@@ -1,27 +1,41 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardHeader from '@material-ui/core/CardHeader'
-import CardMedia from '@material-ui/core/CardMedia'
 import CardContent from '@material-ui/core/CardContent'
-import CardActions from '@material-ui/core/CardActions'
-import Collapse from '@material-ui/core/Collapse'
-import IconButton from '@material-ui/core/IconButton'
-import { red } from '@material-ui/core/colors'
-import FavoriteIcon from '@material-ui/icons/Favorite'
-import ShareIcon from '@material-ui/icons/Share'
+import {red} from '@material-ui/core/colors'
+import TextField from '@material-ui/core/TextField'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
+import ka from './ka.png'
+import DragHandleIcon from '@material-ui/icons/DragHandle'
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
+import Select from '@material-ui/core/Select'
+import FormControl from '@material-ui/core/FormControl'
+import Chip from '@material-ui/core/Chip'
+import Tab from '@material-ui/core/Tab'
+import Tabs from '@material-ui/core/Tabs'
+import Typography from '@material-ui/core/Typography'
+import {Box, Checkbox} from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
     card: {
         width: '100%',
+        marginBottom: '1rem',
     },
     cardHeader: {
         textAlign: 'left',
     },
     media: {
-        // height: 0,
-        // paddingTop: '56.25%', // 16:9
+        maxWidth: '90%',
+        width: 'auto',
+        height: 'auto',
+    },
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+    },
+    marginIndicationTextField: {
+        padding: 0,
     },
     expand: {
         transform: 'rotate(0deg)',
@@ -40,91 +54,173 @@ const useStyles = makeStyles(theme => ({
 
 export default function RecipeReviewCard(props) {
     const classes = useStyles()
-    const [expanded, setExpanded] = React.useState(false)
+    // const [expanded, setExpanded] = React.useState(false)
 
-    const handleExpandClick = () => {
-        setExpanded(!expanded)
-    }
-    console.log('props', props.data)
+    // const handleExpandClick = () => {
+    //     setExpanded(!expanded)
+    // }
     const { data } = props
+
+    const Header = () => {
+        return (
+            <div
+                className="flex p-2 justify-between"
+                style={{ borderBottom: '1px solid rgb(235, 235, 235)' }}
+            >
+                <div className="flex">
+                    <DragHandleIcon className="mr-2" />
+                    <h3 className="font-bold">{data.filename || data.type}</h3>
+                </div>
+                <div className="self-end">
+                    <MoreVertIcon />
+                    <KeyboardArrowDownIcon />
+                </div>
+            </div>
+        )
+    }
+
+    function a11yProps(index) {
+        return {
+            id: `simple-tab-${index}`,
+            'aria-controls': `simple-tabpanel-${index}`,
+        }
+    }
+
+    function TabPanel(props) {
+        const { children, value, index, ...other } = props
+
+        return (
+            <Typography
+                component="div"
+                role="tabpanel"
+                hidden={value !== index}
+                id={`simple-tabpanel-${index}`}
+                aria-labelledby={`simple-tab-${index}`}
+                {...other}
+            >
+                {value === index && <Box className="mt-2">{children}</Box>}
+            </Typography>
+        )
+    }
 
     return (
         <Card className={classes.card}>
-            <CardHeader
-                action={
-                    <IconButton aria-label="settings">
-                        <MoreVertIcon />
-                    </IconButton>
-                }
-                className={classes.cardHeader}
-                title={data.filename || data.type}
-                // subheader="September 14, 2016"
-            />
-            <CardMedia
-                className={classes.media}
-                image="/static/images/cards/paella.jpg"
-                title="Paella dish"
-            />
-            <CardContent>
-                {/*<Typography variant="body2" color="textSecondary" component="p">*/}
-                {/*    This impressive paella is a perfect party dish and a fun*/}
-                {/*    meal to cook together with your guests. Add 1 cup of frozen*/}
-                {/*    peas along with the mussels, if you like.*/}
-                {/*</Typography>*/}
+            <CardHeader className={classes.cardHeader} component={Header} />
+            <CardContent className="flex">
+                <div
+                    style={{ width: 300, height: 192 }}
+                    className="items-center flex justify-center bg-black mr-2"
+                >
+                    <img className={classes.media} src={ka} title="ka" alt="preview" />
+                </div>
+                <div className="w-full flex">
+                    <div className="w-1/3 flex flex-col content-center">
+                        <div className="justify-center flex">
+                            <FormControl
+                                variant="filled"
+                                className={classes.formControl}
+                            >
+                                <div>
+                                    <Select
+                                        native
+                                        value="file"
+                                        onChange={x => {
+                                            console.log('selected', x)
+                                        }}
+                                        style={{ width: 155 }}
+                                        inputProps={{
+                                            name: 'type',
+                                            id: 'type',
+                                        }}
+                                    >
+                                        <option value="file">File</option>
+                                        <option value="missing">Missing</option>
+                                    </Select>
+                                </div>
+                            </FormControl>
+                        </div>
+                        <div className="justify-center flex">
+                            <Chip
+                                label="Title Page"
+                                onDelete={() => {
+                                    console.log('handle delete!')
+                                }}
+                            />
+                        </div>
+                    </div>
+                    <div className="w-2/3">
+                        <Tabs
+                            value={0}
+                            onChange={() => console.log('handle change')}
+                            aria-label="simple tabs example"
+                            indicatorColor="primary"
+                        >
+                            <Tab label="Input 1" {...a11yProps(0)} />
+                            <Tab label="Input 2" {...a11yProps(1)} />
+                        </Tabs>
+
+                        <TabPanel value={0} index={0} className="p-0">
+                            <div>
+                                <TextField
+                                    id="margin-indication"
+                                    label="Margin Indication"
+                                    variant="filled"
+                                    type="text"
+                                />
+                                <Checkbox
+                                    checked={true}
+                                    onChange={() => {
+                                        console.log('checked')
+                                    }}
+                                    value="margin-checked"
+                                    color="primary"
+                                    inputProps={{
+                                        'aria-label': 'primary checkbox',
+                                    }}
+                                />
+                            </div>
+                            <div>
+                                <FormControl
+                                    variant="filled"
+                                    style={{ marginTop: '.5rem' }}
+                                >
+                                    <div>
+                                        <Select
+                                            native
+                                            value="file"
+                                            onChange={x => {
+                                                console.log('selected', x)
+                                            }}
+                                            className="mr-2"
+                                            style={{ width: 155 }}
+                                            inputProps={{
+                                                name: 'type',
+                                                id: 'type',
+                                            }}
+                                        >
+                                            <option value="section1a">
+                                                Section 1a
+                                            </option>
+                                            <option value="section2a">
+                                                Section 2a
+                                            </option>
+                                        </Select>
+                                        <TextField
+                                            id="pagenumber"
+                                            variant="filled"
+                                            type="text"
+                                            value="15a"
+                                        />
+                                    </div>
+                                </FormControl>
+                            </div>
+                        </TabPanel>
+                        {/*<TabPanel value={0} index={1}>*/}
+                        {/*    Item Two*/}
+                        {/*</TabPanel>*/}
+                    </div>
+                </div>
             </CardContent>
-            <CardActions disableSpacing>
-                <IconButton aria-label="add to favorites">
-                    <FavoriteIcon />
-                </IconButton>
-                <IconButton aria-label="share">
-                    <ShareIcon />
-                </IconButton>
-                {/*<IconButton*/}
-                {/*    className={clsx(classes.expand, {*/}
-                {/*        [classes.expandOpen]: expanded,*/}
-                {/*    })}*/}
-                {/*    onClick={handleExpandClick}*/}
-                {/*    aria-expanded={expanded}*/}
-                {/*    aria-label="show more"*/}
-                {/*>*/}
-                {/*    <ExpandMoreIcon />*/}
-                {/*</IconButton>*/}
-            </CardActions>
-            <Collapse in={expanded} timeout="auto" unmountOnExit>
-                {/*<CardContent>*/}
-                {/*    <Typography paragraph>Method:</Typography>*/}
-                {/*    <Typography paragraph>*/}
-                {/*        Heat 1/2 cup of the broth in a pot until simmering, add*/}
-                {/*        saffron and set aside for 10 minutes.*/}
-                {/*    </Typography>*/}
-                {/*    <Typography paragraph>*/}
-                {/*        Heat oil in a (14- to 16-inch) paella pan or a large,*/}
-                {/*        deep skillet over medium-high heat. Add chicken, shrimp*/}
-                {/*        and chorizo, and cook, stirring occasionally until*/}
-                {/*        lightly browned, 6 to 8 minutes. Transfer shrimp to a*/}
-                {/*        large plate and set aside, leaving chicken and chorizo*/}
-                {/*        in the pan. Add pimentón, bay leaves, garlic, tomatoes,*/}
-                {/*        onion, salt and pepper, and cook, stirring often until*/}
-                {/*        thickened and fragrant, about 10 minutes. Add saffron*/}
-                {/*        broth and remaining 4 1/2 cups chicken broth; bring to a*/}
-                {/*        boil.*/}
-                {/*    </Typography>*/}
-                {/*    <Typography paragraph>*/}
-                {/*        Add rice and stir very gently to distribute. Top with*/}
-                {/*        artichokes and peppers, and cook without stirring, until*/}
-                {/*        most of the liquid is absorbed, 15 to 18 minutes. Reduce*/}
-                {/*        heat to medium-low, add reserved shrimp and mussels,*/}
-                {/*        tucking them down into the rice, and cook again without*/}
-                {/*        stirring, until mussels have opened and rice is just*/}
-                {/*        tender, 5 to 7 minutes more. (Discard any mussels that*/}
-                {/*        don’t open.)*/}
-                {/*    </Typography>*/}
-                {/*    <Typography>*/}
-                {/*        Set aside off of the heat to let rest for 10 minutes,*/}
-                {/*        and then serve.*/}
-                {/*    </Typography>*/}
-                {/*</CardContent>*/}
-            </Collapse>
         </Card>
     )
 }

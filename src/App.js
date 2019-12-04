@@ -1,16 +1,12 @@
 import React from 'react'
-import './App.css'
-import { makeStyles } from '@material-ui/core/styles'
+import './index.css'
 import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
-import Typography from '@material-ui/core/Typography'
-import Container from '@material-ui/core/Container'
-import { ThemeProvider } from '@material-ui/core/styles'
-import { createMuiTheme } from '@material-ui/core/styles'
+import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles'
 import Cards from './components/Cards'
 import InfoBar from './components/InfoBar'
 import data from './manifest-simple'
-import { map, path } from 'ramda'
+import {map, path} from 'ramda'
+
 const theme = createMuiTheme({
     palette: {
         primary: {
@@ -19,54 +15,44 @@ const theme = createMuiTheme({
     },
 })
 
-const useStyles = makeStyles(theme => ({
-    header: {
-        width: '100%',
-        flexGrow: 1,
-        // backgroundColor: theme.primary[500],
-    },
-    root: {
-        flexGrow: 1,
-    },
-    menuButton: {
-        marginRight: theme.spacing(2),
-    },
-    title: {
-        fontFamily: 'Roboto-Medium',
-        letterSpacing: 1.1,
-    },
-}))
-
 function App() {
-    const classes = useStyles()
-
     return (
         <ThemeProvider theme={theme}>
             <div className="App">
-                <header className={classes.header}>
-                    <div className={classes.root}>
-                        <AppBar position="static">
-                            <Toolbar>
-                                <Typography
-                                    edge="start"
-                                    variant="h5"
-                                    className={classes.title}
-                                >
-                                    BUDA
-                                </Typography>
-                            </Toolbar>
+                <header>
+                    <div>
+                        <AppBar position="static" className="p-3">
+                            <div className="container mx-auto">
+                                <span className="text-2xl">BUDA</span>
+                            </div>
                         </AppBar>
                     </div>
                 </header>
+                <div className="container mx-auto flex flex-row py-6">
+                    <div className="w-1/2 flex flex-col">
+                        <span className="text-gray-600 text-sm">Volume:</span>
+                        <span className="text-sm font-bold text-xl mb-3">
+                            S4SAD2SD34
+                        </span>
+                        <span className="underline text-blue-600 cursor-pointer">
+                            Preview
+                        </span>
+                    </div>
+                    <div className="w-1/2 flex flex-col">
+                        <span className="underline text-md font-medium self-end cursor-pointer">
+                            SAVE
+                        </span>
+                    </div>
+                </div>
                 <InfoBar />
-                <Container maxWidth="xl">
+                <div className="container mx-auto">
                     {map(
                         item => (
                             <Cards data={item} />
                         ),
-                        path(['view', 'view1', 'imagelist'],data)
+                        path(['view', 'view1', 'imagelist'], data)
                     )}
-                </Container>
+                </div>
             </div>
         </ThemeProvider>
     )
