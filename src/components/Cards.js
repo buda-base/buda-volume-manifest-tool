@@ -24,6 +24,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
+import EditCard from './EditCard'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -62,8 +63,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function RecipeReviewCard(props) {
     const classes = useStyles()
-    // const [expanded, setExpanded] = React.useState(false)
-
+    const [editDialogOpen, setEditDialogOpen] = React.useState(false)
     // const handleExpandClick = () => {
     //     setExpanded(!expanded)
     // }
@@ -149,7 +149,12 @@ export default function RecipeReviewCard(props) {
                         <ArrowDownwardIcon className="mr-2" />
                         Insert One Below
                     </MenuItem>
-                    <MenuItem onClick={handleClose}>
+                    <MenuItem
+                        onClick={() => {
+                            handleClose()
+                            setEditDialogOpen(true)
+                        }}
+                    >
                         <Edit className="mr-2" /> Edit
                     </MenuItem>
                     <MenuItem onClick={handleClose}>
@@ -165,6 +170,11 @@ export default function RecipeReviewCard(props) {
 
     return (
         <Card className={classes.card}>
+            <EditCard
+                open={editDialogOpen}
+                setEditDialogOpen={setEditDialogOpen}
+                data={data}
+            />
             <CardHeader className={classes.cardHeader} component={Header} />
             <CardContent className="flex">
                 <div
