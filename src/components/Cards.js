@@ -17,6 +17,13 @@ import Tabs from '@material-ui/core/Tabs'
 import Typography from '@material-ui/core/Typography'
 import {Box, Checkbox} from '@material-ui/core'
 import FullscreenIcon from '@material-ui/icons/Fullscreen'
+import Edit from '@material-ui/icons/Edit'
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -69,12 +76,15 @@ export default function RecipeReviewCard(props) {
                 style={{ borderBottom: '1px solid rgb(235, 235, 235)' }}
             >
                 <div className="flex">
-                    <DragHandleIcon className="mr-2" style={{cursor: 'move'}} />
+                    <DragHandleIcon
+                        className="mr-2"
+                        style={{ cursor: 'move' }}
+                    />
                     <h3 className="font-bold">{data.filename || data.type}</h3>
                 </div>
-                <div className="self-end">
-                    <MoreVertIcon style={{cursor: 'pointer'}} />
-                    <KeyboardArrowDownIcon style={{cursor: 'pointer'}} />
+                <div className="self-end flex">
+                    <SimpleMenu />
+                    <KeyboardArrowDownIcon style={{ cursor: 'pointer' }} />
                 </div>
             </div>
         )
@@ -104,6 +114,55 @@ export default function RecipeReviewCard(props) {
         )
     }
 
+    function SimpleMenu() {
+        const [anchorEl, setAnchorEl] = React.useState(null)
+
+        const handleClick = event => {
+            setAnchorEl(event.currentTarget)
+        }
+
+        const handleClose = () => {
+            setAnchorEl(null)
+        }
+
+        return (
+            <div className="flex inline-block">
+                <MoreVertIcon
+                    aria-controls="simple-menu"
+                    aria-haspopup="true"
+                    onClick={handleClick}
+                    style={{ cursor: 'pointer' }}
+                />
+
+                <Menu
+                    id="simple-menu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                >
+                    <MenuItem onClick={handleClose}>
+                        <ArrowUpwardIcon className="mr-2" />
+                        Insert One Above
+                    </MenuItem>
+                    <MenuItem onClick={handleClose}>
+                        <ArrowDownwardIcon className="mr-2" />
+                        Insert One Below
+                    </MenuItem>
+                    <MenuItem onClick={handleClose}>
+                        <Edit className="mr-2" /> Edit
+                    </MenuItem>
+                    <MenuItem onClick={handleClose}>
+                        <DeleteForeverIcon className="mr-2" /> Delete
+                    </MenuItem>
+                    <MenuItem onClick={handleClose}>
+                        <VisibilityOffIcon className="mr-2" /> Hide
+                    </MenuItem>
+                </Menu>
+            </div>
+        )
+    }
+
     return (
         <Card className={classes.card}>
             <CardHeader className={classes.cardHeader} component={Header} />
@@ -124,7 +183,7 @@ export default function RecipeReviewCard(props) {
                             bottom: 10,
                             right: 10,
                             color: 'white',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
                         }}
                     />
                 </div>
