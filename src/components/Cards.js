@@ -16,6 +16,7 @@ import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 import Typography from '@material-ui/core/Typography'
 import {Box, Checkbox} from '@material-ui/core'
+import FullscreenIcon from '@material-ui/icons/Fullscreen'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -68,12 +69,12 @@ export default function RecipeReviewCard(props) {
                 style={{ borderBottom: '1px solid rgb(235, 235, 235)' }}
             >
                 <div className="flex">
-                    <DragHandleIcon className="mr-2" />
+                    <DragHandleIcon className="mr-2" style={{cursor: 'move'}} />
                     <h3 className="font-bold">{data.filename || data.type}</h3>
                 </div>
                 <div className="self-end">
-                    <MoreVertIcon />
-                    <KeyboardArrowDownIcon />
+                    <MoreVertIcon style={{cursor: 'pointer'}} />
+                    <KeyboardArrowDownIcon style={{cursor: 'pointer'}} />
                 </div>
             </div>
         )
@@ -108,10 +109,24 @@ export default function RecipeReviewCard(props) {
             <CardHeader className={classes.cardHeader} component={Header} />
             <CardContent className="flex">
                 <div
-                    style={{ width: 300, height: 192 }}
+                    style={{ width: 300, height: 192, position: 'relative' }}
                     className="items-center flex justify-center bg-black mr-2"
                 >
-                    <img className={classes.media} src={ka} title="ka" alt="preview" />
+                    <img
+                        className={classes.media}
+                        src={ka}
+                        title="ka"
+                        alt="preview"
+                    />
+                    <FullscreenIcon
+                        style={{
+                            position: 'absolute',
+                            bottom: 10,
+                            right: 10,
+                            color: 'white',
+                            cursor: 'pointer'
+                        }}
+                    />
                 </div>
                 <div className="w-full flex">
                     <div className="w-1/3 flex flex-col content-center">
