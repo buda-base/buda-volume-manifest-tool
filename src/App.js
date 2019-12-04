@@ -6,6 +6,7 @@ import Cards from './components/Cards'
 import InfoBar from './components/InfoBar'
 import data from './manifest-simple'
 import {map, path} from 'ramda'
+import {Slider} from '@material-ui/core'
 
 const theme = createMuiTheme({
     palette: {
@@ -46,6 +47,14 @@ function App() {
                 </div>
                 <InfoBar />
                 <div className="container mx-auto">
+                    <div className="mt-5 text-gray-700" style={{ width: 144 }}>
+                        <span className="text-xs">Thumbnail Zoom Level:</span>
+                        <Slider
+                            value={30}
+                            onChange={() => console.log('handle change')}
+                            aria-labelledby="continuous-slider"
+                        />
+                    </div>
                     {map(
                         item => (
                             <Cards data={item} />
