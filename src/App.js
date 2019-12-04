@@ -1,13 +1,15 @@
 import React from 'react'
 import './index.css'
-import AppBar from '@material-ui/core/AppBar'
+import AppBar from './components/AppBar'
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles'
 import Cards from './components/Cards'
 import InfoBar from './components/InfoBar'
 import data from './manifest-simple'
-import {map, path} from 'ramda'
+import {addIndex, assoc, insert, lensPath, map, prop, propOr, reject, set, view,} from 'ramda'
+
 import {Slider} from '@material-ui/core'
 
+const mapIndex = addIndex(map)
 const theme = createMuiTheme({
     palette: {
         primary: {
@@ -16,19 +18,77 @@ const theme = createMuiTheme({
     },
 })
 
+const imageListLens = lensPath(['view', 'view1', 'imagelist'])
 function App() {
+    const [workingData, setWorkingData] = React.useState(data)
+    const imageList = view(imageListLens, workingData)
+
+    const updateImageList = updatedImageList => {
+        setWorkingData(set(imageListLens, updatedImageList, workingData))
+    }
+
+    const deleteImageChip = (imageId, chipId) => {
+        const updatedImageList = map(image => {
+            if (image.id === imageId) {
+                const updatedChips = reject(
+                    ({ id }) => id === chipId,
+                    propOr([], 'chips', image)
+                )
+                return assoc('chips', updatedChips, image)
+            } else {
+                return image
+            }
+        }, imageList)
+        updateImageList(updatedImageList)
+    }
+
+    const toggleReview = imageId => {
+        const updatedImageList = map(image => {
+            if (image.id === imageId) {
+                const reviewed = prop('reviewed', image)
+                return assoc('reviewed', !reviewed, image)
+            } else {
+                return image
+            }
+        }, imageList)
+        updateImageList(updatedImageList)
+    }
+
+    const insertMissing = (i, direction) => {
+        const defaultMissingImage = {
+            id: 'UPDATE_THIS',
+            type: 'missing',
+        }
+        if (direction === 'before') {
+            updateImageList(insert(i, defaultMissingImage, imageList))
+        } else if (direction === 'after') {
+            updateImageList(insert(i + 1, defaultMissingImage, imageList))
+        }
+    }
+
+    const deleteImage = imageId => {
+        const updatedImageList = reject(({ id }) => {
+            return id === imageId
+        }, imageList)
+        updateImageList(updatedImageList)
+    }
+
+    const toggleHideImage = imageId => {
+        const updatedImageList = map(image => {
+            if (image.id === imageId) {
+                const hidden = !!prop('hide', image)
+                return assoc('hide', !hidden, image)
+            } else {
+                return image
+            }
+        }, imageList)
+        updateImageList(updatedImageList)
+    }
+
     return (
         <ThemeProvider theme={theme}>
             <div className="App">
-                <header>
-                    <div>
-                        <AppBar position="static" className="p-3">
-                            <div className="container mx-auto">
-                                <span className="text-2xl">BUDA</span>
-                            </div>
-                        </AppBar>
-                    </div>
-                </header>
+                <AppBar />
                 <div className="container mx-auto flex flex-row py-6">
                     <div className="w-1/2 flex flex-col">
                         <span className="text-gray-600 text-sm">Volume:</span>
@@ -51,15 +111,24 @@ function App() {
                         <span className="text-xs">Thumbnail Zoom Level:</span>
                         <Slider
                             value={30}
-                            onChange={() => console.log('handle change')}
+                            onChange={val => console.log('handle change', val)}
                             aria-labelledby="continuous-slider"
                         />
                     </div>
-                    {map(
-                        item => (
-                            <Cards data={item} />
+                    {mapIndex(
+                        (item, i) => (
+                            <Cards
+                                data={item}
+                                deleteImageChip={deleteImageChip}
+                                toggleReview={toggleReview}
+                                insertMissing={insertMissing}
+                                deleteImage={deleteImage}
+                                toggleHideImage={toggleHideImage}
+                                key={item.id}
+                                i={i}
+                            />
                         ),
-                        path(['view', 'view1', 'imagelist'], data)
+                        imageList
                     )}
                 </div>
             </div>

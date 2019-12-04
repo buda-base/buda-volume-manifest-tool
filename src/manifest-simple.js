@@ -24,21 +24,27 @@ const data = {
         view1: {
             imagelist: [
                 {
+                    id: 1,
                     subtype: 'cover',
                     filename: 'I1KG9128001.tif',
+                    chips: [{ id: 2, text: 'Cover Page' }],
                 },
                 {
+                    id: 2,
                     subtype: 'blank',
                     filename: 'I1KG9128002.tif',
                     pagination: '1a',
+                    chips: [{ id: 1, text: 'Title Page' }],
                 },
                 {
+                    id: 3,
                     subtype: 'title',
                     thumbnail: true,
                     filename: 'I1KG9128003.tif',
                     pagination: '1b',
                 },
                 {
+                    id: 4,
                     filename: 'I1KG9128004.tif',
                     pagination: "1'a",
                     rotation: 180,
@@ -48,11 +54,13 @@ const data = {
                     ],
                 },
                 {
+                    id: 5,
                     type: 'missing',
                     subtype: 'from-scan',
                     pagination: "1'b",
                 },
                 {
+                    id: 6,
                     type: 'duplicate',
                     filename: 'I1KG9128005.tif',
                     subtype: 'from-scan',

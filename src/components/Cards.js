@@ -24,7 +24,9 @@ import MenuItem from '@material-ui/core/MenuItem'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
+import VisibilityOnIcon from '@material-ui/icons/Visibility'
 import EditCard from './EditCard'
+import {map, propOr} from 'ramda'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -67,7 +69,7 @@ export default function RecipeReviewCard(props) {
     // const handleExpandClick = () => {
     //     setExpanded(!expanded)
     // }
-    const { data } = props
+    const { data: image } = props
 
     const Header = () => {
         return (
@@ -80,7 +82,9 @@ export default function RecipeReviewCard(props) {
                         className="mr-2"
                         style={{ cursor: 'move' }}
                     />
-                    <h3 className="font-bold">{data.filename || data.type}</h3>
+                    <h3 className="font-bold">
+                        {image.filename || image.type}
+                    </h3>
                 </div>
                 <div className="self-end flex">
                     <SimpleMenu />
@@ -141,11 +145,15 @@ export default function RecipeReviewCard(props) {
                     open={Boolean(anchorEl)}
                     onClose={handleClose}
                 >
-                    <MenuItem onClick={handleClose}>
+                    <MenuItem
+                        onClick={() => props.insertMissing(props.i, 'before')}
+                    >
                         <ArrowUpwardIcon className="mr-2" />
                         Insert One Above
                     </MenuItem>
-                    <MenuItem onClick={handleClose}>
+                    <MenuItem
+                        onClick={() => props.insertMissing(props.i, 'after')}
+                    >
                         <ArrowDownwardIcon className="mr-2" />
                         Insert One Below
                     </MenuItem>
@@ -157,13 +165,59 @@ export default function RecipeReviewCard(props) {
                     >
                         <Edit className="mr-2" /> Edit
                     </MenuItem>
-                    <MenuItem onClick={handleClose}>
+                    <MenuItem
+                        onClick={() => {
+                            props.deleteImage(image.id)
+                        }}
+                    >
                         <DeleteForeverIcon className="mr-2" /> Delete
                     </MenuItem>
-                    <MenuItem onClick={handleClose}>
-                        <VisibilityOffIcon className="mr-2" /> Hide
+                    <MenuItem
+                        onClick={() => {
+                            props.toggleHideImage(image.id)
+                        }}
+                    >
+                        {image.hide ? (
+                            <VisibilityOnIcon className="mr-2" />
+                        ) : (
+                            <VisibilityOffIcon className="mr-2" />
+                        )}
+
+                        {image.hide ? 'Unhide' : 'Hide'}
                     </MenuItem>
                 </Menu>
+            </div>
+        )
+    }
+
+    const PreviewImage = ({ image }) => {
+        console.log('image', image)
+        return (
+            <div
+                style={{ width: 300, height: 192, position: 'relative' }}
+                className="items-center flex justify-center bg-black mr-2"
+            >
+                {image.filename ? (
+                    <>
+                        <img
+                            className={classes.media}
+                            src={ka}
+                            title="ka"
+                            alt="preview"
+                        />
+                        <FullscreenIcon
+                            style={{
+                                position: 'absolute',
+                                bottom: 10,
+                                right: 10,
+                                color: 'white',
+                                cursor: 'pointer',
+                            }}
+                        />
+                    </>
+                ) : (
+                    <h3 className="text-white">:(</h3>
+                )}
             </div>
         )
     }
@@ -173,138 +227,133 @@ export default function RecipeReviewCard(props) {
             <EditCard
                 open={editDialogOpen}
                 setEditDialogOpen={setEditDialogOpen}
-                data={data}
+                data={image}
             />
             <CardHeader className={classes.cardHeader} component={Header} />
-            <CardContent className="flex">
-                <div
-                    style={{ width: 300, height: 192, position: 'relative' }}
-                    className="items-center flex justify-center bg-black mr-2"
-                >
-                    <img
-                        className={classes.media}
-                        src={ka}
-                        title="ka"
-                        alt="preview"
-                    />
-                    <FullscreenIcon
-                        style={{
-                            position: 'absolute',
-                            bottom: 10,
-                            right: 10,
-                            color: 'white',
-                            cursor: 'pointer',
-                        }}
-                    />
-                </div>
-                <div className="w-full flex">
-                    <div className="w-1/3 flex flex-col content-center">
-                        <div className="justify-center flex">
-                            <FormControl
-                                variant="filled"
-                                className={classes.formControl}
-                            >
-                                <div>
-                                    <Select
-                                        native
-                                        value="file"
-                                        onChange={x => {
-                                            console.log('selected', x)
-                                        }}
-                                        style={{ width: 155 }}
-                                        inputProps={{
-                                            name: 'type',
-                                            id: 'type',
-                                        }}
-                                    >
-                                        <option value="file">File</option>
-                                        <option value="missing">Missing</option>
-                                    </Select>
-                                </div>
-                            </FormControl>
-                        </div>
-                        <div className="justify-center flex">
-                            <Chip
-                                label="Title Page"
-                                onDelete={() => {
-                                    console.log('handle delete!')
-                                }}
-                            />
-                        </div>
-                    </div>
-                    <div className="w-2/3">
-                        <Tabs
-                            value={0}
-                            onChange={() => console.log('handle change')}
-                            aria-label="simple tabs example"
-                            indicatorColor="primary"
-                        >
-                            <Tab label="Input 1" {...a11yProps(0)} />
-                            <Tab label="Input 2" {...a11yProps(1)} />
-                        </Tabs>
-
-                        <TabPanel value={0} index={0} className="p-0">
-                            <div>
-                                <TextField
-                                    id="margin-indication"
-                                    label="Margin Indication"
-                                    variant="filled"
-                                    type="text"
-                                />
-                                <Checkbox
-                                    checked={true}
-                                    onChange={() => {
-                                        console.log('checked')
-                                    }}
-                                    value="margin-checked"
-                                    color="primary"
-                                    inputProps={{
-                                        'aria-label': 'primary checkbox',
-                                    }}
-                                />
-                            </div>
-                            <div>
+            {!image.hide && (
+                <CardContent className="flex">
+                    <PreviewImage image={image} />
+                    <div className="w-full flex">
+                        <div className="w-1/3 flex flex-col content-center">
+                            <div className="justify-center flex">
                                 <FormControl
                                     variant="filled"
-                                    style={{ marginTop: '.5rem' }}
+                                    className={classes.formControl}
                                 >
                                     <div>
                                         <Select
                                             native
-                                            value="file"
+                                            value={
+                                                image.filename
+                                                    ? 'file'
+                                                    : 'missing'
+                                            }
                                             onChange={x => {
                                                 console.log('selected', x)
                                             }}
-                                            className="mr-2"
                                             style={{ width: 155 }}
                                             inputProps={{
                                                 name: 'type',
                                                 id: 'type',
                                             }}
                                         >
-                                            <option value="section1a">
-                                                Section 1a
-                                            </option>
-                                            <option value="section2a">
-                                                Section 2a
+                                            <option value="file">File</option>
+                                            <option value="missing">
+                                                Missing
                                             </option>
                                         </Select>
-                                        <TextField
-                                            id="pagenumber"
-                                            variant="filled"
-                                            type="text"
-                                            value="15a"
-                                        />
                                     </div>
                                 </FormControl>
                             </div>
-                        </TabPanel>
-                        {/*<TabPanel value={0} index={1}>*/}
-                        {/*    Item Two*/}
-                        {/*</TabPanel>*/}
+                            <div className="justify-center flex">
+                                {map(({ id, text }) => {
+                                    return (
+                                        <Chip
+                                            label={text}
+                                            onDelete={() => {
+                                                props.deleteImageChip(
+                                                    image.id,
+                                                    id
+                                                )
+                                            }}
+                                        />
+                                    )
+                                }, propOr([], 'chips', image))}
+                            </div>
+                        </div>
+                        <div className="w-2/3">
+                            <Tabs
+                                value={0}
+                                onChange={() => console.log('handle change')}
+                                aria-label="simple tabs example"
+                                indicatorColor="primary"
+                            >
+                                <Tab label="Input 1" {...a11yProps(0)} />
+                                <Tab label="Input 2" {...a11yProps(1)} />
+                            </Tabs>
+
+                            <TabPanel value={0} index={0} className="p-0">
+                                <div>
+                                    <TextField
+                                        id="margin-indication"
+                                        label="Margin Indication"
+                                        variant="filled"
+                                        type="text"
+                                    />
+                                    <Checkbox
+                                        checked={image.reviewed}
+                                        onChange={() => {
+                                            props.toggleReview(image.id)
+                                        }}
+                                        value="reviewed"
+                                        color="primary"
+                                        inputProps={{
+                                            'aria-label': 'primary checkbox',
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <FormControl
+                                        variant="filled"
+                                        style={{ marginTop: '.5rem' }}
+                                    >
+                                        <div>
+                                            <Select
+                                                native
+                                                value="file"
+                                                onChange={x => {
+                                                    console.log('selected', x)
+                                                }}
+                                                className="mr-2"
+                                                style={{ width: 155 }}
+                                                inputProps={{
+                                                    name: 'type',
+                                                    id: 'type',
+                                                }}
+                                            >
+                                                <option value="section1a">
+                                                    Section 1a
+                                                </option>
+                                                <option value="section2a">
+                                                    Section 2a
+                                                </option>
+                                            </Select>
+                                            <TextField
+                                                id="pagenumber"
+                                                variant="filled"
+                                                type="text"
+                                            />
+                                        </div>
+                                    </FormControl>
+                                </div>
+                            </TabPanel>
+                            {/*<TabPanel value={0} index={1}>*/}
+                            {/*    Item Two*/}
+                            {/*</TabPanel>*/}
+                        </div>
                     </div>
-                </div>
-            </CardContent>
+                </CardContent>
+            )}
         </Card>
     )
 }
