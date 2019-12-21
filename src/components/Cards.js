@@ -6,7 +6,6 @@ import CardContent from '@material-ui/core/CardContent'
 import {red} from '@material-ui/core/colors'
 import TextField from '@material-ui/core/TextField'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
-import ka from './ka.png'
 import DragHandleIcon from '@material-ui/icons/DragHandle'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
 import Select from '@material-ui/core/Select'
@@ -16,7 +15,6 @@ import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
 import Typography from '@material-ui/core/Typography'
 import {Box, Checkbox} from '@material-ui/core'
-import FullscreenIcon from '@material-ui/icons/Fullscreen'
 import Edit from '@material-ui/icons/Edit'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import Menu from '@material-ui/core/Menu'
@@ -27,6 +25,7 @@ import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import VisibilityOnIcon from '@material-ui/icons/Visibility'
 import EditCard from './EditCard'
 import {map, propOr} from 'ramda'
+import OpenSeaDragon from "openseadragon";
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -63,12 +62,48 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
+class PreviewImage extends React.Component {
+    constructor(props){
+        super(props)
+    }
+    componentDidMount() {
+
+        const id = `openseadragon${this.props.i}`
+        console.log('mountid', id)
+        OpenSeaDragon({
+            id: `openseadragon${this.props.i}`,
+            tileSources: "https://iiif.bdrc.io/bdr:V22084_I0916::09160001.tif/info.json"
+        });
+    }
+
+    render() {
+        console.log('renderid', `openseadragon${this.props.i}`)
+           return <div
+                style={{ width: 300, height: 192, position: 'relative' }}
+                className="items-center flex justify-center bg-black mr-2"
+                id={`openseadragon${this.props.i}`}
+            />
+
+    }
+}
+
+
+
 export default function RecipeReviewCard(props) {
     const classes = useStyles()
     const [editDialogOpen, setEditDialogOpen] = React.useState(false)
     // const handleExpandClick = () => {
     //     setExpanded(!expanded)
     // }
+    // const id = `openseadragon${props.i}`
+    // console.log('id', id)
+    // React.useEffect(() => {
+    //     OpenSeaDragon({
+    //         id: `openseadragon${props.i}`,
+    //         tileSources: "https://iiif.bdrc.io/bdr:V22084_I0916::09160001.tif/info.json"
+    //     });
+    // }
+// , [])
     const { data: image } = props
 
     const Header = () => {
@@ -190,37 +225,33 @@ export default function RecipeReviewCard(props) {
         )
     }
 
-    const PreviewImage = ({ image }) => {
-        console.log('image', image)
-        return (
-            <div
-                style={{ width: 300, height: 192, position: 'relative' }}
-                className="items-center flex justify-center bg-black mr-2"
-            >
-                {image.filename ? (
-                    <>
-                        <img
-                            className={classes.media}
-                            src={ka}
-                            title="ka"
-                            alt="preview"
-                        />
-                        <FullscreenIcon
-                            style={{
-                                position: 'absolute',
-                                bottom: 10,
-                                right: 10,
-                                color: 'white',
-                                cursor: 'pointer',
-                            }}
-                        />
-                    </>
-                ) : (
-                    <h3 className="text-white">:(</h3>
-                )}
-            </div>
-        )
-    }
+    // const PreviewImage = ({ image }) => {
+    //     console.log('image', image)
+    //     return (
+    //         <div
+    //             style={{ width: 300, height: 192, position: 'relative' }}
+    //             className="items-center flex justify-center bg-black mr-2"
+    //             id="openseadragon1"
+    //         >
+    //             {image.filename ? (
+    //                 <>
+    //                     <div id={`openseadragon${props.i}`} />
+    //                     <FullscreenIcon
+    //                         style={{
+    //                             position: 'absolute',
+    //                             bottom: 10,
+    //                             right: 10,
+    //                             color: 'white',
+    //                             cursor: 'pointer',
+    //                         }}
+    //                     />
+    //                 </>
+    //             ) : (
+    //                 <h3 className="text-white">:(</h3>
+    //             )}
+    //         </div>
+    //     )
+    // }
 
     return (
         <Card className={classes.card}>
@@ -232,7 +263,7 @@ export default function RecipeReviewCard(props) {
             <CardHeader className={classes.cardHeader} component={Header} />
             {!image.hide && (
                 <CardContent className="flex">
-                    <PreviewImage image={image} />
+                    <PreviewImage image={image} i={props.i} />
                     <div className="w-full flex">
                         <div className="w-1/3 flex flex-col content-center">
                             <div className="justify-center flex">
@@ -269,6 +300,7 @@ export default function RecipeReviewCard(props) {
                                 {map(({ id, text }) => {
                                     return (
                                         <Chip
+                                            key={image.id}
                                             label={text}
                                             onDelete={() => {
                                                 props.deleteImageChip(

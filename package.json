@@ -5,9 +5,17 @@
   "dependencies": {
     "@material-ui/core": "^4.5.1",
     "@material-ui/icons": "^4.5.1",
+    "add": "^2.0.6",
+    "leaflet": "^1.6.0",
+    "leaflet-iiif": "^3.0.0",
+    "openseadragon": "^2.4.1",
     "ramda": "^0.26.1",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
+    "react-iiif-image": "^1.0.1",
+    "react-iiif-media-player": "^2.0.0",
+    "react-leaflet": "^2.6.0",
+    "react-leaflet-iiif": "^0.1.9",
     "react-scripts": "3.2.0",
     "tailwindcss": "^1.1.3"
   },
@@ -17,7 +25,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "prestart": "tailwind build ./src/index.tailwind.css -c ./tailwind.config.js -o ./src/index.css",
-    "tailwind:css":"tailwind build src/css/tailwind.src.css -c  tailwind.js -o src/css/tailwind.css"
+    "tailwind:css": "tailwind build src/css/tailwind.src.css -c  tailwind.js -o src/css/tailwind.css"
   },
   "eslintConfig": {
     "extends": "react-app"

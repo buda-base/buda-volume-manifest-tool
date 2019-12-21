@@ -6,7 +6,6 @@ import Cards from './components/Cards'
 import InfoBar from './components/InfoBar'
 import data from './manifest-simple'
 import {addIndex, assoc, insert, lensPath, map, prop, propOr, reject, set, view,} from 'ramda'
-
 import {Slider} from '@material-ui/core'
 
 const mapIndex = addIndex(map)
@@ -84,6 +83,33 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
+
+    // React.useEffect(() => {
+    //     var map = L.map('map', {
+    //         center: [0, 0],
+    //         crs: L.CRS.Simple,
+    //         zoom: 0,
+    //     })
+    //
+    //     L.tileLayer
+    //         .iiif(
+    //             'https://stacks.stanford.edu/image/iiif/hg676jb4964%2F0380_796-44/info.json'
+    //         )
+    //         .addTo(map)
+    // }, [])
+
+    // React.useEffect(() => {
+    //     var map = window.L.map('map', {
+    //         center: [0, 0],
+    //         crs: window.L.CRS.Simple,
+    //         zoom: 0,
+    //     })
+    //     window.L.tileLayer
+    //         .iiif(
+    //             'https://stacks.stanford.edu/image/iiif/hg676jb4964%2F0380_796-44/info.json'
+    //         )
+    //         .addTo(map)
+    // }, [])
 
     return (
         <ThemeProvider theme={theme}>
