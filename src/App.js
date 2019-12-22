@@ -7,6 +7,8 @@ import InfoBar from './components/InfoBar'
 import data from './manifest-simple'
 import {addIndex, assoc, insert, lensPath, map, prop, propOr, reject, set, view,} from 'ramda'
 import {Slider} from '@material-ui/core'
+import SettingsIcon from '@material-ui/icons/Settings'
+import Dialog from "./components/Dialog";
 
 const mapIndex = addIndex(map)
 const theme = createMuiTheme({
@@ -20,6 +22,7 @@ const theme = createMuiTheme({
 const imageListLens = lensPath(['view', 'view1', 'imagelist'])
 function App() {
     const [workingData, setWorkingData] = React.useState(data)
+    const [settingsDialogOpen, setSettingsDialog] = React.useState(true)
     const imageList = view(imageListLens, workingData)
 
     const updateImageList = updatedImageList => {
@@ -84,36 +87,10 @@ function App() {
         updateImageList(updatedImageList)
     }
 
-    // React.useEffect(() => {
-    //     var map = L.map('map', {
-    //         center: [0, 0],
-    //         crs: L.CRS.Simple,
-    //         zoom: 0,
-    //     })
-    //
-    //     L.tileLayer
-    //         .iiif(
-    //             'https://stacks.stanford.edu/image/iiif/hg676jb4964%2F0380_796-44/info.json'
-    //         )
-    //         .addTo(map)
-    // }, [])
-
-    // React.useEffect(() => {
-    //     var map = window.L.map('map', {
-    //         center: [0, 0],
-    //         crs: window.L.CRS.Simple,
-    //         zoom: 0,
-    //     })
-    //     window.L.tileLayer
-    //         .iiif(
-    //             'https://stacks.stanford.edu/image/iiif/hg676jb4964%2F0380_796-44/info.json'
-    //         )
-    //         .addTo(map)
-    // }, [])
-
     return (
         <ThemeProvider theme={theme}>
             <div className="App">
+                <Dialog open={settingsDialogOpen} handleClose={() => setSettingsDialog(false)} />
                 <AppBar />
                 <div className="container mx-auto flex flex-row py-6">
                     <div className="w-1/2 flex flex-col">
@@ -126,9 +103,14 @@ function App() {
                         </span>
                     </div>
                     <div className="w-1/2 flex flex-col">
-                        <span className="underline text-md font-medium self-end cursor-pointer">
-                            SAVE
-                        </span>
+                        <div className="self-end">
+                            <span className="underline text-md font-medium cursor-pointer mr-5">
+                                SAVE
+                            </span>
+                            <span onClick={() => setSettingsDialog(true)} className="underline text-md font-medium cursor-pointer">
+                                <SettingsIcon />
+                            </span>
+                        </div>
                     </div>
                 </div>
                 <InfoBar />

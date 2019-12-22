@@ -25,7 +25,7 @@ import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import VisibilityOnIcon from '@material-ui/icons/Visibility'
 import EditCard from './EditCard'
 import {map, propOr} from 'ramda'
-import OpenSeaDragon from "openseadragon";
+import PreviewImage from './PreviewImage'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -62,34 +62,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-class PreviewImage extends React.Component {
-    constructor(props){
-        super(props)
-    }
-    componentDidMount() {
-
-        const id = `openseadragon${this.props.i}`
-        console.log('mountid', id)
-        OpenSeaDragon({
-            id: `openseadragon${this.props.i}`,
-            tileSources: "https://iiif.bdrc.io/bdr:V22084_I0916::09160001.tif/info.json"
-        });
-    }
-
-    render() {
-        console.log('renderid', `openseadragon${this.props.i}`)
-           return <div
-                style={{ width: 300, height: 192, position: 'relative' }}
-                className="items-center flex justify-center bg-black mr-2"
-                id={`openseadragon${this.props.i}`}
-            />
-
-    }
-}
-
-
-
-export default function RecipeReviewCard(props) {
+export default function ImageCard(props) {
     const classes = useStyles()
     const [editDialogOpen, setEditDialogOpen] = React.useState(false)
     // const handleExpandClick = () => {
@@ -103,7 +76,7 @@ export default function RecipeReviewCard(props) {
     //         tileSources: "https://iiif.bdrc.io/bdr:V22084_I0916::09160001.tif/info.json"
     //     });
     // }
-// , [])
+    // , [])
     const { data: image } = props
 
     const Header = () => {
