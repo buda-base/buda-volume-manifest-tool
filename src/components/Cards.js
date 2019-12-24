@@ -26,6 +26,7 @@ import VisibilityOnIcon from '@material-ui/icons/Visibility'
 import EditCard from './EditCard'
 import {map, propOr} from 'ramda'
 import PreviewImage from './PreviewImage'
+import axios from 'axios'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -65,6 +66,8 @@ const useStyles = makeStyles(theme => ({
 export default function ImageCard(props) {
     const classes = useStyles()
     const [editDialogOpen, setEditDialogOpen] = React.useState(false)
+    const [iiif, setiiif] = React.useState(null)
+    const { imageView, setImageView } = props
     // const handleExpandClick = () => {
     //     setExpanded(!expanded)
     // }
@@ -78,6 +81,34 @@ export default function ImageCard(props) {
     // }
     // , [])
     const { data: image } = props
+
+    React.useEffect(async () => {
+        try {
+            const data = await axios.get(
+                `https://iiif.bdrc.io/bdr:V4CZ5369_I1KG9128::${image.filename}/info.json`
+            )
+            const iiif = data.data
+            setiiif(iiif)
+        } catch (err) {
+            console.log('iiifErr', err)
+        }
+    }, [])
+
+    // React.useEffect(() => {
+    //     axios
+    //         .get(`https://iiifpres.bdrc.io/il/v:${volume}`)
+    //         .then(res => {
+    //             return res.data.slice(0, 10).map(({ filename }) => {
+    //                 return axios.get(
+    //                     `https://iiif.bdrc.io/${volume}::${filename}/info.json`
+    //                 )
+    //             })
+    //         })
+    //         .then(proms => Promise.all(proms))
+    //         .then(data => {
+    //             return pluck('data', data)
+    //         })
+    // }, [])
 
     const Header = () => {
         return (
@@ -198,34 +229,6 @@ export default function ImageCard(props) {
         )
     }
 
-    // const PreviewImage = ({ image }) => {
-    //     console.log('image', image)
-    //     return (
-    //         <div
-    //             style={{ width: 300, height: 192, position: 'relative' }}
-    //             className="items-center flex justify-center bg-black mr-2"
-    //             id="openseadragon1"
-    //         >
-    //             {image.filename ? (
-    //                 <>
-    //                     <div id={`openseadragon${props.i}`} />
-    //                     <FullscreenIcon
-    //                         style={{
-    //                             position: 'absolute',
-    //                             bottom: 10,
-    //                             right: 10,
-    //                             color: 'white',
-    //                             cursor: 'pointer',
-    //                         }}
-    //                     />
-    //                 </>
-    //             ) : (
-    //                 <h3 className="text-white">:(</h3>
-    //             )}
-    //         </div>
-    //     )
-    // }
-
     return (
         <Card className={classes.card}>
             <EditCard
@@ -236,7 +239,17 @@ export default function ImageCard(props) {
             <CardHeader className={classes.cardHeader} component={Header} />
             {!image.hide && (
                 <CardContent className="flex">
-                    <PreviewImage image={image} i={props.i} />
+                    {iiif && (
+                        <PreviewImage
+                            showUpdateView
+                            setImageView={setImageView}
+                            image={image}
+                            i={props.i}
+                            imageView={imageView}
+                            iiif={iiif}
+                        />
+                    )}
+
                     <div className="w-full flex">
                         <div className="w-1/3 flex flex-col content-center">
                             <div className="justify-center flex">

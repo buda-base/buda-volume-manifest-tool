@@ -5,10 +5,11 @@ import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles'
 import Cards from './components/Cards'
 import InfoBar from './components/InfoBar'
 import data from './manifest-simple'
+// import axios from 'axios'
 import {addIndex, assoc, insert, lensPath, map, prop, propOr, reject, set, view,} from 'ramda'
 import {Slider} from '@material-ui/core'
 import SettingsIcon from '@material-ui/icons/Settings'
-import Dialog from "./components/Dialog";
+import Dialog from './components/Dialog'
 
 const mapIndex = addIndex(map)
 const theme = createMuiTheme({
@@ -22,8 +23,30 @@ const theme = createMuiTheme({
 const imageListLens = lensPath(['view', 'view1', 'imagelist'])
 function App() {
     const [workingData, setWorkingData] = React.useState(data)
-    const [settingsDialogOpen, setSettingsDialog] = React.useState(true)
+    const [settingsDialogOpen, setSettingsDialog] = React.useState(false)
+    const [imageView, setImageView] = React.useState({
+        zoom: 0,
+        center: { x: null, y: null },
+    })
     const imageList = view(imageListLens, workingData)
+
+    const volume = 'bdr:V22084_I0888'
+
+    // React.useEffect(() => {
+    //     axios
+    //         .get(`https://iiifpres.bdrc.io/il/v:${volume}`)
+    //         .then(res => {
+    //             return res.data.slice(0, 10).map(({ filename }) => {
+    //                 return axios.get(
+    //                     `https://iiif.bdrc.io/${volume}::${filename}/info.json`
+    //                 )
+    //             })
+    //         })
+    //         .then(proms => Promise.all(proms))
+    //         .then(data => {
+    //             return pluck('data', data)
+    //         })
+    // }, [])
 
     const updateImageList = updatedImageList => {
         setWorkingData(set(imageListLens, updatedImageList, workingData))
@@ -90,7 +113,12 @@ function App() {
     return (
         <ThemeProvider theme={theme}>
             <div className="App">
-                <Dialog open={settingsDialogOpen} handleClose={() => setSettingsDialog(false)} />
+                <Dialog
+                    open={settingsDialogOpen}
+                    handleClose={() => setSettingsDialog(false)}
+                    setImageView={setImageView}
+                    imageView={imageView}
+                />
                 <AppBar />
                 <div className="container mx-auto flex flex-row py-6">
                     <div className="w-1/2 flex flex-col">
@@ -107,7 +135,10 @@ function App() {
                             <span className="underline text-md font-medium cursor-pointer mr-5">
                                 SAVE
                             </span>
-                            <span onClick={() => setSettingsDialog(true)} className="underline text-md font-medium cursor-pointer">
+                            <span
+                                onClick={() => setSettingsDialog(true)}
+                                className="underline text-md font-medium cursor-pointer"
+                            >
                                 <SettingsIcon />
                             </span>
                         </div>
@@ -126,6 +157,7 @@ function App() {
                     {mapIndex(
                         (item, i) => (
                             <Cards
+                                imageView={imageView}
                                 data={item}
                                 deleteImageChip={deleteImageChip}
                                 toggleReview={toggleReview}
@@ -133,6 +165,7 @@ function App() {
                                 deleteImage={deleteImage}
                                 toggleHideImage={toggleHideImage}
                                 key={item.id}
+                                setImageView={setImageView}
                                 i={i}
                             />
                         ),

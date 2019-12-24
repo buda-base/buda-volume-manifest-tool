@@ -12,7 +12,9 @@ import {Checkbox} from '@material-ui/core'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Select from '@material-ui/core/Select'
 import TextField from '@material-ui/core/TextField'
-import PreviewImage from "./PreviewImage";
+import PreviewImage from './PreviewImage'
+import TextareaAutosize from '@material-ui/core/TextareaAutosize';
+
 
 const styles = theme => ({
     root: {
@@ -59,7 +61,7 @@ const DialogActions = withStyles(theme => ({
 }))(MuiDialogActions)
 
 export default function SettingsDialog(props) {
-    const { data } = props
+    const { setImageView, imageView } = props
 
     return (
         <Dialog
@@ -99,7 +101,14 @@ export default function SettingsDialog(props) {
                     label="Default Language"
                 />
             </DialogContent>
-            <DialogContent dividers style={{display: 'flex', flexDirection: 'column', alignItems: 'start'}}>
+            <DialogContent
+                dividers
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'start',
+                }}
+            >
                 <TextField
                     label="Volume Name"
                     variant="filled"
@@ -197,7 +206,90 @@ export default function SettingsDialog(props) {
                     }
                     label="add input for whole margin"
                 />
-                <PreviewImage i={2323} />
+                <h3>Preview</h3>
+                <PreviewImage
+                    i={2323}
+                    setImageView={setImageView}
+                    imageView={imageView}
+                    zoom={imageView.zoom}
+                    showUpdateView
+                />
+                <div className="block">
+                    <TextField
+                        label="Section 1 name"
+                        variant="filled"
+                        type="text"
+                        value={'Val 1'}
+                    />
+                    <Select
+                        native
+                        value="english"
+                        onChange={x => {
+                            console.log('selected', x)
+                        }}
+                        style={{ width: 155 }}
+                        inputProps={
+                            {
+                                // name: 'type',
+                                // id: 'type',
+                            }
+                        }
+                    >
+                        <option value="missing">Tibetan</option>
+                    </Select>
+                </div>
+                <div className="block">
+                    <TextField
+                        label="Section 2 name"
+                        variant="filled"
+                        type="text"
+                        value={'Val 2'}
+                    />
+                    <Select
+                        native
+                        value="english"
+                        onChange={x => {
+                            console.log('selected', x)
+                        }}
+                        style={{ width: 155 }}
+                        inputProps={
+                            {
+                                // name: 'type',
+                                // id: 'type',
+                            }
+                        }
+                    >
+                        <option value="missing">Tibetan</option>
+                    </Select>
+                </div>
+                <div className="block">
+                    <TextField
+                        label="Indication (odd)"
+                        variant="filled"
+                        type="text"
+                        value={'{volname}-{sectionname}-{pagenum:bo}'}
+                    />
+                </div>
+                <div className="block">
+                    <TextField
+                        label="Indication (even)"
+                        variant="filled"
+                        type="text"
+                        value={'{volname}'}
+                    />
+                </div>
+            </DialogContent>
+            <DialogContent dividers>
+                <h3>Comments</h3>
+                <div className="block">
+                    {/*<TextField*/}
+                    {/*    label="Indication (even)"*/}
+                    {/*    variant="filled"*/}
+                    {/*    type="textarea"*/}
+                    {/*    value={'{volname}'}*/}
+                    {/*/>*/}
+                    <TextareaAutosize  rowsMin={3} placeholder="Minimum 3 rows" value={'ka kha'} />
+                </div>
             </DialogContent>
             <DialogActions>
                 <Button autoFocus onClick={props.handleClose} color="primary">
