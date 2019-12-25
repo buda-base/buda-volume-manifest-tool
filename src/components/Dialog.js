@@ -3,7 +3,6 @@ import {withStyles} from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import MuiDialogTitle from '@material-ui/core/DialogTitle'
-import MuiDialogContent from '@material-ui/core/DialogContent'
 import MuiDialogActions from '@material-ui/core/DialogActions'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
@@ -14,6 +13,8 @@ import Select from '@material-ui/core/Select'
 import TextField from '@material-ui/core/TextField'
 import TextareaAutosize from '@material-ui/core/TextareaAutosize'
 import {lensPath, lensProp} from 'ramda'
+import InputLabel from '@material-ui/core/InputLabel'
+import FormControl from '@material-ui/core/FormControl'
 
 const styles = theme => ({
     root: {
@@ -46,12 +47,6 @@ const DialogTitle = withStyles(styles)(props => {
     )
 })
 
-const DialogContent = withStyles(theme => ({
-    root: {
-        padding: theme.spacing(2),
-    },
-}))(MuiDialogContent)
-
 const DialogActions = withStyles(theme => ({
     root: {
         margin: 0,
@@ -75,127 +70,125 @@ export default function SettingsDialog(props) {
             >
                 Edit
             </DialogTitle>
-            <DialogContent>
-                <FormControlLabel
-                    labelPlacement="top"
-                    control={
-                        <Select
-                            native
-                            value={settings.defaultLanguage}
-                            onChange={e => {
-                                handleSettingsUpdate(
-                                    lensProp('defaultLanguage'),
-                                    e.target.value
-                                )
-                            }}
-                            style={{ width: 155 }}
-                        >
-                            <option value="eng">English</option>
-                            <option value="bo">Tibetan</option>
-                        </Select>
-                    }
-                    label="Default Language"
-                />
-            </DialogContent>
-            <DialogContent
-                dividers
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'start',
-                }}
-            >
-                <TextField
-                    label="Volume Name"
-                    variant="filled"
-                    type="text"
-                    value={settings.volume}
-                />
-                <FormControlLabel
-                    style={{ display: 'block' }}
-                    control={
-                        <Checkbox
-                            checked={settings.showCheckedImages}
-                            onChange={e => {
-                                handleSettingsUpdate(
-                                    lensProp('showCheckedImages'),
-                                    !settings.showCheckedImages
-                                )
-                            }}
-                            value="show-checked-images"
-                            color="primary"
-                            inputProps={{
-                                'aria-label': 'primary checkbox',
-                            }}
-                        />
-                    }
-                    label="Show Checked Images"
-                />
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={settings.showHiddenImages}
-                            onChange={e => {
-                                handleSettingsUpdate(
-                                    lensProp('showHiddenImages'),
-                                    !settings.showHiddenImages
-                                )
-                            }}
-                            value="show-hidden-images"
-                            color="primary"
-                            inputProps={{
-                                'aria-label': 'primary checkbox',
-                            }}
-                        />
-                    }
-                    label="Show Hidden Images"
-                />
-                <FormControlLabel
-                    labelPlacement="start"
-                    control={
-                        <Select
-                            native
-                            value={settings.volumeLanguage}
-                            onChange={e => {
-                                handleSettingsUpdate(
-                                    lensProp('volumeLanguage'),
-                                    e.target.value
-                                )
-                            }}
-                            style={{ width: 155 }}
-                        >
-                            <option value="bo">Tibetan</option>
-                            <option value="eng">English</option>
-                        </Select>
-                    }
-                    label="Volume Language"
-                />
-            </DialogContent>
-            <DialogContent dividers>
-                <h3>Input 1</h3>
-                <FormControlLabel
-                    labelPlacement="start"
-                    control={
-                        <Select
-                            native
-                            value={settings.inputOne.paginationType}
-                            onChange={e => {
-                                handleSettingsUpdate(
-                                    lensPath(['inputOne', 'paginationType']),
-                                    e.target.value
-                                )
-                            }}
-                            style={{ width: 155 }}
-                        >
-                            <option value="folio">Folio</option>
-                            <option value="folio-with-sections">
-                                Folio With Sections
-                            </option>
-                            <option value="normal">Normal Pagination</option>
-                        </Select>
-                    }
-                    label="Pagination Type"
-                />
+            <div className="p-3">
+                <div className="w-full">
+                    <div className="w-2/4">
+                        <FormControl style={{ width: '100%' }}>
+                            <InputLabel shrink>Default Language</InputLabel>
+                            <Select
+                                value={settings.defaultLanguage}
+                                onChange={e => {
+                                    handleSettingsUpdate(
+                                        lensProp('defaultLanguage'),
+                                        e.target.value
+                                    )
+                                }}
+                                native
+                            >
+                                <option value="eng">English</option>
+                                <option value="bo">Tibetan</option>
+                            </Select>
+                        </FormControl>
+                    </div>
+                </div>
+                <div>
+                    {/*todo: is this needed here?*/}
+                    {/*<TextField*/}
+                    {/*    label="Volume Name"*/}
+                    {/*   */}
+                    {/*    type="text"*/}
+                    {/*    value={settings.volume}*/}
+                    {/*/>*/}
+                    <div className="w-full">
+                        <div className="w-2/4">
+                            <FormControl style={{ width: '100%' }}>
+                                <InputLabel shrink>Volume Language</InputLabel>
+                                <Select
+                                    value={settings.volumeLanguage}
+                                    onChange={e => {
+                                        handleSettingsUpdate(
+                                            lensProp('volumeLanguage'),
+                                            e.target.value
+                                        )
+                                    }}
+                                    native
+                                >
+                                    <option value="bo">Tibetan</option>
+                                    <option value="eng">English</option>
+                                </Select>
+                            </FormControl>
+                        </div>
+                    </div>
+                    <FormControlLabel
+                        style={{ display: 'block' }}
+                        control={
+                            <Checkbox
+                                checked={settings.showCheckedImages}
+                                onChange={e => {
+                                    handleSettingsUpdate(
+                                        lensProp('showCheckedImages'),
+                                        !settings.showCheckedImages
+                                    )
+                                }}
+                                value="show-checked-images"
+                                color="primary"
+                                inputProps={{
+                                    'aria-label': 'primary checkbox',
+                                }}
+                            />
+                        }
+                        label="Show Checked Images"
+                    />
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={settings.showHiddenImages}
+                                onChange={e => {
+                                    handleSettingsUpdate(
+                                        lensProp('showHiddenImages'),
+                                        !settings.showHiddenImages
+                                    )
+                                }}
+                                value="show-hidden-images"
+                                color="primary"
+                                inputProps={{
+                                    'aria-label': 'primary checkbox',
+                                }}
+                            />
+                        }
+                        label="Show Hidden Images"
+                    />
+                </div>
+                <h2 className="mb-3 font-bold">Input 1</h2>
+                <div className="w-full">
+                    <div className="w-2/4">
+                        <FormControl style={{ width: '100%' }}>
+                            <InputLabel shrink>Pagination Type</InputLabel>
+                            <Select
+                                value={settings.inputOne.paginationType}
+                                onChange={e => {
+                                    handleSettingsUpdate(
+                                        lensPath([
+                                            'inputOne',
+                                            'paginationType',
+                                        ]),
+                                        e.target.value
+                                    )
+                                }}
+                                native
+                            >
+                                <option value="folio">Folio</option>
+                                <option value="folio-with-sections">
+                                    Folio With Sections
+                                </option>
+                                <option value="normal">
+                                    Normal Pagination
+                                </option>
+                            </Select>
+                        </FormControl>
+                    </div>
+                </div>
+
                 <FormControlLabel
                     style={{ display: 'block' }}
                     control={
@@ -221,58 +214,67 @@ export default function SettingsDialog(props) {
                 {/*/>*/}
                 {settings.inputOne.sectionInputs.map(data => {
                     return (
-                        <div className="block">
-                            <TextField
-                                label="Section 1 name"
-                                variant="filled"
-                                type="text"
-                                value={data.value}
-                            />
-                            <Select
-                                native
-                                value={data.language}
-                                onChange={x => {
-                                    console.log('selected', x)
-                                }}
-                                style={{ width: 155 }}
-                            >
-                                <option value="bo">Tibetan</option>
-                                <option value="eng">English</option>
-                            </Select>
+                        <div className="w-full flex mb-6">
+                            <div className="w-1/2">
+                                <TextField
+                                    label="Section 1 name"
+                                    type="text"
+                                    value={data.value}
+                                    style={{ width: '100%' }}
+                                />
+                            </div>
+                            <div className="w-1/2 pl-8">
+                                <FormControl style={{ width: '100%' }}>
+                                    <InputLabel shrink>Language</InputLabel>
+                                    <Select
+                                        native
+                                        value={data.language}
+                                        onChange={x => {
+                                            console.log('selected', x)
+                                        }}
+                                    >
+                                        <option value="bo">Tibetan</option>
+                                        <option value="eng">English</option>
+                                    </Select>
+                                </FormControl>
+                            </div>
                         </div>
                     )
                 })}
-                <div className="block">
+                <div className="w-full">
                     <TextField
                         label="Indication (odd)"
-                        variant="filled"
                         type="text"
                         value={'{volname}-{sectionname}-{pagenum:bo}'}
+                        style={{ width: '50%' }}
                     />
                 </div>
-                <div className="block">
+                <div className="w-full">
                     <TextField
                         label="Indication (even)"
-                        variant="filled"
                         type="text"
                         value={'{volname}'}
+                        style={{ width: '50%' }}
                     />
                 </div>
-            </DialogContent>
-            <DialogContent dividers>
                 <h3>Comments</h3>
                 <div className="block">
                     <TextareaAutosize
                         placeholder="Minimum 3 rows"
                         value={'ka kha'}
+                        style={{ width: '50%' }}
                     />
                 </div>
-            </DialogContent>
-            <DialogActions>
-                <Button autoFocus onClick={props.handleClose} color="primary">
-                    Save changes
-                </Button>
-            </DialogActions>
+                <DialogActions>
+                    <Button
+                        autoFocus
+                        onClick={props.handleClose}
+                        color="primary"
+                    >
+                        Save changes
+                    </Button>
+                </DialogActions>
+            </div>
         </Dialog>
     )
 }
