@@ -11,16 +11,10 @@ export default class PreviewImage extends React.Component {
     }
     componentDidMount() {
         if (this.props.iiif) {
-            console.log('this.props.iiif', this.props.iiif)
             const viewer = OpenSeaDragon({
                 id: `openseadragon${this.props.i}`,
                 degrees: this.state.degrees,
                 defaultZoomLevel: this.props.zoom,
-                // def
-                // center: {
-                //     "x": 0.5,
-                //     "y": 0.6480637813211846
-                // },
                 showRotationControl: true,
                 tileSources: [this.props.iiif],
             })
@@ -54,9 +48,7 @@ export default class PreviewImage extends React.Component {
         }
     }
 
-
     render() {
-        console.log('imageView', this.props)
         return (
             <div>
                 <div

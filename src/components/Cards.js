@@ -24,7 +24,7 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import VisibilityOnIcon from '@material-ui/icons/Visibility'
 import EditCard from './EditCard'
-import {map, propOr} from 'ramda'
+import {always, cond, map, propEq, propOr} from 'ramda'
 import PreviewImage from './PreviewImage'
 import axios from 'axios'
 
@@ -68,18 +68,6 @@ export default function ImageCard(props) {
     const [editDialogOpen, setEditDialogOpen] = React.useState(false)
     const [iiif, setiiif] = React.useState(null)
     const { imageView, setImageView } = props
-    // const handleExpandClick = () => {
-    //     setExpanded(!expanded)
-    // }
-    // const id = `openseadragon${props.i}`
-    // console.log('id', id)
-    // React.useEffect(() => {
-    //     OpenSeaDragon({
-    //         id: `openseadragon${props.i}`,
-    //         tileSources: "https://iiif.bdrc.io/bdr:V22084_I0916::09160001.tif/info.json"
-    //     });
-    // }
-    // , [])
     const { data: image } = props
 
     React.useEffect(async () => {
@@ -93,22 +81,6 @@ export default function ImageCard(props) {
             console.log('iiifErr', err)
         }
     }, [])
-
-    // React.useEffect(() => {
-    //     axios
-    //         .get(`https://iiifpres.bdrc.io/il/v:${volume}`)
-    //         .then(res => {
-    //             return res.data.slice(0, 10).map(({ filename }) => {
-    //                 return axios.get(
-    //                     `https://iiif.bdrc.io/${volume}::${filename}/info.json`
-    //                 )
-    //             })
-    //         })
-    //         .then(proms => Promise.all(proms))
-    //         .then(data => {
-    //             return pluck('data', data)
-    //         })
-    // }, [])
 
     const Header = () => {
         return (
@@ -229,6 +201,12 @@ export default function ImageCard(props) {
         )
     }
 
+    const type = cond([
+        [propEq('type', 'duplicate'), always('duplicate')],
+        [({ filename }) => filename, always('file')],
+        [propEq('type', 'missing'), always('missing')],
+    ])(image)
+
     return (
         <Card className={classes.card}>
             <EditCard
@@ -239,7 +217,7 @@ export default function ImageCard(props) {
             <CardHeader className={classes.cardHeader} component={Header} />
             {!image.hide && (
                 <CardContent className="flex">
-                    {iiif && (
+                    {iiif ? (
                         <PreviewImage
                             showUpdateView
                             setImageView={setImageView}
@@ -248,6 +226,17 @@ export default function ImageCard(props) {
                             imageView={imageView}
                             iiif={iiif}
                         />
+                    ) : (
+                        <div>
+                            <div
+                                style={{
+                                    width: 300,
+                                    height: 192,
+                                    position: 'relative',
+                                }}
+                                className="items-center flex justify-center bg-black mr-2"
+                            />
+                        </div>
                     )}
 
                     <div className="w-full flex">
@@ -260,13 +249,10 @@ export default function ImageCard(props) {
                                     <div>
                                         <Select
                                             native
-                                            value={
-                                                image.filename
-                                                    ? 'file'
-                                                    : 'missing'
-                                            }
-                                            onChange={x => {
-                                                console.log('selected', x)
+                                            disabled={type === 'missing'}
+                                            value={type}
+                                            onChange={e => {
+                                                props.selectType(image.id, e)
                                             }}
                                             style={{ width: 155 }}
                                             inputProps={{
@@ -275,8 +261,13 @@ export default function ImageCard(props) {
                                             }}
                                         >
                                             <option value="file">File</option>
-                                            <option value="missing">
-                                                Missing
+                                            {type === 'missing' && (
+                                                <option value="missing">
+                                                    Missing
+                                                </option>
+                                            )}
+                                            <option value="duplicate">
+                                                Duplicate
                                             </option>
                                         </Select>
                                     </div>

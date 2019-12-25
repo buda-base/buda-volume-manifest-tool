@@ -12,9 +12,8 @@ import {Checkbox} from '@material-ui/core'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Select from '@material-ui/core/Select'
 import TextField from '@material-ui/core/TextField'
-import PreviewImage from './PreviewImage'
-import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-
+import TextareaAutosize from '@material-ui/core/TextareaAutosize'
+import {lensPath, lensProp} from 'ramda'
 
 const styles = theme => ({
     root: {
@@ -61,7 +60,7 @@ const DialogActions = withStyles(theme => ({
 }))(MuiDialogActions)
 
 export default function SettingsDialog(props) {
-    const { setImageView, imageView } = props
+    const { volume, handleSettingsUpdate, settings } = props
 
     return (
         <Dialog
@@ -82,20 +81,17 @@ export default function SettingsDialog(props) {
                     control={
                         <Select
                             native
-                            value="english"
-                            onChange={x => {
-                                console.log('selected', x)
+                            value={settings.defaultLanguage}
+                            onChange={e => {
+                                handleSettingsUpdate(
+                                    lensProp('defaultLanguage'),
+                                    e.target.value
+                                )
                             }}
                             style={{ width: 155 }}
-                            inputProps={
-                                {
-                                    // name: 'type',
-                                    // id: 'type',
-                                }
-                            }
                         >
-                            <option value="file">English</option>
-                            <option value="missing">Tibetan</option>
+                            <option value="eng">English</option>
+                            <option value="bo">Tibetan</option>
                         </Select>
                     }
                     label="Default Language"
@@ -113,14 +109,19 @@ export default function SettingsDialog(props) {
                     label="Volume Name"
                     variant="filled"
                     type="text"
-                    value={'S4SA'}
+                    value={settings.volume}
                 />
                 <FormControlLabel
                     style={{ display: 'block' }}
                     control={
                         <Checkbox
-                            checked={true}
-                            onChange={x => console.log('x', x)}
+                            checked={settings.showCheckedImages}
+                            onChange={e => {
+                                handleSettingsUpdate(
+                                    lensProp('showCheckedImages'),
+                                    !settings.showCheckedImages
+                                )
+                            }}
                             value="show-checked-images"
                             color="primary"
                             inputProps={{
@@ -133,9 +134,14 @@ export default function SettingsDialog(props) {
                 <FormControlLabel
                     control={
                         <Checkbox
-                            checked={true}
-                            onChange={x => console.log('x', x)}
-                            value="show-hiddel-images"
+                            checked={settings.showHiddenImages}
+                            onChange={e => {
+                                handleSettingsUpdate(
+                                    lensProp('showHiddenImages'),
+                                    !settings.showHiddenImages
+                                )
+                            }}
+                            value="show-hidden-images"
                             color="primary"
                             inputProps={{
                                 'aria-label': 'primary checkbox',
@@ -149,19 +155,17 @@ export default function SettingsDialog(props) {
                     control={
                         <Select
                             native
-                            value="english"
-                            onChange={x => {
-                                console.log('selected', x)
+                            value={settings.volumeLanguage}
+                            onChange={e => {
+                                handleSettingsUpdate(
+                                    lensProp('volumeLanguage'),
+                                    e.target.value
+                                )
                             }}
                             style={{ width: 155 }}
-                            inputProps={
-                                {
-                                    // name: 'type',
-                                    // id: 'type',
-                                }
-                            }
                         >
-                            <option value="missing">Tibetan</option>
+                            <option value="bo">Tibetan</option>
+                            <option value="eng">English</option>
                         </Select>
                     }
                     label="Volume Language"
@@ -174,19 +178,20 @@ export default function SettingsDialog(props) {
                     control={
                         <Select
                             native
-                            value="folio"
-                            onChange={x => {
-                                console.log('selected', x)
+                            value={settings.inputOne.paginationType}
+                            onChange={e => {
+                                handleSettingsUpdate(
+                                    lensPath(['inputOne', 'paginationType']),
+                                    e.target.value
+                                )
                             }}
                             style={{ width: 155 }}
-                            inputProps={
-                                {
-                                    // name: 'type',
-                                    // id: 'type',
-                                }
-                            }
                         >
                             <option value="folio">Folio</option>
+                            <option value="folio-with-sections">
+                                Folio With Sections
+                            </option>
+                            <option value="normal">Normal Pagination</option>
                         </Select>
                     }
                     label="Pagination Type"
@@ -206,62 +211,37 @@ export default function SettingsDialog(props) {
                     }
                     label="add input for whole margin"
                 />
-                <h3>Preview</h3>
-                <PreviewImage
-                    i={2323}
-                    setImageView={setImageView}
-                    imageView={imageView}
-                    zoom={imageView.zoom}
-                    showUpdateView
-                />
-                <div className="block">
-                    <TextField
-                        label="Section 1 name"
-                        variant="filled"
-                        type="text"
-                        value={'Val 1'}
-                    />
-                    <Select
-                        native
-                        value="english"
-                        onChange={x => {
-                            console.log('selected', x)
-                        }}
-                        style={{ width: 155 }}
-                        inputProps={
-                            {
-                                // name: 'type',
-                                // id: 'type',
-                            }
-                        }
-                    >
-                        <option value="missing">Tibetan</option>
-                    </Select>
-                </div>
-                <div className="block">
-                    <TextField
-                        label="Section 2 name"
-                        variant="filled"
-                        type="text"
-                        value={'Val 2'}
-                    />
-                    <Select
-                        native
-                        value="english"
-                        onChange={x => {
-                            console.log('selected', x)
-                        }}
-                        style={{ width: 155 }}
-                        inputProps={
-                            {
-                                // name: 'type',
-                                // id: 'type',
-                            }
-                        }
-                    >
-                        <option value="missing">Tibetan</option>
-                    </Select>
-                </div>
+                {/*<h3>Preview</h3>*/}
+                {/*<PreviewImage*/}
+                {/*    i={2323}*/}
+                {/*    setImageView={setImageView}*/}
+                {/*    imageView={imageView}*/}
+                {/*    zoom={imageView.zoom}*/}
+                {/*    showUpdateView*/}
+                {/*/>*/}
+                {settings.inputOne.sectionInputs.map(data => {
+                    return (
+                        <div className="block">
+                            <TextField
+                                label="Section 1 name"
+                                variant="filled"
+                                type="text"
+                                value={data.value}
+                            />
+                            <Select
+                                native
+                                value={data.language}
+                                onChange={x => {
+                                    console.log('selected', x)
+                                }}
+                                style={{ width: 155 }}
+                            >
+                                <option value="bo">Tibetan</option>
+                                <option value="eng">English</option>
+                            </Select>
+                        </div>
+                    )
+                })}
                 <div className="block">
                     <TextField
                         label="Indication (odd)"
@@ -282,13 +262,10 @@ export default function SettingsDialog(props) {
             <DialogContent dividers>
                 <h3>Comments</h3>
                 <div className="block">
-                    {/*<TextField*/}
-                    {/*    label="Indication (even)"*/}
-                    {/*    variant="filled"*/}
-                    {/*    type="textarea"*/}
-                    {/*    value={'{volname}'}*/}
-                    {/*/>*/}
-                    <TextareaAutosize  rowsMin={3} placeholder="Minimum 3 rows" value={'ka kha'} />
+                    <TextareaAutosize
+                        placeholder="Minimum 3 rows"
+                        value={'ka kha'}
+                    />
                 </div>
             </DialogContent>
             <DialogActions>

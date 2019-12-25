@@ -5,8 +5,7 @@ import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles'
 import Cards from './components/Cards'
 import InfoBar from './components/InfoBar'
 import data from './manifest-simple'
-// import axios from 'axios'
-import {addIndex, assoc, insert, lensPath, map, prop, propOr, reject, set, view,} from 'ramda'
+import {addIndex, assoc, curry, dissoc, insert, lensPath, map, prop, propOr, reject, set, view,} from 'ramda'
 import {Slider} from '@material-ui/core'
 import SettingsIcon from '@material-ui/icons/Settings'
 import Dialog from './components/Dialog'
@@ -29,24 +28,29 @@ function App() {
         center: { x: null, y: null },
     })
     const imageList = view(imageListLens, workingData)
+    const [settings, updateSettings] = React.useState({
+        volume: 'bdr:V22084_I0888',
+        defaultLanguage: 'en',
+        volumeLanguage: 'tibetan',
+        showCheckedImages: true,
+        showHiddenImages: true,
+        inputOne: {
+            paginationType: 'folio',
+            inputForWholeMargin: true,
+            sectionInputs: [
+                { value: 'Section 1a', language: 'bo' },
+                { value: 'Section 2a', language: 'bo' },
+            ],
+            indicationOdd: '{volname}-{sectionname}-{pagenum:bo}',
+            indicationEven: '{volname}',
+        },
+        comments: null,
+    })
 
-    const volume = 'bdr:V22084_I0888'
-
-    // React.useEffect(() => {
-    //     axios
-    //         .get(`https://iiifpres.bdrc.io/il/v:${volume}`)
-    //         .then(res => {
-    //             return res.data.slice(0, 10).map(({ filename }) => {
-    //                 return axios.get(
-    //                     `https://iiif.bdrc.io/${volume}::${filename}/info.json`
-    //                 )
-    //             })
-    //         })
-    //         .then(proms => Promise.all(proms))
-    //         .then(data => {
-    //             return pluck('data', data)
-    //         })
-    // }, [])
+    const handleSettingsUpdate = curry((lens, value) => {
+        const updatedSettings = set(lens, value, settings)
+        updateSettings(updatedSettings)
+    })
 
     const updateImageList = updatedImageList => {
         setWorkingData(set(imageListLens, updatedImageList, workingData))
@@ -110,6 +114,19 @@ function App() {
         updateImageList(updatedImageList)
     }
 
+    const selectType = (imageId, e) => {
+        const val = e.target.value
+        const updatedImageList = map(image => {
+            if (image.id === imageId) {
+                if (val === 'file') return dissoc('type', image)
+                return assoc('type', val, image)
+            } else {
+                return image
+            }
+        }, imageList)
+        updateImageList(updatedImageList)
+    }
+
     return (
         <ThemeProvider theme={theme}>
             <div className="App">
@@ -118,6 +135,9 @@ function App() {
                     handleClose={() => setSettingsDialog(false)}
                     setImageView={setImageView}
                     imageView={imageView}
+                    volume={workingData}
+                    handleSettingsUpdate={handleSettingsUpdate}
+                    settings={settings}
                 />
                 <AppBar />
                 <div className="container mx-auto flex flex-row py-6">
@@ -157,6 +177,7 @@ function App() {
                     {mapIndex(
                         (item, i) => (
                             <Cards
+                                selectType={selectType}
                                 imageView={imageView}
                                 data={item}
                                 deleteImageChip={deleteImageChip}
