@@ -71,26 +71,6 @@ export default function SettingsDialog(props) {
                 Edit
             </DialogTitle>
             <div className="p-3">
-                <div className="w-full">
-                    <div className="w-2/4">
-                        <FormControl style={{ width: '100%' }}>
-                            <InputLabel shrink>Default Language</InputLabel>
-                            <Select
-                                value={settings.defaultLanguage}
-                                onChange={e => {
-                                    handleSettingsUpdate(
-                                        lensProp('defaultLanguage'),
-                                        e.target.value
-                                    )
-                                }}
-                                native
-                            >
-                                <option value="eng">English</option>
-                                <option value="bo">Tibetan</option>
-                            </Select>
-                        </FormControl>
-                    </div>
-                </div>
                 <div>
                     {/*todo: is this needed here?*/}
                     {/*<TextField*/}
@@ -119,45 +99,6 @@ export default function SettingsDialog(props) {
                             </FormControl>
                         </div>
                     </div>
-                    <FormControlLabel
-                        style={{ display: 'block' }}
-                        control={
-                            <Checkbox
-                                checked={settings.showCheckedImages}
-                                onChange={e => {
-                                    handleSettingsUpdate(
-                                        lensProp('showCheckedImages'),
-                                        !settings.showCheckedImages
-                                    )
-                                }}
-                                value="show-checked-images"
-                                color="primary"
-                                inputProps={{
-                                    'aria-label': 'primary checkbox',
-                                }}
-                            />
-                        }
-                        label="Show Checked Images"
-                    />
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={settings.showHiddenImages}
-                                onChange={e => {
-                                    handleSettingsUpdate(
-                                        lensProp('showHiddenImages'),
-                                        !settings.showHiddenImages
-                                    )
-                                }}
-                                value="show-hidden-images"
-                                color="primary"
-                                inputProps={{
-                                    'aria-label': 'primary checkbox',
-                                }}
-                            />
-                        }
-                        label="Show Hidden Images"
-                    />
                 </div>
                 <h2 className="mb-3 font-bold">Input 1</h2>
                 <div className="w-full">
@@ -188,13 +129,20 @@ export default function SettingsDialog(props) {
                         </FormControl>
                     </div>
                 </div>
-
                 <FormControlLabel
                     style={{ display: 'block' }}
                     control={
                         <Checkbox
-                            checked={true}
-                            onChange={x => console.log('x', x)}
+                            checked={settings.inputOne.inputForWholeMargin}
+                            onChange={e => {
+                                handleSettingsUpdate(
+                                    lensPath([
+                                        'inputOne',
+                                        'inputForWholeMargin',
+                                    ]),
+                                    !settings.inputOne.inputForWholeMargin
+                                )
+                            }}
                             value="input-whole-margin"
                             color="primary"
                             inputProps={{

@@ -3,12 +3,12 @@ import './index.css'
 import AppBar from './components/AppBar'
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles'
 import Cards from './components/Cards'
-import InfoBar from './components/InfoBar'
 import data from './manifest-simple'
-import {addIndex, assoc, curry, dissoc, insert, lensPath, map, prop, propOr, reject, set, view,} from 'ramda'
-import {Slider} from '@material-ui/core'
+import {addIndex, assoc, curry, dissoc, insert, lensPath, lensProp, map, prop, propOr, reject, set, view,} from 'ramda'
+import {Checkbox} from '@material-ui/core'
 import SettingsIcon from '@material-ui/icons/Settings'
 import Dialog from './components/Dialog'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
 
 const mapIndex = addIndex(map)
 const theme = createMuiTheme({
@@ -139,12 +139,21 @@ function App() {
                     handleSettingsUpdate={handleSettingsUpdate}
                     settings={settings}
                 />
-                <AppBar />
+                <AppBar
+                    settings={settings}
+                    handleSettingsUpdate={handleSettingsUpdate}
+                />
                 <div className="container mx-auto flex flex-row py-6">
                     <div className="w-1/2 flex flex-col">
                         <span className="text-gray-600 text-sm">Volume:</span>
                         <span className="text-sm font-bold text-xl mb-3">
-                            S4SAD2SD34
+                            S4SAD2SD34{' '}
+                            <span
+                                onClick={() => setSettingsDialog(true)}
+                                className="underline text-md font-medium cursor-pointer"
+                            >
+                                <SettingsIcon />
+                            </span>
                         </span>
                         <span className="underline text-blue-600 cursor-pointer">
                             Preview
@@ -155,25 +164,67 @@ function App() {
                             <span className="underline text-md font-medium cursor-pointer mr-5">
                                 SAVE
                             </span>
-                            <span
-                                onClick={() => setSettingsDialog(true)}
-                                className="underline text-md font-medium cursor-pointer"
-                            >
-                                <SettingsIcon />
-                            </span>
+                            {/*<span*/}
+                            {/*    onClick={() => setSettingsDialog(true)}*/}
+                            {/*    className="underline text-md font-medium cursor-pointer"*/}
+                            {/*>*/}
+                            {/*    <SettingsIcon />*/}
+                            {/*</span>*/}
                         </div>
                     </div>
                 </div>
-                <InfoBar />
+                {/*<InfoBar />*/}
+                <div className="container mx-auto flex flex-row justify-end">
+                    <FormControlLabel
+                        style={{ display: 'block' }}
+                        control={
+                            <Checkbox
+                                checked={settings.showCheckedImages}
+                                onChange={e => {
+                                    handleSettingsUpdate(
+                                        lensProp('showCheckedImages'),
+                                        !settings.showCheckedImages
+                                    )
+                                }}
+                                value="show-checked-images"
+                                color="primary"
+                                inputProps={{
+                                    'aria-label': 'primary checkbox',
+                                }}
+                            />
+                        }
+                        label="Show Checked Images"
+                    />
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={settings.showHiddenImages}
+                                onChange={e => {
+                                    handleSettingsUpdate(
+                                        lensProp('showHiddenImages'),
+                                        !settings.showHiddenImages
+                                    )
+                                }}
+                                value="show-hidden-images"
+                                color="primary"
+                                inputProps={{
+                                    'aria-label': 'primary checkbox',
+                                }}
+                            />
+                        }
+                        label="Show Hidden Images"
+                    />
+                </div>
                 <div className="container mx-auto">
-                    <div className="mt-5 text-gray-700" style={{ width: 144 }}>
-                        <span className="text-xs">Thumbnail Zoom Level:</span>
-                        <Slider
-                            value={30}
-                            onChange={val => console.log('handle change', val)}
-                            aria-labelledby="continuous-slider"
-                        />
-                    </div>
+                    {/*todo: do we need this?*/}
+                    {/*<div className="mt-5 text-gray-700" style={{ width: 144 }}>*/}
+                    {/*    <span className="text-xs">Thumbnail Zoom Level:</span>*/}
+                    {/*    <Slider*/}
+                    {/*        value={30}*/}
+                    {/*        onChange={val => console.log('handle change', val)}*/}
+                    {/*        aria-labelledby="continuous-slider"*/}
+                    {/*    />*/}
+                    {/*</div>*/}
                     {mapIndex(
                         (item, i) => (
                             <Cards

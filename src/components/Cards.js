@@ -11,8 +11,6 @@ import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
 import Select from '@material-ui/core/Select'
 import FormControl from '@material-ui/core/FormControl'
 import Chip from '@material-ui/core/Chip'
-import Tab from '@material-ui/core/Tab'
-import Tabs from '@material-ui/core/Tabs'
 import Typography from '@material-ui/core/Typography'
 import {Box, Checkbox} from '@material-ui/core'
 import Edit from '@material-ui/icons/Edit'
@@ -27,6 +25,9 @@ import EditCard from './EditCard'
 import {always, cond, map, propEq, propOr} from 'ramda'
 import PreviewImage from './PreviewImage'
 import axios from 'axios'
+import BeenhereIcon from '@material-ui/icons/Beenhere'
+import CheckBoxIcon from '@material-ui/icons/CheckBox'
+import ReorderIcon from '@material-ui/icons/Reorder'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -129,6 +130,49 @@ export default function ImageCard(props) {
         )
     }
 
+    function CardMenu() {
+        const [anchorEl, setAnchorEl] = React.useState(null)
+
+        const handleClick = event => {
+            setAnchorEl(event.currentTarget)
+        }
+
+        const handleClose = () => {
+            setAnchorEl(null)
+        }
+        return (
+            <div className="inline-block">
+                <MoreVertIcon
+                    aria-controls="simple-menu"
+                    aria-haspopup="true"
+                    onClick={handleClick}
+                    style={{ cursor: 'pointer' }}
+                />
+
+                <Menu
+                    id="simple-menu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                >
+                    <MenuItem onClick={() => {}}>
+                        <BeenhereIcon className="mr-2" />
+                        Update following unchecked items
+                    </MenuItem>
+                    <MenuItem onClick={() => {}}>
+                        <ReorderIcon className="mr-2" />
+                        Reorder this image according to indicated pagination
+                    </MenuItem>
+                    <MenuItem onClick={() => {}}>
+                        <CheckBoxIcon className="mr-2" />
+                        Mark all images down to this one as checked
+                    </MenuItem>
+                </Menu>
+            </div>
+        )
+    }
+
     function SimpleMenu() {
         const [anchorEl, setAnchorEl] = React.useState(null)
 
@@ -216,7 +260,7 @@ export default function ImageCard(props) {
             />
             <CardHeader className={classes.cardHeader} component={Header} />
             {!image.hide && (
-                <CardContent className="flex">
+                <CardContent className="flex" style={{ padding: 0 }}>
                     {iiif ? (
                         <PreviewImage
                             showUpdateView
@@ -240,12 +284,9 @@ export default function ImageCard(props) {
                     )}
 
                     <div className="w-full flex">
-                        <div className="w-1/3 flex flex-col content-center">
-                            <div className="justify-center flex">
-                                <FormControl
-                                    variant="filled"
-                                    className={classes.formControl}
-                                >
+                        <div className="w-1/2 flex flex-col content-center">
+                            <div className="flex">
+                                <FormControl className={classes.formControl}>
                                     <div>
                                         <Select
                                             native
@@ -273,40 +314,21 @@ export default function ImageCard(props) {
                                     </div>
                                 </FormControl>
                             </div>
-                            <div className="justify-center flex">
-                                {map(({ id, text }) => {
-                                    return (
-                                        <Chip
-                                            key={image.id}
-                                            label={text}
-                                            onDelete={() => {
-                                                props.deleteImageChip(
-                                                    image.id,
-                                                    id
-                                                )
-                                            }}
-                                        />
-                                    )
-                                }, propOr([], 'chips', image))}
-                            </div>
-                        </div>
-                        <div className="w-2/3">
-                            <Tabs
-                                value={0}
-                                onChange={() => console.log('handle change')}
-                                aria-label="simple tabs example"
-                                indicatorColor="primary"
-                            >
-                                <Tab label="Input 1" {...a11yProps(0)} />
-                                <Tab label="Input 2" {...a11yProps(1)} />
-                            </Tabs>
+                            {/*<Tabs*/}
+                            {/*    value={0}*/}
+                            {/*    onChange={() => console.log('handle change')}*/}
+                            {/*    aria-label="simple tabs example"*/}
+                            {/*    indicatorColor="primary"*/}
+                            {/*>*/}
+                            {/*<Tab label="Input 1" {...a11yProps(0)} />*/}
+                            {/*<Tab label="Input 2" {...a11yProps(1)} />*/}
+                            {/*</Tabs>*/}
 
                             <TabPanel value={0} index={0} className="p-0">
-                                <div>
+                                <div className="mb-2">
                                     <TextField
                                         id="margin-indication"
                                         label="Margin Indication"
-                                        variant="filled"
                                         type="text"
                                     />
                                     <Checkbox
@@ -322,10 +344,7 @@ export default function ImageCard(props) {
                                     />
                                 </div>
                                 <div>
-                                    <FormControl
-                                        variant="filled"
-                                        style={{ marginTop: '.5rem' }}
-                                    >
+                                    <FormControl style={{ marginTop: '.5rem' }}>
                                         <div>
                                             <Select
                                                 native
@@ -349,9 +368,9 @@ export default function ImageCard(props) {
                                             </Select>
                                             <TextField
                                                 id="pagenumber"
-                                                variant="filled"
                                                 type="text"
                                             />
+                                            <CardMenu />
                                         </div>
                                     </FormControl>
                                 </div>
@@ -359,6 +378,19 @@ export default function ImageCard(props) {
                             {/*<TabPanel value={0} index={1}>*/}
                             {/*    Item Two*/}
                             {/*</TabPanel>*/}
+                        </div>
+                        <div className="flex flex-row content-center mt-3">
+                            {map(({ id, text }) => {
+                                return (
+                                    <Chip
+                                        key={image.id}
+                                        label={text}
+                                        onDelete={() => {
+                                            props.deleteImageChip(image.id, id)
+                                        }}
+                                    />
+                                )
+                            }, propOr([], 'chips', image))}
                         </div>
                     </div>
                 </CardContent>

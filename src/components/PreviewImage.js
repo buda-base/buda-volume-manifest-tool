@@ -1,5 +1,9 @@
 import React from 'react'
 import OpenSeaDragon from 'openseadragon'
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
+import {withStyles} from '@material-ui/core'
+import Icon from '@material-ui/core/Icon'
 
 export default class PreviewImage extends React.Component {
     constructor(props) {
@@ -49,35 +53,97 @@ export default class PreviewImage extends React.Component {
     }
 
     render() {
+        const ImageMenu = props => {
+            const [anchorEl, setAnchorEl] = React.useState(null)
+            const { classes } = props
+
+            const handleClick = event => {
+                setAnchorEl(event.currentTarget)
+            }
+
+            const handleClose = () => {
+                setAnchorEl(null)
+            }
+            return (
+                <div
+                    style={{
+                        color: 'white',
+                        position: 'absolute',
+                        top: '0',
+                        right: '0',
+                        zIndex: '99',
+                    }}
+                >
+                    <div
+                        style={{ backgroundColor: 'black' }}
+                        className="flex content-center justify-center"
+                    >
+                        <Icon
+                            aria-controls="simple-menu"
+                            aria-haspopup="true"
+                            onClick={handleClick}
+                            style={{ color: 'white', cursor: 'pointer' }}
+                        >
+                            more_vert
+                        </Icon>
+                    </div>
+                    <Menu
+                        id="simple-menu"
+                        anchorEl={anchorEl}
+                        keepMounted
+                        open={Boolean(anchorEl)}
+                        onClose={handleClose}
+                    >
+                        <MenuItem
+                            onClick={() => {
+                                const zoom = this.state.viewer.viewport.getZoom(
+                                    true
+                                )
+                                const center = this.state.viewer.viewport.getCenter(
+                                    true
+                                )
+                                const rotation = this.state.viewer.viewport.getRotation(
+                                    true
+                                )
+                                this.props.setImageView({
+                                    zoom,
+                                    center,
+                                    rotation,
+                                })
+                            }}
+                        >
+                            Set Preview
+                        </MenuItem>
+                    </Menu>
+                </div>
+            )
+        }
+
+        const ImageMenuOverlay = withStyles(theme => ({
+            root: {
+                color: 'white',
+            },
+        }))(ImageMenu)
+
         return (
             <div>
                 <div
                     style={{ width: 300, height: 192, position: 'relative' }}
-                    className="items-center flex justify-center bg-black mr-2"
+                    className="items-center flex justify-center bg-black mr-2 border-black border-2"
                     id={`openseadragon${this.props.i}`}
-                />
-                {this.props.showUpdateView && (
-                    <button
-                        onClick={() => {
-                            const zoom = this.state.viewer.viewport.getZoom(
-                                true
-                            )
-                            const center = this.state.viewer.viewport.getCenter(
-                                true
-                            )
-                            const rotation = this.state.viewer.viewport.getRotation(
-                                true
-                            )
-                            this.props.setImageView({
-                                zoom,
-                                center,
-                                rotation,
-                            })
+                >
+                    <div
+                        style={{
+                            height: '100%',
+                            width: '100%',
+                            backgroundColor: 'transparent',
+                            position: 'absolute',
                         }}
+                        className="text-white"
                     >
-                        Update View
-                    </button>
-                )}
+                        <ImageMenuOverlay />
+                    </div>
+                </div>
             </div>
         )
     }
