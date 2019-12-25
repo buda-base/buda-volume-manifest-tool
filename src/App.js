@@ -96,9 +96,11 @@ function App() {
     }
 
     const deleteImage = imageId => {
+        console.log('imageId', imageId)
         const updatedImageList = reject(({ id }) => {
             return id === imageId
         }, imageList)
+        console.log('updatedImageList', updatedImageList)
         updateImageList(updatedImageList)
     }
 

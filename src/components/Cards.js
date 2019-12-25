@@ -71,16 +71,20 @@ export default function ImageCard(props) {
     const { imageView, setImageView } = props
     const { data: image } = props
 
-    React.useEffect(async () => {
-        try {
-            const data = await axios.get(
-                `https://iiif.bdrc.io/bdr:V4CZ5369_I1KG9128::${image.filename}/info.json`
-            )
-            const iiif = data.data
-            setiiif(iiif)
-        } catch (err) {
-            console.log('iiifErr', err)
+    React.useEffect(() => {
+        const getData = async () => {
+            try {
+                const data = await axios.get(
+                    `https://iiif.bdrc.io/bdr:V4CZ5369_I1KG9128::${image.filename}/info.json`
+                )
+                const iiif = data.data
+                setiiif(iiif)
+                return () => {}
+            } catch (err) {
+                console.log('iiifErr', err)
+            }
         }
+        getData()
     }, [])
 
     const Header = () => {
@@ -327,7 +331,6 @@ export default function ImageCard(props) {
                             <TabPanel value={0} index={0} className="p-0">
                                 <div className="mb-2">
                                     <TextField
-                                        id="margin-indication"
                                         label="Margin Indication"
                                         type="text"
                                     />
@@ -366,10 +369,7 @@ export default function ImageCard(props) {
                                                     Section 2a
                                                 </option>
                                             </Select>
-                                            <TextField
-                                                id="pagenumber"
-                                                type="text"
-                                            />
+                                            <TextField type="text" />
                                             <CardMenu />
                                         </div>
                                     </FormControl>

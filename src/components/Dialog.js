@@ -160,9 +160,9 @@ export default function SettingsDialog(props) {
                 {/*    zoom={imageView.zoom}*/}
                 {/*    showUpdateView*/}
                 {/*/>*/}
-                {settings.inputOne.sectionInputs.map(data => {
+                {settings.inputOne.sectionInputs.map((data, i) => {
                     return (
-                        <div className="w-full flex mb-6">
+                        <div key={i} className="w-full flex mb-6">
                             <div className="w-1/2">
                                 <TextField
                                     label="Section 1 name"
