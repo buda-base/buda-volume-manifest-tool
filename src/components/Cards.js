@@ -342,8 +342,8 @@ export default function ImageCard(props) {
                                 </div>
                                 <div>
                                     <FormControl style={{ marginTop: '.5rem' }}>
-                                        {sectionInputs.length > 0 && (
-                                            <div>
+                                        <div>
+                                            {sectionInputs.length > 0 && (
                                                 <Select
                                                     native
                                                     value={sectionId}
@@ -381,10 +381,11 @@ export default function ImageCard(props) {
                                                         }
                                                     )}
                                                 </Select>
-                                                <TextField type="text" />
-                                                <CardMenu />
-                                            </div>
-                                        )}
+                                            )}
+
+                                            <TextField type="text" />
+                                            <CardMenu />
+                                        </div>
                                     </FormControl>
                                 </div>
                             </TabPanel>
