@@ -95,15 +95,6 @@ function App() {
         }
     }
 
-    const deleteImage = imageId => {
-        console.log('imageId', imageId)
-        const updatedImageList = reject(({ id }) => {
-            return id === imageId
-        }, imageList)
-        console.log('updatedImageList', updatedImageList)
-        updateImageList(updatedImageList)
-    }
-
     const toggleHideImage = imageId => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
@@ -236,7 +227,6 @@ function App() {
                                 deleteImageChip={deleteImageChip}
                                 toggleReview={toggleReview}
                                 insertMissing={insertMissing}
-                                deleteImage={deleteImage}
                                 toggleHideImage={toggleHideImage}
                                 key={item.id}
                                 setImageView={setImageView}

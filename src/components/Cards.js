@@ -14,7 +14,6 @@ import Chip from '@material-ui/core/Chip'
 import Typography from '@material-ui/core/Typography'
 import {Box, Checkbox} from '@material-ui/core'
 import Edit from '@material-ui/icons/Edit'
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
@@ -223,13 +222,6 @@ export default function ImageCard(props) {
                         }}
                     >
                         <Edit className="mr-2" /> Edit
-                    </MenuItem>
-                    <MenuItem
-                        onClick={() => {
-                            props.deleteImage(image.id)
-                        }}
-                    >
-                        <DeleteForeverIcon className="mr-2" /> Delete
                     </MenuItem>
                     <MenuItem
                         onClick={() => {
