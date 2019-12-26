@@ -365,9 +365,10 @@ export default function ImageCard(props) {
                                                     </option>
                                                     )
                                                     {sectionInputs.map(
-                                                        section => {
+                                                        (section, i) => {
                                                             return (
                                                                 <option
+                                                                    key={i}
                                                                     value={
                                                                         section.id
                                                                     }

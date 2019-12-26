@@ -56,10 +56,15 @@ function SectionInput(props) {
     const id = pathOr(null, ['data', 'id'], props)
     const [sectionValue, setSectionValue] = React.useState(value)
     const [languageValue, setLanguageValue] = React.useState(language)
-    const { handleAddSection, handleRemoveSection, sectionInUseCount } = props
+    const {
+        handleAddSection,
+        handleRemoveSection,
+        sectionInUseCount,
+        key,
+    } = props
     const inputValid = sectionValue.length > 0
     return (
-        <div className="w-full flex mb-6">
+        <div className="w-full flex mb-6" key={key}>
             <div className="w-1/2">
                 <TextField
                     label="Section"
@@ -249,6 +254,7 @@ export default function SettingsDialog(props) {
                     return (
                         <SectionInput
                             i={i}
+                            key={i}
                             data={data}
                             handleAddSection={handleAddSection}
                             handleRemoveSection={handleRemoveSection}
