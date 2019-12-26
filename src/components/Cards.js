@@ -68,7 +68,7 @@ export default function ImageCard(props) {
     const [editDialogOpen, setEditDialogOpen] = React.useState(false)
     const [iiif, setiiif] = React.useState(null)
     const { imageView, setImageView } = props
-    const { data: image } = props
+    const { data: image, sectionInputs } = props
 
     React.useEffect(() => {
         const getData = async () => {
@@ -247,6 +247,8 @@ export default function ImageCard(props) {
         [propEq('type', 'missing'), always('missing')],
     ])(image)
 
+    const sectionId = image.sectionId || 'none'
+
     return (
         <Card className={classes.card}>
             <EditCard
@@ -340,30 +342,48 @@ export default function ImageCard(props) {
                                 </div>
                                 <div>
                                     <FormControl style={{ marginTop: '.5rem' }}>
-                                        <div>
-                                            <Select
-                                                native
-                                                value="file"
-                                                onChange={x => {
-                                                    console.log('selected', x)
-                                                }}
-                                                className="mr-2"
-                                                style={{ width: 155 }}
-                                                inputProps={{
-                                                    name: 'type',
-                                                    id: 'type',
-                                                }}
-                                            >
-                                                <option value="section1a">
-                                                    Section 1a
-                                                </option>
-                                                <option value="section2a">
-                                                    Section 2a
-                                                </option>
-                                            </Select>
-                                            <TextField type="text" />
-                                            <CardMenu />
-                                        </div>
+                                        {sectionInputs.length > 0 && (
+                                            <div>
+                                                <Select
+                                                    native
+                                                    value={sectionId}
+                                                    onChange={e => {
+                                                        props.updateImageSection(
+                                                            image.id,
+                                                            e.target.value
+                                                        )
+                                                    }}
+                                                    className="mr-2"
+                                                    style={{ width: 155 }}
+                                                    inputProps={{
+                                                        name: 'type',
+                                                        id: 'type',
+                                                    }}
+                                                >
+                                                    <option value={'none'}>
+                                                        Choose Section
+                                                    </option>
+                                                    )
+                                                    {sectionInputs.map(
+                                                        section => {
+                                                            return (
+                                                                <option
+                                                                    value={
+                                                                        section.id
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        section.value
+                                                                    }
+                                                                </option>
+                                                            )
+                                                        }
+                                                    )}
+                                                </Select>
+                                                <TextField type="text" />
+                                                <CardMenu />
+                                            </div>
+                                        )}
                                     </FormControl>
                                 </div>
                             </TabPanel>

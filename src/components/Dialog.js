@@ -12,9 +12,12 @@ import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Select from '@material-ui/core/Select'
 import TextField from '@material-ui/core/TextField'
 import TextareaAutosize from '@material-ui/core/TextareaAutosize'
-import {lensPath, lensProp} from 'ramda'
+import {append, lensPath, lensProp, pathOr, propEq, reject, view} from 'ramda'
 import InputLabel from '@material-ui/core/InputLabel'
 import FormControl from '@material-ui/core/FormControl'
+import AddCircleIcon from '@material-ui/icons/AddCircle'
+import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
+import uuidv4 from 'uuid/v4'
 
 const styles = theme => ({
     root: {
@@ -47,6 +50,86 @@ const DialogTitle = withStyles(styles)(props => {
     )
 })
 
+function SectionInput(props) {
+    const value = pathOr('', ['data', 'value'], props)
+    const language = pathOr('', ['data', 'value'], props)
+    const id = pathOr(null, ['data', 'id'], props)
+    const [sectionValue, setSectionValue] = React.useState(value)
+    const [languageValue, setLanguageValue] = React.useState(language)
+    const { handleAddSection, handleRemoveSection, sectionInUseCount } = props
+    const inputValid = sectionValue.length > 0
+    return (
+        <div className="w-full flex mb-6">
+            <div className="w-1/2">
+                <TextField
+                    label="Section"
+                    type="text"
+                    disabled={!props.new}
+                    value={sectionValue}
+                    style={{ width: '100%' }}
+                    onChange={e => {
+                        setSectionValue(e.target.value)
+                    }}
+                />
+            </div>
+            <div className="w-1/2 pl-8 flex flex-row">
+                <div className="w-3/4">
+                    <FormControl style={{ width: '100%' }}>
+                        <InputLabel shrink>Language</InputLabel>
+                        <Select
+                            native
+                            disabled={!props.new}
+                            value={languageValue}
+                            onChange={e => {
+                                setLanguageValue(e.target.value)
+                            }}
+                        >
+                            <option value="bo">Tibetan</option>
+                            <option value="eng">English</option>
+                        </Select>
+                    </FormControl>
+                </div>
+                <div className="w-1/4 flex items-center">
+                    {props.new ? (
+                        <AddCircleIcon
+                            style={{
+                                color: inputValid ? 'black' : 'gray',
+                                cursor: inputValid ? 'pointer' : 'initial',
+                            }}
+                            onClick={() => {
+                                if (inputValid) {
+                                    setSectionValue('')
+                                    setLanguageValue('')
+                                    handleAddSection(
+                                        sectionValue,
+                                        languageValue
+                                    )
+                                } else {
+                                    alert('Section name must not be empty!')
+                                }
+                            }}
+                        />
+                    ) : (
+                        <RemoveCircleIcon
+                            className="cursor-pointer"
+                            onClick={() => {
+                                const count = sectionInUseCount(id)
+                                if (count > 0) {
+                                    alert(
+                                        `This section is set to ${count} images. Unselect these to remove the section`
+                                    )
+                                } else {
+                                    handleRemoveSection(id)
+                                }
+                            }}
+                        />
+                    )}
+                </div>
+            </div>
+        </div>
+    )
+}
+
 const DialogActions = withStyles(theme => ({
     root: {
         margin: 0,
@@ -55,7 +138,24 @@ const DialogActions = withStyles(theme => ({
 }))(MuiDialogActions)
 
 export default function SettingsDialog(props) {
-    const { volume, handleSettingsUpdate, settings } = props
+    const { handleSettingsUpdate, settings, sectionInUseCount } = props
+
+    const handleAddSection = (value, language) => {
+        const sectionsLens = lensPath(['inputOne', 'sectionInputs'])
+        const currentSections = view(sectionsLens, settings)
+        const updatedSections = append(
+            { value, language, id: uuidv4() },
+            currentSections
+        )
+        handleSettingsUpdate(sectionsLens, updatedSections)
+    }
+
+    const handleRemoveSection = id => {
+        const sectionsLens = lensPath(['inputOne', 'sectionInputs'])
+        const currentSections = view(sectionsLens, settings)
+        const updatedSections = reject(propEq('id', id), currentSections)
+        handleSettingsUpdate(sectionsLens, updatedSections)
+    }
 
     return (
         <Dialog
@@ -72,13 +172,6 @@ export default function SettingsDialog(props) {
             </DialogTitle>
             <div className="p-3">
                 <div>
-                    {/*todo: is this needed here?*/}
-                    {/*<TextField*/}
-                    {/*    label="Volume Name"*/}
-                    {/*   */}
-                    {/*    type="text"*/}
-                    {/*    value={settings.volume}*/}
-                    {/*/>*/}
                     <div className="w-full">
                         <div className="w-2/4">
                             <FormControl style={{ width: '100%' }}>
@@ -152,43 +245,23 @@ export default function SettingsDialog(props) {
                     }
                     label="add input for whole margin"
                 />
-                {/*<h3>Preview</h3>*/}
-                {/*<PreviewImage*/}
-                {/*    i={2323}*/}
-                {/*    setImageView={setImageView}*/}
-                {/*    imageView={imageView}*/}
-                {/*    zoom={imageView.zoom}*/}
-                {/*    showUpdateView*/}
-                {/*/>*/}
                 {settings.inputOne.sectionInputs.map((data, i) => {
                     return (
-                        <div key={i} className="w-full flex mb-6">
-                            <div className="w-1/2">
-                                <TextField
-                                    label="Section 1 name"
-                                    type="text"
-                                    value={data.value}
-                                    style={{ width: '100%' }}
-                                />
-                            </div>
-                            <div className="w-1/2 pl-8">
-                                <FormControl style={{ width: '100%' }}>
-                                    <InputLabel shrink>Language</InputLabel>
-                                    <Select
-                                        native
-                                        value={data.language}
-                                        onChange={x => {
-                                            console.log('selected', x)
-                                        }}
-                                    >
-                                        <option value="bo">Tibetan</option>
-                                        <option value="eng">English</option>
-                                    </Select>
-                                </FormControl>
-                            </div>
-                        </div>
+                        <SectionInput
+                            i={i}
+                            data={data}
+                            handleAddSection={handleAddSection}
+                            handleRemoveSection={handleRemoveSection}
+                            sectionInUseCount={sectionInUseCount}
+                        />
                     )
                 })}
+                <SectionInput
+                    new
+                    handleAddSection={handleAddSection}
+                    handleRemoveSection={handleRemoveSection}
+                    sectionInUseCount={sectionInUseCount}
+                />
                 <div className="w-full">
                     <TextField
                         label="Indication (odd)"

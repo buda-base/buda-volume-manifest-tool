@@ -4,11 +4,27 @@ import AppBar from './components/AppBar'
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles'
 import Cards from './components/Cards'
 import data from './manifest-simple'
-import {addIndex, assoc, curry, dissoc, insert, lensPath, lensProp, map, prop, propOr, reject, set, view,} from 'ramda'
+import {
+    addIndex,
+    assoc,
+    curry,
+    dissoc,
+    insert,
+    lensPath,
+    lensProp,
+    map,
+    prop,
+    propOr,
+    reduce,
+    reject,
+    set,
+    view,
+} from 'ramda'
 import {Checkbox} from '@material-ui/core'
 import SettingsIcon from '@material-ui/icons/Settings'
 import Dialog from './components/Dialog'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
+import uuidv4 from 'uuid/v4'
 
 const mapIndex = addIndex(map)
 const theme = createMuiTheme({
@@ -38,14 +54,25 @@ function App() {
             paginationType: 'folio',
             inputForWholeMargin: true,
             sectionInputs: [
-                { value: 'Section 1a', language: 'bo' },
-                { value: 'Section 2a', language: 'bo' },
+                { value: 'Section 1a', language: 'bo', id: uuidv4() },
+                { value: 'Section 2a', language: 'bo', id: uuidv4() },
             ],
             indicationOdd: '{volname}-{sectionname}-{pagenum:bo}',
             indicationEven: '{volname}',
         },
         comments: null,
     })
+
+    const sectionInUseCount = sectionId => {
+        const count = reduce(
+            (acc, val) => {
+                return val.sectionId === sectionId ? ++acc : acc
+            },
+            0,
+            imageList
+        )
+        return count
+    }
 
     const handleSettingsUpdate = curry((lens, value) => {
         const updatedSettings = set(lens, value, settings)
@@ -54,6 +81,17 @@ function App() {
 
     const updateImageList = updatedImageList => {
         setWorkingData(set(imageListLens, updatedImageList, workingData))
+    }
+
+    const updateImageSection = (imageId, sectionId) => {
+        const updatedImageList = map(image => {
+            if (image.id === imageId) {
+                return assoc('sectionId', sectionId, image)
+            } else {
+                return image
+            }
+        }, imageList)
+        updateImageList(updatedImageList)
     }
 
     const deleteImageChip = (imageId, chipId) => {
@@ -124,6 +162,7 @@ function App() {
         <ThemeProvider theme={theme}>
             <div className="App">
                 <Dialog
+                    sectionInUseCount={sectionInUseCount}
                     open={settingsDialogOpen}
                     handleClose={() => setSettingsDialog(false)}
                     setImageView={setImageView}
@@ -221,6 +260,8 @@ function App() {
                     {mapIndex(
                         (item, i) => (
                             <Cards
+                                updateImageSection={updateImageSection}
+                                sectionInputs={settings.inputOne.sectionInputs}
                                 selectType={selectType}
                                 imageView={imageView}
                                 data={item}
