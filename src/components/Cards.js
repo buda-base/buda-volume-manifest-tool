@@ -21,12 +21,13 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import VisibilityOnIcon from '@material-ui/icons/Visibility'
 import EditCard from './EditCard'
-import {always, cond, map, propEq, propOr} from 'ramda'
+import {always, cond, map, propEq, propOr, reject} from 'ramda'
 import PreviewImage from './PreviewImage'
 import axios from 'axios'
 import BeenhereIcon from '@material-ui/icons/Beenhere'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import ReorderIcon from '@material-ui/icons/Reorder'
+import Autocomplete from '@material-ui/lab/Autocomplete'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -109,12 +110,12 @@ export default function ImageCard(props) {
         )
     }
 
-    function a11yProps(index) {
-        return {
-            id: `simple-tab-${index}`,
-            'aria-controls': `simple-tabpanel-${index}`,
-        }
-    }
+    // function a11yProps(index) {
+    //     return {
+    //         id: `simple-tab-${index}`,
+    //         'aria-controls': `simple-tabpanel-${index}`,
+    //     }
+    // }
 
     function TabPanel(props) {
         const { children, value, index, ...other } = props
@@ -130,49 +131,6 @@ export default function ImageCard(props) {
             >
                 {value === index && <Box className="mt-2">{children}</Box>}
             </Typography>
-        )
-    }
-
-    function CardMenu() {
-        const [anchorEl, setAnchorEl] = React.useState(null)
-
-        const handleClick = event => {
-            setAnchorEl(event.currentTarget)
-        }
-
-        const handleClose = () => {
-            setAnchorEl(null)
-        }
-        return (
-            <div className="inline-block">
-                <MoreVertIcon
-                    aria-controls="simple-menu"
-                    aria-haspopup="true"
-                    onClick={handleClick}
-                    style={{ cursor: 'pointer' }}
-                />
-
-                <Menu
-                    id="simple-menu"
-                    anchorEl={anchorEl}
-                    keepMounted
-                    open={Boolean(anchorEl)}
-                    onClose={handleClose}
-                >
-                    <MenuItem onClick={() => {}}>
-                        <BeenhereIcon className="mr-2" />
-                        Update following unchecked items
-                    </MenuItem>
-                    <MenuItem onClick={() => {}}>
-                        <ReorderIcon className="mr-2" />
-                        Reorder this image according to indicated pagination
-                    </MenuItem>
-                    <MenuItem onClick={() => {}}>
-                        <CheckBoxIcon className="mr-2" />
-                        Mark all images down to this one as checked
-                    </MenuItem>
-                </Menu>
-            </div>
         )
     }
 
@@ -236,6 +194,18 @@ export default function ImageCard(props) {
 
                         {image.hide ? 'Unhide' : 'Hide'}
                     </MenuItem>
+                    <MenuItem onClick={() => {}}>
+                        <BeenhereIcon className="mr-2" />
+                        Update following unchecked items
+                    </MenuItem>
+                    <MenuItem onClick={() => {}}>
+                        <ReorderIcon className="mr-2" />
+                        Reorder this image according to indicated pagination
+                    </MenuItem>
+                    <MenuItem onClick={() => {}}>
+                        <CheckBoxIcon className="mr-2" />
+                        Mark all images down to this one as checked
+                    </MenuItem>
                 </Menu>
             </div>
         )
@@ -281,9 +251,9 @@ export default function ImageCard(props) {
                         </div>
                     )}
 
-                    <div className="w-full flex">
-                        <div className="w-1/2 flex flex-col content-center">
-                            <div className="flex">
+                    <div className="flex flex-col">
+                        <div className="flex w-full">
+                            <div>
                                 <FormControl className={classes.formControl}>
                                     <div>
                                         <Select
@@ -291,7 +261,11 @@ export default function ImageCard(props) {
                                             disabled={type === 'missing'}
                                             value={type}
                                             onChange={e => {
-                                                props.selectType(image.id, e)
+                                                props.selectType(
+                                                    image.id,
+                                                    e,
+                                                    props.i
+                                                )
                                             }}
                                             style={{ width: 155 }}
                                             inputProps={{
@@ -311,100 +285,170 @@ export default function ImageCard(props) {
                                         </Select>
                                     </div>
                                 </FormControl>
-                            </div>
-                            {/*<Tabs*/}
-                            {/*    value={0}*/}
-                            {/*    onChange={() => console.log('handle change')}*/}
-                            {/*    aria-label="simple tabs example"*/}
-                            {/*    indicatorColor="primary"*/}
-                            {/*>*/}
-                            {/*<Tab label="Input 1" {...a11yProps(0)} />*/}
-                            {/*<Tab label="Input 2" {...a11yProps(1)} />*/}
-                            {/*</Tabs>*/}
-
-                            <TabPanel value={0} index={0} className="p-0">
-                                <div className="mb-2">
-                                    <TextField
-                                        label="Margin Indication"
-                                        type="text"
-                                    />
-                                    <Checkbox
-                                        checked={image.reviewed}
-                                        onChange={() => {
-                                            props.toggleReview(image.id)
-                                        }}
-                                        value="reviewed"
-                                        color="primary"
-                                        inputProps={{
-                                            'aria-label': 'primary checkbox',
-                                        }}
-                                    />
-                                </div>
-                                <div>
-                                    <FormControl style={{ marginTop: '.5rem' }}>
-                                        <div>
-                                            {sectionInputs.length > 0 && (
+                                {type === 'duplicate' && (
+                                    <>
+                                        <FormControl
+                                            className={classes.formControl}
+                                        >
+                                            <div>
+                                                <Autocomplete
+                                                    autoComplete
+                                                    options={reject(
+                                                        propEq('id', image.id),
+                                                        props.duplicateImageOptions
+                                                    )}
+                                                    style={{ width: 250 }}
+                                                    autoSelect
+                                                    autoHighlight
+                                                    value={image.duplicateOf}
+                                                    getOptionLabel={({
+                                                        name,
+                                                    }) => name}
+                                                    onChange={(
+                                                        event,
+                                                        newValue
+                                                    ) => {
+                                                        props.updateDuplicateOf(
+                                                            image.id,
+                                                            newValue
+                                                        )
+                                                    }}
+                                                    renderInput={params => {
+                                                        return (
+                                                            <TextField
+                                                                helperText="of File"
+                                                                {...params}
+                                                                fullWidth
+                                                            />
+                                                        )
+                                                    }}
+                                                />
+                                            </div>
+                                        </FormControl>
+                                        <FormControl
+                                            className={classes.formControl}
+                                        >
+                                            <div>
                                                 <Select
                                                     native
-                                                    value={sectionId}
+                                                    value={image.duplicateType}
                                                     onChange={e => {
-                                                        props.updateImageSection(
+                                                        props.setDuplicateType(
                                                             image.id,
                                                             e.target.value
                                                         )
                                                     }}
-                                                    className="mr-2"
-                                                    style={{ width: 155 }}
-                                                    inputProps={{
-                                                        name: 'type',
-                                                        id: 'type',
-                                                    }}
+                                                    style={{ width: 250 }}
                                                 >
-                                                    <option value={'none'}>
-                                                        Choose Section
+                                                    <option value="dup-in-original">
+                                                        Duplicate in Original
                                                     </option>
-                                                    )
-                                                    {sectionInputs.map(
-                                                        (section, i) => {
-                                                            return (
-                                                                <option
-                                                                    key={i}
-                                                                    value={
-                                                                        section.id
-                                                                    }
-                                                                >
-                                                                    {
-                                                                        section.value
-                                                                    }
-                                                                </option>
-                                                            )
-                                                        }
-                                                    )}
+                                                    <option value="dif-pic-same-page">
+                                                        Different Picture of
+                                                        Same Page
+                                                    </option>
+                                                    <option value="same-pic-same-page">
+                                                        Same Picture of Same
+                                                        Page
+                                                    </option>
                                                 </Select>
-                                            )}
-
-                                            <TextField type="text" />
-                                            <CardMenu />
-                                        </div>
-                                    </FormControl>
-                                </div>
-                            </TabPanel>
-                            {/*<TabPanel value={0} index={1}>*/}
-                            {/*    Item Two*/}
-                            {/*</TabPanel>*/}
+                                            </div>
+                                        </FormControl>
+                                    </>
+                                )}
+                            </div>
                         </div>
-                        <div className="flex flex-row content-center mt-3">
-                            {map(({ id, text }) => {
-                                return (
-                                    <Chip
-                                        key={image.id}
-                                        label={text}
-                                        onDelete={() => {
-                                            props.deleteImageChip(image.id, id)
-                                        }}
-                                    />
-                                )
-                            }, propOr([], 'chips', image))}
+                        <div className="w-full flex">
+                            <div className="w-1/2 flex flex-col content-center">
+                                <TabPanel value={0} index={0} className="p-0">
+                                    <div className="mb-2">
+                                        <TextField
+                                            label="Margin Indication"
+                                            type="text"
+                                        />
+                                        <Checkbox
+                                            checked={image.reviewed}
+                                            onChange={() => {
+                                                props.toggleReview(image.id)
+                                            }}
+                                            value="reviewed"
+                                            color="primary"
+                                            inputProps={{
+                                                'aria-label':
+                                                    'primary checkbox',
+                                            }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <FormControl
+                                            style={{ marginTop: '.5rem' }}
+                                        >
+                                            <div>
+                                                {sectionInputs.length > 0 && (
+                                                    <Select
+                                                        native
+                                                        value={sectionId}
+                                                        onChange={e => {
+                                                            props.updateImageSection(
+                                                                image.id,
+                                                                e.target.value
+                                                            )
+                                                        }}
+                                                        className="mr-2"
+                                                        style={{ width: 155 }}
+                                                        inputProps={{
+                                                            name: 'type',
+                                                            id: 'type',
+                                                        }}
+                                                    >
+                                                        <option value={'none'}>
+                                                            Choose Section
+                                                        </option>
+                                                        )
+                                                        {sectionInputs.map(
+                                                            (section, i) => {
+                                                                return (
+                                                                    <option
+                                                                        key={i}
+                                                                        value={
+                                                                            section.id
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            section.value
+                                                                        }
+                                                                    </option>
+                                                                )
+                                                            }
+                                                        )}
+                                                    </Select>
+                                                )}
+
+                                                <TextField type="text" />
+                                            </div>
+                                        </FormControl>
+                                    </div>
+                                </TabPanel>
+                                {/*<TabPanel value={0} index={1}>*/}
+                                {/*    Item Two*/}
+                                {/*</TabPanel>*/}
+                            </div>
+                            <div className="flex flex-row content-center mt-3">
+                                {map(({ id, text }) => {
+                                    return (
+                                        <Chip
+                                            key={image.id}
+                                            label={text}
+                                            onDelete={() => {
+                                                props.deleteImageChip(
+                                                    image.id,
+                                                    id
+                                                )
+                                            }}
+                                        />
+                                    )
+                                }, propOr([], 'chips', image))}
+                            </div>
                         </div>
                     </div>
                 </CardContent>

@@ -7,8 +7,12 @@ import data from './manifest-simple'
 import {
     addIndex,
     assoc,
+    complement,
+    compose,
     curry,
+    dec,
     dissoc,
+    has,
     insert,
     lensPath,
     lensProp,
@@ -93,6 +97,26 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
+    const updateDuplicateOf = (imageId, val) => {
+        const updatedImageList = map(image => {
+            if (image.id === imageId) {
+                return assoc('duplicateOf', val, image)
+            } else {
+                return image
+            }
+        }, imageList)
+        updateImageList(updatedImageList)
+    }
+    const setDuplicateType = (imageId, val) => {
+        const updatedImageList = map(image => {
+            if (image.id === imageId) {
+                return assoc('duplicateType', val, image)
+            } else {
+                return image
+            }
+        }, imageList)
+        updateImageList(updatedImageList)
+    }
 
     const deleteImageChip = (imageId, chipId) => {
         const updatedImageList = map(image => {
@@ -145,11 +169,29 @@ function App() {
         updateImageList(updatedImageList)
     }
 
-    const selectType = (imageId, e) => {
+    const selectType = (imageId, e, i) => {
         const val = e.target.value
+        const attachDuplicateOfPreImage = image => {
+            const previousImage = imageList[dec(i)]
+            const fileName = prop('filename', previousImage)
+            return fileName
+                ? assoc(
+                      'duplicateOf',
+                      { name: fileName, id: previousImage.id },
+                      image
+                  )
+                : image
+        }
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 if (val === 'file') return dissoc('type', image)
+                if (val === 'duplicate') {
+                    const res = compose(
+                        attachDuplicateOfPreImage,
+                        assoc('type', val)
+                    )(image)
+                    return res
+                }
                 return assoc('type', val, image)
             } else {
                 return image
@@ -157,6 +199,11 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
+
+    const duplicateImageOptions = compose(
+        map(({ id, filename }) => ({ id, name: filename })),
+        reject(complement(has)('filename'))
+    )(imageList)
 
     return (
         <ThemeProvider theme={theme}>
@@ -270,8 +317,11 @@ function App() {
                                 insertMissing={insertMissing}
                                 toggleHideImage={toggleHideImage}
                                 key={item.id}
+                                duplicateImageOptions={duplicateImageOptions}
                                 setImageView={setImageView}
                                 i={i}
+                                updateDuplicateOf={updateDuplicateOf}
+                                setDuplicateType={setDuplicateType}
                             />
                         ),
                         imageList
