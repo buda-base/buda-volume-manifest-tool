@@ -359,7 +359,7 @@ export default function ImageCard(props) {
                             </div>
                         </div>
                         <div className="w-full flex">
-                            <div className="w-1/2 flex flex-col content-center">
+                            <div className="w-full flex flex-col content-center">
                                 <TabPanel value={0} index={0} className="p-0">
                                     <div className="mb-2">
                                         <TextField
@@ -379,7 +379,7 @@ export default function ImageCard(props) {
                                             }}
                                         />
                                     </div>
-                                    <div>
+                                    <div className="w-full">
                                         <FormControl
                                             style={{ marginTop: '.5rem' }}
                                         >
