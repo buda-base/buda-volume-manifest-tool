@@ -229,10 +229,10 @@ function App() {
             },
             imageList
         )
-        const insertIdx = idx > 0 ? inc(idx) : 0
+        // const insertIdx = idx > 0 ? inc(idx) : 0
         const updatedImageList = reject(
             propEq('remove', true),
-            insert(insertIdx, image, images)
+            insert(inc(idx), image, images)
         )
         updateImageList(updatedImageList)
     }
@@ -344,7 +344,7 @@ function App() {
                                 <React.Fragment key={i}>
                                     {i === 0 && (
                                         <CardDropZone
-                                            i={i}
+                                            i={-1}
                                             handleDrop={handleDrop}
                                         />
                                     )}
