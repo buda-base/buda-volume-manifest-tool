@@ -4,6 +4,8 @@ import AppBar from './components/AppBar'
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles'
 import Cards from './components/Cards'
 import data from './manifest-simple'
+import {DndProvider} from 'react-dnd'
+import Backend from 'react-dnd-html5-backend'
 import {
     addIndex,
     assoc,
@@ -13,11 +15,13 @@ import {
     dec,
     dissoc,
     has,
+    inc,
     insert,
     lensPath,
     lensProp,
     map,
     prop,
+    propEq,
     propOr,
     reduce,
     reject,
@@ -29,6 +33,8 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import Dialog from './components/Dialog'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import uuidv4 from 'uuid/v4'
+
+import CardDropZone from './components/CardDropZone'
 
 const mapIndex = addIndex(map)
 const theme = createMuiTheme({
@@ -205,129 +211,175 @@ function App() {
         reject(complement(has)('filename'))
     )(imageList)
 
+    const handleDrop = (imageId, idx) => {
+        const { image, images } = reduce(
+            (acc, val) => {
+                if (val.id === imageId) {
+                    const valToRemove = assoc('remove', true, val)
+                    acc.image = val
+                    acc.images.push(valToRemove)
+                    return acc
+                }
+                acc.images.push(val)
+                return acc
+            },
+            {
+                image: null,
+                images: [],
+            },
+            imageList
+        )
+        const insertIdx = idx > 0 ? inc(idx) : 0
+        const updatedImageList = reject(
+            propEq('remove', true),
+            insert(insertIdx, image, images)
+        )
+        updateImageList(updatedImageList)
+    }
+
     return (
         <ThemeProvider theme={theme}>
-            <div className="App">
-                <Dialog
-                    sectionInUseCount={sectionInUseCount}
-                    open={settingsDialogOpen}
-                    handleClose={() => setSettingsDialog(false)}
-                    setImageView={setImageView}
-                    imageView={imageView}
-                    volume={workingData}
-                    handleSettingsUpdate={handleSettingsUpdate}
-                    settings={settings}
-                />
-                <AppBar
-                    settings={settings}
-                    handleSettingsUpdate={handleSettingsUpdate}
-                />
-                <div className="container mx-auto flex flex-row py-6">
-                    <div className="w-1/2 flex flex-col">
-                        <span className="text-gray-600 text-sm">Volume:</span>
-                        <span className="text-sm font-bold text-xl mb-3">
-                            S4SAD2SD34{' '}
-                            <span
-                                onClick={() => setSettingsDialog(true)}
-                                className="underline text-md font-medium cursor-pointer"
-                            >
-                                <SettingsIcon />
+            <DndProvider backend={Backend}>
+                <div className="App">
+                    <Dialog
+                        sectionInUseCount={sectionInUseCount}
+                        open={settingsDialogOpen}
+                        handleClose={() => setSettingsDialog(false)}
+                        setImageView={setImageView}
+                        imageView={imageView}
+                        volume={workingData}
+                        handleSettingsUpdate={handleSettingsUpdate}
+                        settings={settings}
+                    />
+                    <AppBar
+                        settings={settings}
+                        handleSettingsUpdate={handleSettingsUpdate}
+                    />
+                    <div className="container mx-auto flex flex-row py-6">
+                        <div className="w-1/2 flex flex-col">
+                            <span className="text-gray-600 text-sm">
+                                Volume:
                             </span>
-                        </span>
-                        <span className="underline text-blue-600 cursor-pointer">
-                            Preview
-                        </span>
-                    </div>
-                    <div className="w-1/2 flex flex-col">
-                        <div className="self-end">
-                            <span className="underline text-md font-medium cursor-pointer mr-5">
-                                SAVE
+                            <span className="text-sm font-bold text-xl mb-3">
+                                S4SAD2SD34{' '}
+                                <span
+                                    onClick={() => setSettingsDialog(true)}
+                                    className="underline text-md font-medium cursor-pointer"
+                                >
+                                    <SettingsIcon />
+                                </span>
                             </span>
-                            {/*<span*/}
-                            {/*    onClick={() => setSettingsDialog(true)}*/}
-                            {/*    className="underline text-md font-medium cursor-pointer"*/}
-                            {/*>*/}
-                            {/*    <SettingsIcon />*/}
-                            {/*</span>*/}
+                            <span className="underline text-blue-600 cursor-pointer">
+                                Preview
+                            </span>
+                        </div>
+                        <div className="w-1/2 flex flex-col">
+                            <div className="self-end">
+                                <span className="underline text-md font-medium cursor-pointer mr-5">
+                                    SAVE
+                                </span>
+                                {/*<span*/}
+                                {/*    onClick={() => setSettingsDialog(true)}*/}
+                                {/*    className="underline text-md font-medium cursor-pointer"*/}
+                                {/*>*/}
+                                {/*    <SettingsIcon />*/}
+                                {/*</span>*/}
+                            </div>
                         </div>
                     </div>
+                    {/*<InfoBar />*/}
+                    <div className="container mx-auto flex flex-row justify-end">
+                        <FormControlLabel
+                            style={{ display: 'block' }}
+                            control={
+                                <Checkbox
+                                    checked={settings.showCheckedImages}
+                                    onChange={e => {
+                                        handleSettingsUpdate(
+                                            lensProp('showCheckedImages'),
+                                            !settings.showCheckedImages
+                                        )
+                                    }}
+                                    value="show-checked-images"
+                                    color="primary"
+                                    inputProps={{
+                                        'aria-label': 'primary checkbox',
+                                    }}
+                                />
+                            }
+                            label="Show Checked Images"
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={settings.showHiddenImages}
+                                    onChange={e => {
+                                        handleSettingsUpdate(
+                                            lensProp('showHiddenImages'),
+                                            !settings.showHiddenImages
+                                        )
+                                    }}
+                                    value="show-hidden-images"
+                                    color="primary"
+                                    inputProps={{
+                                        'aria-label': 'primary checkbox',
+                                    }}
+                                />
+                            }
+                            label="Show Hidden Images"
+                        />
+                    </div>
+                    <div className="container mx-auto">
+                        {/*todo: do we need this?*/}
+                        {/*<div className="mt-5 text-gray-700" style={{ width: 144 }}>*/}
+                        {/*    <span className="text-xs">Thumbnail Zoom Level:</span>*/}
+                        {/*    <Slider*/}
+                        {/*        value={30}*/}
+                        {/*        onChange={val => console.log('handle change', val)}*/}
+                        {/*        aria-labelledby="continuous-slider"*/}
+                        {/*    />*/}
+                        {/*</div>*/}
+                        {mapIndex(
+                            (item, i) => (
+                                <React.Fragment key={i}>
+                                    {i === 0 && (
+                                        <CardDropZone
+                                            i={i}
+                                            handleDrop={handleDrop}
+                                        />
+                                    )}
+                                    <Cards
+                                        updateImageSection={updateImageSection}
+                                        sectionInputs={
+                                            settings.inputOne.sectionInputs
+                                        }
+                                        selectType={selectType}
+                                        imageView={imageView}
+                                        data={item}
+                                        deleteImageChip={deleteImageChip}
+                                        toggleReview={toggleReview}
+                                        insertMissing={insertMissing}
+                                        toggleHideImage={toggleHideImage}
+                                        key={item.id}
+                                        duplicateImageOptions={
+                                            duplicateImageOptions
+                                        }
+                                        setImageView={setImageView}
+                                        i={i}
+                                        updateDuplicateOf={updateDuplicateOf}
+                                        setDuplicateType={setDuplicateType}
+                                    />
+                                    <CardDropZone
+                                        i={i}
+                                        handleDrop={handleDrop}
+                                    />
+                                </React.Fragment>
+                            ),
+                            imageList
+                        )}
+                    </div>
                 </div>
-                {/*<InfoBar />*/}
-                <div className="container mx-auto flex flex-row justify-end">
-                    <FormControlLabel
-                        style={{ display: 'block' }}
-                        control={
-                            <Checkbox
-                                checked={settings.showCheckedImages}
-                                onChange={e => {
-                                    handleSettingsUpdate(
-                                        lensProp('showCheckedImages'),
-                                        !settings.showCheckedImages
-                                    )
-                                }}
-                                value="show-checked-images"
-                                color="primary"
-                                inputProps={{
-                                    'aria-label': 'primary checkbox',
-                                }}
-                            />
-                        }
-                        label="Show Checked Images"
-                    />
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={settings.showHiddenImages}
-                                onChange={e => {
-                                    handleSettingsUpdate(
-                                        lensProp('showHiddenImages'),
-                                        !settings.showHiddenImages
-                                    )
-                                }}
-                                value="show-hidden-images"
-                                color="primary"
-                                inputProps={{
-                                    'aria-label': 'primary checkbox',
-                                }}
-                            />
-                        }
-                        label="Show Hidden Images"
-                    />
-                </div>
-                <div className="container mx-auto">
-                    {/*todo: do we need this?*/}
-                    {/*<div className="mt-5 text-gray-700" style={{ width: 144 }}>*/}
-                    {/*    <span className="text-xs">Thumbnail Zoom Level:</span>*/}
-                    {/*    <Slider*/}
-                    {/*        value={30}*/}
-                    {/*        onChange={val => console.log('handle change', val)}*/}
-                    {/*        aria-labelledby="continuous-slider"*/}
-                    {/*    />*/}
-                    {/*</div>*/}
-                    {mapIndex(
-                        (item, i) => (
-                            <Cards
-                                updateImageSection={updateImageSection}
-                                sectionInputs={settings.inputOne.sectionInputs}
-                                selectType={selectType}
-                                imageView={imageView}
-                                data={item}
-                                deleteImageChip={deleteImageChip}
-                                toggleReview={toggleReview}
-                                insertMissing={insertMissing}
-                                toggleHideImage={toggleHideImage}
-                                key={item.id}
-                                duplicateImageOptions={duplicateImageOptions}
-                                setImageView={setImageView}
-                                i={i}
-                                updateDuplicateOf={updateDuplicateOf}
-                                setDuplicateType={setDuplicateType}
-                            />
-                        ),
-                        imageList
-                    )}
-                </div>
-            </div>
+            </DndProvider>
         </ThemeProvider>
     )
 }

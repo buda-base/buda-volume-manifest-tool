@@ -28,11 +28,11 @@ import BeenhereIcon from '@material-ui/icons/Beenhere'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import ReorderIcon from '@material-ui/icons/Reorder'
 import Autocomplete from '@material-ui/lab/Autocomplete'
+import {useDrag} from 'react-dnd'
 
 const useStyles = makeStyles(theme => ({
     card: {
         width: '100%',
-        marginBottom: '1rem',
     },
     cardHeader: {
         textAlign: 'left',
@@ -70,6 +70,13 @@ export default function ImageCard(props) {
     const [iiif, setiiif] = React.useState(null)
     const { imageView, setImageView } = props
     const { data: image, sectionInputs } = props
+
+    const [{ opacity }, dragRef] = useDrag({
+        item: { type: 'CARD', imageId: image.id },
+        collect: monitor => ({
+            opacity: monitor.isDragging() ? 0.3 : 1,
+        }),
+    })
 
     React.useEffect(() => {
         const getData = async () => {
@@ -220,7 +227,7 @@ export default function ImageCard(props) {
     const sectionId = image.sectionId || 'none'
 
     return (
-        <Card className={classes.card}>
+        <Card className={classes.card} style={{ opacity }} ref={dragRef}>
             <EditCard
                 open={editDialogOpen}
                 setEditDialogOpen={setEditDialogOpen}
