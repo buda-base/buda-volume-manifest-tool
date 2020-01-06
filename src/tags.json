@@ -1,0 +1,104 @@
+{
+    "T0001": {
+        "label": {
+            "eng": "cover page"
+        },
+        "helpMessage": ""
+    },
+    "T0002": {
+        "label": {
+            "eng": "cover page (inside)"
+        },
+        "helpMessage": ""
+    },
+    "T0003": {
+        "label": {
+            "eng": "back cover"
+        },
+        "helpMessage": ""
+    },
+    "T0003": {
+        "label": {
+            "eng": "back cover (inside)"
+        },
+        "helpMessage": ""
+    },
+    "T0004": {
+        "label": {
+            "eng": "catalog card (not part of the original, added for cataloging)"
+        },
+        "helpMessage": ""
+    },
+    "T0005": {
+        "label": {
+            "eng": "bdrc scan request page"
+        },
+        "helpMessage": ""
+    },
+    "T0006": {
+        "label": {
+            "eng": "picture of book side"
+        },
+        "helpMessage": ""
+    },
+    "T0007": {
+        "label": {
+            "eng": "picture of edge"
+        },
+        "helpMessage": ""
+    },
+    "T0008": {
+        "label": {
+            "eng": "picture of close volume"
+        },
+        "helpMessage": ""
+    },
+    "T0009": {
+        "label": {
+            "eng": "picture of wrapped volume"
+        },
+        "helpMessage": ""
+    },
+    "T0010": {
+        "label": {
+            "eng": "picture of wrapping cloth"
+        },
+        "helpMessage": ""
+    },
+    "T0011": {
+        "label": {
+            "eng": "volume title page"
+        },
+        "helpMessage": ""
+    },
+    "T0012": {
+        "label": {
+            "eng": "text title page"
+        },
+        "helpMessage": ""
+    },
+    "T0013": {
+        "label": {
+            "eng": "blank page"
+        },
+        "helpMessage": ""
+    },
+    "T0014": {
+        "label": {
+            "eng": "illustration page"
+        },
+        "helpMessage": ""
+    },
+    "T0015": {
+        "label": {
+            "eng": "color cards / rules"
+        },
+        "helpMessage": ""
+    },
+    "T0016": {
+        "label": {
+            "eng": "picture of close volume"
+        },
+        "helpMessage": ""
+    }
+}

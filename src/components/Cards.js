@@ -21,14 +21,16 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import VisibilityOnIcon from '@material-ui/icons/Visibility'
 import EditCard from './EditCard'
-import {always, cond, map, propEq, propOr, reject} from 'ramda'
+import {always, cond, map, path, propEq, propOr, reject} from 'ramda'
 import PreviewImage from './PreviewImage'
 import axios from 'axios'
 import BeenhereIcon from '@material-ui/icons/Beenhere'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import ReorderIcon from '@material-ui/icons/Reorder'
 import Autocomplete from '@material-ui/lab/Autocomplete'
+import FormHelperText from '@material-ui/core/FormHelperText';
 import {useDrag} from 'react-dnd'
+import tags from '../tags'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -231,7 +233,9 @@ export default function ImageCard(props) {
             <EditCard
                 open={editDialogOpen}
                 setEditDialogOpen={setEditDialogOpen}
+                addImageTag={props.addImageTag}
                 data={image}
+                removeImageTag={props.removeImageTag}
             />
             <CardHeader className={classes.cardHeader} component={Header} />
             {!image.hide && (
@@ -258,7 +262,7 @@ export default function ImageCard(props) {
                         </div>
                     )}
 
-                    <div className="flex flex-col">
+                    <div className="flex flex-col w-full">
                         <div className="flex w-full">
                             <div>
                                 <FormControl className={classes.formControl}>
@@ -278,9 +282,10 @@ export default function ImageCard(props) {
                                             inputProps={{
                                                 name: 'type',
                                                 id: 'type',
+                                                helperTest: 'Type',
                                             }}
                                         >
-                                            <option value="file">File</option>
+                                            <option value="file"></option>
                                             {type === 'missing' && (
                                                 <option value="missing">
                                                     Missing
@@ -290,6 +295,9 @@ export default function ImageCard(props) {
                                                 Duplicate
                                             </option>
                                         </Select>
+                                        <FormHelperText>
+                                            Type
+                                        </FormHelperText>
                                     </div>
                                 </FormControl>
                                 {type === 'duplicate' && (
@@ -366,7 +374,7 @@ export default function ImageCard(props) {
                             </div>
                         </div>
                         <div className="w-full flex">
-                            <div className="w-full flex flex-col content-center">
+                            <div className="w-1/2 flex flex-col content-center">
                                 <TabPanel value={0} index={0} className="p-0">
                                     <div className="mb-2">
                                         <TextField
@@ -440,21 +448,29 @@ export default function ImageCard(props) {
                                 {/*    Item Two*/}
                                 {/*</TabPanel>*/}
                             </div>
-                            <div className="flex flex-row content-center mt-3">
-                                {map(({ id, text }) => {
-                                    return (
-                                        <Chip
-                                            key={image.id}
-                                            label={text}
-                                            onDelete={() => {
-                                                props.deleteImageChip(
-                                                    image.id,
-                                                    id
-                                                )
-                                            }}
-                                        />
-                                    )
-                                }, propOr([], 'chips', image))}
+                            <div className="flex flex-row content-center mt-3 w-1/2">
+                                <div className="flex flex-wrap  max-w-full">
+                                    {map(tagId => {
+                                        const tagData = tags[tagId]
+                                        return (
+                                            <div className="m-2">
+                                                <Chip
+                                                    key={tagId}
+                                                    label={path(
+                                                        ['label', 'eng'],
+                                                        tagData
+                                                    )}
+                                                    onDelete={() => {
+                                                        props.removeImageTag(
+                                                            image.id,
+                                                            tagId
+                                                        )
+                                                    }}
+                                                />
+                                            </div>
+                                        )
+                                    }, propOr([], 'tags', image))}
+                                </div>
                             </div>
                         </div>
                     </div>

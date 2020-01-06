@@ -9,7 +9,7 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import Typography from '@material-ui/core/Typography'
 import {Checkbox} from '@material-ui/core'
-import {map} from 'ramda'
+import {includes, map, path, propOr, reject, toPairs} from 'ramda'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import TextField from '@material-ui/core/TextField'
 import FormControl from '@material-ui/core/FormControl'
@@ -18,6 +18,7 @@ import Select from '@material-ui/core/Select'
 import Chip from '@material-ui/core/Chip'
 import AddIcon from '@material-ui/icons/Add'
 import TextareaAutosize from '@material-ui/core/TextareaAutosize'
+import tags from '../tags'
 
 const styles = theme => ({
     root: {
@@ -70,6 +71,19 @@ export default function EditCard(props) {
 
     const { data } = props
 
+    const [selectedTag, setSelectedTag] = React.useState('initial')
+    const [tagOptions, setTagOptions] = React.useState([])
+
+    React.useEffect(() => {
+        const options = reject(
+            ([tag]) => includes(tag, propOr([], 'tags', data)),
+            toPairs(tags)
+        )
+        setSelectedTag(options[0][0])
+        setTagOptions(options)
+    }, [data.tags])
+
+
     return (
         <div>
             <Dialog
@@ -120,7 +134,7 @@ export default function EditCard(props) {
                                                 console.log('selected', x)
                                             }}
                                         >
-                                            <option value="bo">Tibetan</option>
+                                            <option value="bo">བོད</option>
                                             <option value="eng">English</option>
                                         </Select>
                                     </FormControl>
@@ -128,52 +142,7 @@ export default function EditCard(props) {
                             </div>
                         </div>
                     </div>
-                    <div className="w-full flex mb-6">
-                        <div className="w-1/2 flex flex-row">
-                            <div className="w-1/2">
-                                <FormControlLabel
-                                    style={{ display: 'block' }}
-                                    control={
-                                        <Checkbox
-                                            checked={true}
-                                            onChange={e => {
-                                                console.log(e)
-                                            }}
-                                            value="input-whole-margin"
-                                            color="primary"
-                                            inputProps={{
-                                                'aria-label':
-                                                    'primary checkbox',
-                                            }}
-                                        />
-                                    }
-                                    label="Duplicate of"
-                                />
-                            </div>
-                            <div className="w-1/2">
-                                <TextField
-                                    label="File name"
-                                    type="text"
-                                    value={data.value}
-                                    style={{ width: '100%' }}
-                                />
-                            </div>
-                        </div>
-                        <div className="w-1/2 pl-8">
-                            <FormControl style={{ width: '100%' }}>
-                                <InputLabel shrink>type</InputLabel>
-                                <Select
-                                    native
-                                    value="bo"
-                                    onChange={x => {
-                                        console.log('selected', x)
-                                    }}
-                                >
-                                    <option value="in-scans">in scans</option>
-                                </Select>
-                            </FormControl>
-                        </div>
-                    </div>
+
                     <div className="w-full flex mb-6">
                         <div className="w-1/2 flex flex-row">
                             <div className="w-2/3">
@@ -209,32 +178,61 @@ export default function EditCard(props) {
                     <div className="w-full flex mb-6 flex-col">
                         <h3 className="block">Tags:</h3>
                         <div className="flex flex-row">
-                            <TextField
-                                label="tag"
-                                type="text"
-                                // value={data.value}
-                                style={{ width: '25%' }}
-                            />
-                            <AddIcon className="self-center cursor-pointer" />
-                        </div>
-                        <div className="flex flex-row mt-2">
-                            {map(
-                                ({ id, text }) => {
-                                    return (
-                                        <Chip
-                                            key={'1234'}
-                                            label={text}
-                                            onDelete={() => {}}
-                                        />
-                                    )
-                                },
-                                [{ id: '1234', text: 'test' }]
+                            <div className="w-1/2">
+                                <Select
+                                    native
+                                    value={selectedTag}
+                                    onChange={e => {
+                                        setSelectedTag(e.target.value)
+                                    }}
+                                    style={{ width: '100%' }}
+                                >
+                                    {tagOptions.map(tag => {
+                                        return (
+                                            <option value={tag[0]}>
+                                                {path(['label', 'eng'], tag[1])}
+                                            </option>
+                                        )
+                                    })}
+                                </Select>
+                            </div>
+
+                            {tagOptions.length > 0 && (
+                                <AddIcon
+                                    className="self-center cursor-pointer"
+                                    onClick={() => {
+                                        setSelectedTag('')
+                                        props.addImageTag(data.id, selectedTag)
+                                    }}
+                                />
                             )}
                         </div>
+                        <div className="flex flex-wrap  max-w-full">
+                            {map(tagId => {
+                                const tagData = tags[tagId]
+                                return (
+                                    <div className="m-2">
+                                        <Chip
+                                            key={tagId}
+                                            label={path(
+                                                ['label', 'eng'],
+                                                tagData
+                                            )}
+                                            onDelete={() => {
+                                                props.removeImageTag(
+                                                    data.id,
+                                                    tagId
+                                                )
+                                            }}
+                                        />
+                                    </div>
+                                )
+                            }, propOr([], 'tags', data))}
+                        </div>
                     </div>
-                    <div className="w-full flex mb-6 flex-col">
-                        <h3 className="block">Crop:</h3>
-                    </div>
+                    {/*<div className="w-full flex mb-6 flex-col">*/}
+                    {/*    <h3 className="block">Crop:</h3>*/}
+                    {/*</div>*/}
                     <div className="w-full flex mb-6 flex-col">
                         <h3 className="block">Notes:</h3>
                         <div className="flex flex-row">
@@ -252,7 +250,7 @@ export default function EditCard(props) {
                 </div>
                 <DialogActions>
                     <Button autoFocus onClick={handleClose} color="primary">
-                        Save changes
+                        OK
                     </Button>
                 </DialogActions>
             </Dialog>

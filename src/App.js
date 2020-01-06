@@ -8,6 +8,7 @@ import {DndProvider} from 'react-dnd'
 import Backend from 'react-dnd-html5-backend'
 import {
     addIndex,
+    append,
     assoc,
     complement,
     compose,
@@ -206,6 +207,33 @@ function App() {
         updateImageList(updatedImageList)
     }
 
+    const addImageTag = (imageId, tag) => {
+        const updatedImageList = map(image => {
+            if (image.id === imageId) {
+                const updatedTags = append(tag, propOr([], 'tags', image))
+                return assoc('tags', updatedTags, image)
+            } else {
+                return image
+            }
+        }, imageList)
+        updateImageList(updatedImageList)
+    }
+
+    const removeImageTag = (imageId, tag) => {
+        const updatedImageList = map(image => {
+            if (image.id === imageId) {
+                const updatedTags = reject(
+                    imgTag => imgTag === tag,
+                    propOr([], 'tags', image)
+                )
+                return assoc('tags', updatedTags, image)
+            } else {
+                return image
+            }
+        }, imageList)
+        updateImageList(updatedImageList)
+    }
+
     const duplicateImageOptions = compose(
         map(({ id, filename }) => ({ id, name: filename })),
         reject(complement(has)('filename'))
@@ -368,6 +396,8 @@ function App() {
                                         i={i}
                                         updateDuplicateOf={updateDuplicateOf}
                                         setDuplicateType={setDuplicateType}
+                                        addImageTag={addImageTag}
+                                        removeImageTag={removeImageTag}
                                     />
                                     <CardDropZone
                                         i={i}
