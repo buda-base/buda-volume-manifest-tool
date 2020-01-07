@@ -10,6 +10,10 @@ import CloseIcon from '@material-ui/icons/Close'
 import Typography from '@material-ui/core/Typography'
 import {Checkbox} from '@material-ui/core'
 import {includes, map, path, propOr, reject, toPairs} from 'ramda'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemText from '@material-ui/core/ListItemText'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import TextField from '@material-ui/core/TextField'
 import FormControl from '@material-ui/core/FormControl'
@@ -17,7 +21,6 @@ import InputLabel from '@material-ui/core/InputLabel'
 import Select from '@material-ui/core/Select'
 import Chip from '@material-ui/core/Chip'
 import AddIcon from '@material-ui/icons/Add'
-import TextareaAutosize from '@material-ui/core/TextareaAutosize'
 import tags from '../tags'
 
 const styles = theme => ({
@@ -73,6 +76,7 @@ export default function EditCard(props) {
 
     const [selectedTag, setSelectedTag] = React.useState('initial')
     const [tagOptions, setTagOptions] = React.useState([])
+    const [notesInput, setNotesInput] = React.useState('')
 
     React.useEffect(() => {
         const options = reject(
@@ -82,7 +86,6 @@ export default function EditCard(props) {
         setSelectedTag(options[0][0])
         setTagOptions(options)
     }, [data.tags])
-
 
     return (
         <div>
@@ -187,9 +190,9 @@ export default function EditCard(props) {
                                     }}
                                     style={{ width: '100%' }}
                                 >
-                                    {tagOptions.map(tag => {
+                                    {tagOptions.map((tag, i)=> {
                                         return (
-                                            <option value={tag[0]}>
+                                            <option key={i} value={tag[0]}>
                                                 {path(['label', 'eng'], tag[1])}
                                             </option>
                                         )
@@ -211,7 +214,7 @@ export default function EditCard(props) {
                             {map(tagId => {
                                 const tagData = tags[tagId]
                                 return (
-                                    <div className="m-2">
+                                    <div className="m-2" key={tagId}>
                                         <Chip
                                             key={tagId}
                                             label={path(
@@ -236,16 +239,37 @@ export default function EditCard(props) {
                     <div className="w-full flex mb-6 flex-col">
                         <h3 className="block">Notes:</h3>
                         <div className="flex flex-row">
-                            <TextareaAutosize
-                                rowsMax={4}
-                                label="New note"
-                                aria-label="maximum height"
-                                placeholder="Maximum 4 rows"
-                                defaultValue="..."
-                                style={{ width: '25%' }}
+                            <TextField
+                                value={notesInput}
+                                onChange={e => setNotesInput(e.target.value)}
+                                style={{ width: '50%' }}
+                                multiline
+                                rows="2"
                             />
-                            <AddIcon className="self-center cursor-pointer" />
+                            <AddIcon
+                                className="self-center cursor-pointer"
+                                onClick={() => {
+                                    if (notesInput.length > 0) {
+                                        props.addNote(data.id, notesInput)
+                                        setNotesInput('')
+                                    }
+                                }}
+                            />
                         </div>
+                        <List>
+                            {propOr([], 'note', data).map((note, i) => (
+                                <ListItem key={i} button>
+                                    <ListItemIcon>
+                                        <CloseIcon
+                                            onClick={() => {
+                                                props.removeNote(data.id, i)
+                                            }}
+                                        />
+                                    </ListItemIcon>
+                                    <ListItemText primary={note} />
+                                </ListItem>
+                            ))}
+                        </List>
                     </div>
                 </div>
                 <DialogActions>

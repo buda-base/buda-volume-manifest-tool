@@ -26,7 +26,9 @@ import {
     propOr,
     reduce,
     reject,
+    remove,
     set,
+    trim,
     view,
 } from 'ramda'
 import {Checkbox} from '@material-ui/core'
@@ -71,7 +73,7 @@ function App() {
             indicationOdd: '{volname}-{sectionname}-{pagenum:bo}',
             indicationEven: '{volname}',
         },
-        comments: null,
+        comments: '',
     })
 
     const sectionInUseCount = sectionId => {
@@ -234,6 +236,48 @@ function App() {
         updateImageList(updatedImageList)
     }
 
+    const addNote = (imageId, note) => {
+        const updatedImageList = map(image => {
+            if (image.id === imageId) {
+                const updatedNotes = append(
+                    trim(note),
+                    propOr([], 'note', image)
+                )
+                return assoc('note', updatedNotes, image)
+            } else {
+                return image
+            }
+        }, imageList)
+        updateImageList(updatedImageList)
+    }
+
+    const removeNote = (imageId, noteIdx) => {
+        const updatedImageList = map(image => {
+            if (image.id === imageId) {
+                const updatedNotes = remove(
+                    noteIdx,
+                    1,
+                    propOr([], 'note', image)
+                )
+                return assoc('note', updatedNotes, image)
+            } else {
+                return image
+            }
+        }, imageList)
+        updateImageList(updatedImageList)
+    }
+
+    const markPreviousAsReviewed = imageIdx => {
+        const updatedImageList = mapIndex((image, idx) => {
+            if (idx <= imageIdx) {
+                return assoc('reviewed', true, image)
+            } else {
+                return image
+            }
+        }, imageList)
+        updateImageList(updatedImageList)
+    }
+
     const duplicateImageOptions = compose(
         map(({ id, filename }) => ({ id, name: filename })),
         reject(complement(has)('filename'))
@@ -382,6 +426,7 @@ function App() {
                                             settings.inputOne.sectionInputs
                                         }
                                         selectType={selectType}
+                                        addNote={addNote}
                                         imageView={imageView}
                                         data={item}
                                         deleteImageChip={deleteImageChip}
@@ -398,6 +443,8 @@ function App() {
                                         setDuplicateType={setDuplicateType}
                                         addImageTag={addImageTag}
                                         removeImageTag={removeImageTag}
+                                        removeNote={removeNote}
+                                        markPreviousAsReviewed={markPreviousAsReviewed}
                                     />
                                     <CardDropZone
                                         i={i}

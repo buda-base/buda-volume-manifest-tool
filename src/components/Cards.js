@@ -7,7 +7,6 @@ import {red} from '@material-ui/core/colors'
 import TextField from '@material-ui/core/TextField'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import DragHandleIcon from '@material-ui/icons/DragHandle'
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
 import Select from '@material-ui/core/Select'
 import FormControl from '@material-ui/core/FormControl'
 import Chip from '@material-ui/core/Chip'
@@ -28,7 +27,7 @@ import BeenhereIcon from '@material-ui/icons/Beenhere'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import ReorderIcon from '@material-ui/icons/Reorder'
 import Autocomplete from '@material-ui/lab/Autocomplete'
-import FormHelperText from '@material-ui/core/FormHelperText';
+import FormHelperText from '@material-ui/core/FormHelperText'
 import {useDrag} from 'react-dnd'
 import tags from '../tags'
 
@@ -113,7 +112,7 @@ export default function ImageCard(props) {
                 </div>
                 <div className="self-end flex">
                     <SimpleMenu />
-                    <KeyboardArrowDownIcon style={{ cursor: 'pointer' }} />
+                    {/*<KeyboardArrowDownIcon style={{ cursor: 'pointer' }} />*/}
                 </div>
             </div>
         )
@@ -211,7 +210,9 @@ export default function ImageCard(props) {
                         <ReorderIcon className="mr-2" />
                         Reorder this image according to indicated pagination
                     </MenuItem>
-                    <MenuItem onClick={() => {}}>
+                    <MenuItem
+                        onClick={() => props.markPreviousAsReviewed(props.i)}
+                    >
                         <CheckBoxIcon className="mr-2" />
                         Mark all images down to this one as checked
                     </MenuItem>
@@ -236,6 +237,8 @@ export default function ImageCard(props) {
                 addImageTag={props.addImageTag}
                 data={image}
                 removeImageTag={props.removeImageTag}
+                addNote={props.addNote}
+                removeNote={props.removeNote}
             />
             <CardHeader className={classes.cardHeader} component={Header} />
             {!image.hide && (
@@ -279,11 +282,6 @@ export default function ImageCard(props) {
                                                 )
                                             }}
                                             style={{ width: 155 }}
-                                            inputProps={{
-                                                name: 'type',
-                                                id: 'type',
-                                                helperTest: 'Type',
-                                            }}
                                         >
                                             <option value="file"></option>
                                             {type === 'missing' && (
@@ -295,9 +293,7 @@ export default function ImageCard(props) {
                                                 Duplicate
                                             </option>
                                         </Select>
-                                        <FormHelperText>
-                                            Type
-                                        </FormHelperText>
+                                        <FormHelperText>Type</FormHelperText>
                                     </div>
                                 </FormControl>
                                 {type === 'duplicate' && (

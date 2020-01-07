@@ -11,7 +11,6 @@ import {Checkbox} from '@material-ui/core'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Select from '@material-ui/core/Select'
 import TextField from '@material-ui/core/TextField'
-import TextareaAutosize from '@material-ui/core/TextareaAutosize'
 import {append, lensPath, lensProp, pathOr, propEq, reject, view} from 'ramda'
 import InputLabel from '@material-ui/core/InputLabel'
 import FormControl from '@material-ui/core/FormControl'
@@ -272,7 +271,13 @@ export default function SettingsDialog(props) {
                     <TextField
                         label="Indication (odd)"
                         type="text"
-                        value={'{volname}-{sectionname}-{pagenum:bo}'}
+                        defaultValue={settings.inputOne.indicationOdd}
+                        onBlur={e => {
+                            handleSettingsUpdate(
+                                lensPath(['inputOne', 'indicationOdd']),
+                                e.target.value
+                            )
+                        }}
                         style={{ width: '50%' }}
                     />
                 </div>
@@ -280,16 +285,29 @@ export default function SettingsDialog(props) {
                     <TextField
                         label="Indication (even)"
                         type="text"
-                        value={'{volname}'}
+                        defaultValue={settings.inputOne.indicationEven}
                         style={{ width: '50%' }}
+                        onBlur={e => {
+                            handleSettingsUpdate(
+                                lensPath(['inputOne', 'indicationEven']),
+                                e.target.value
+                            )
+                        }}
                     />
                 </div>
                 <h3>Comments</h3>
                 <div className="block">
-                    <TextareaAutosize
-                        placeholder="Minimum 3 rows"
-                        value={'ka kha'}
+                    <TextField
+                        defaultValue={settings.comments}
                         style={{ width: '50%' }}
+                        multiline
+                        rows="4"
+                        onBlur={e => {
+                            handleSettingsUpdate(
+                                lensPath(['comments']),
+                                e.target.value
+                            )
+                        }}
                     />
                 </div>
                 <DialogActions>
@@ -298,7 +316,7 @@ export default function SettingsDialog(props) {
                         onClick={props.handleClose}
                         color="primary"
                     >
-                        Save changes
+                        OK
                     </Button>
                 </DialogActions>
             </div>
