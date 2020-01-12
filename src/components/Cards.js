@@ -20,7 +20,7 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import VisibilityOnIcon from '@material-ui/icons/Visibility'
 import EditCard from './EditCard'
-import {always, cond, map, path, propEq, propOr, reject} from 'ramda'
+import {always, cond, map, path, propEq, propOr, reject,} from 'ramda'
 import PreviewImage from './PreviewImage'
 import axios from 'axios'
 import BeenhereIcon from '@material-ui/icons/Beenhere'
@@ -229,7 +229,11 @@ export default function ImageCard(props) {
 
     const sectionId = image.sectionId || 'none'
 
-    return (
+    const hideCard =
+        (!props.showHiddenImages && !!image.hide) ||
+        (!!image.reviewed && !props.showCheckedImages)
+
+    return hideCard ? null : (
         <Card className={classes.card} style={{ opacity }} ref={dragRef}>
             <EditCard
                 open={editDialogOpen}
@@ -434,15 +438,23 @@ export default function ImageCard(props) {
                                                         )}
                                                     </Select>
                                                 )}
-
-                                                <TextField type="text" />
+                                                <TextField
+                                                    helperText="Pagination"
+                                                    defaultValue={
+                                                        image.pagination
+                                                    }
+                                                    onBlur={e => {
+                                                        props.setPagination(
+                                                            image.id,
+                                                            e.target.value
+                                                        )
+                                                    }}
+                                                />
+                                                {/*<TextField type="text" />*/}
                                             </div>
                                         </FormControl>
                                     </div>
                                 </TabPanel>
-                                {/*<TabPanel value={0} index={1}>*/}
-                                {/*    Item Two*/}
-                                {/*</TabPanel>*/}
                             </div>
                             <div className="flex flex-row content-center mt-3 w-1/2">
                                 <div className="flex flex-wrap  max-w-full">

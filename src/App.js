@@ -236,6 +236,17 @@ function App() {
         updateImageList(updatedImageList)
     }
 
+    const setPagination = (imageId, pagination) => {
+        const updatedImageList = map(image => {
+            if (image.id === imageId) {
+                return assoc('pagination', pagination, image)
+            } else {
+                return image
+            }
+        }, imageList)
+        updateImageList(updatedImageList)
+    }
+
     const addNote = (imageId, note) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
@@ -301,7 +312,6 @@ function App() {
             },
             imageList
         )
-        // const insertIdx = idx > 0 ? inc(idx) : 0
         const updatedImageList = reject(
             propEq('remove', true),
             insert(inc(idx), image, images)
@@ -374,9 +384,6 @@ function App() {
                                     }}
                                     value="show-checked-images"
                                     color="primary"
-                                    inputProps={{
-                                        'aria-label': 'primary checkbox',
-                                    }}
                                 />
                             }
                             label="Show Checked Images"
@@ -393,24 +400,12 @@ function App() {
                                     }}
                                     value="show-hidden-images"
                                     color="primary"
-                                    inputProps={{
-                                        'aria-label': 'primary checkbox',
-                                    }}
                                 />
                             }
                             label="Show Hidden Images"
                         />
                     </div>
                     <div className="container mx-auto">
-                        {/*todo: do we need this?*/}
-                        {/*<div className="mt-5 text-gray-700" style={{ width: 144 }}>*/}
-                        {/*    <span className="text-xs">Thumbnail Zoom Level:</span>*/}
-                        {/*    <Slider*/}
-                        {/*        value={30}*/}
-                        {/*        onChange={val => console.log('handle change', val)}*/}
-                        {/*        aria-labelledby="continuous-slider"*/}
-                        {/*    />*/}
-                        {/*</div>*/}
                         {mapIndex(
                             (item, i) => (
                                 <React.Fragment key={i}>
@@ -421,6 +416,7 @@ function App() {
                                         />
                                     )}
                                     <Cards
+                                        setPagination={setPagination}
                                         updateImageSection={updateImageSection}
                                         sectionInputs={
                                             settings.inputOne.sectionInputs
@@ -444,7 +440,15 @@ function App() {
                                         addImageTag={addImageTag}
                                         removeImageTag={removeImageTag}
                                         removeNote={removeNote}
-                                        markPreviousAsReviewed={markPreviousAsReviewed}
+                                        markPreviousAsReviewed={
+                                            markPreviousAsReviewed
+                                        }
+                                        showHiddenImages={
+                                            settings.showHiddenImages
+                                        }
+                                        showCheckedImages={
+                                            settings.showCheckedImages
+                                        }
                                     />
                                     <CardDropZone
                                         i={i}
