@@ -26,7 +26,7 @@ function AppBarTwo(props) {
                                         style={{
                                             color: 'white',
                                             backgroundColor: 'transparent',
-                                            borderBottomColor: 'white'
+                                            borderBottomColor: 'white',
                                         }}
                                         native
                                     >

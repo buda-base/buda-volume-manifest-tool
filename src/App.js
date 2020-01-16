@@ -156,7 +156,7 @@ function App() {
 
     const insertMissing = (i, direction) => {
         const defaultMissingImage = {
-            id: 'UPDATE_THIS',
+            id: uuidv4(),
             type: 'missing',
         }
         if (direction === 'before') {
@@ -369,7 +369,6 @@ function App() {
                             </div>
                         </div>
                     </div>
-                    {/*<InfoBar />*/}
                     <div className="container mx-auto flex flex-row justify-end">
                         <FormControlLabel
                             style={{ display: 'block' }}

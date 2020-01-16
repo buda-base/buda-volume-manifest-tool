@@ -190,7 +190,7 @@ export default function EditCard(props) {
                                     }}
                                     style={{ width: '100%' }}
                                 >
-                                    {tagOptions.map((tag, i)=> {
+                                    {tagOptions.map((tag, i) => {
                                         return (
                                             <option key={i} value={tag[0]}>
                                                 {path(['label', 'eng'], tag[1])}
