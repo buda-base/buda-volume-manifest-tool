@@ -105,9 +105,13 @@ export default function EditCard(props) {
                                 style={{ display: 'block' }}
                                 control={
                                     <Checkbox
-                                        checked={true}
+                                        checked={data.thumbnailForVolume}
                                         onChange={e => {
-                                            console.log(e)
+                                            props.updateImageValue(
+                                                data.id,
+                                                'thumbnailForVolume',
+                                                e.target.value
+                                            )
                                         }}
                                         value="input-whole-margin"
                                         color="primary"
@@ -123,7 +127,14 @@ export default function EditCard(props) {
                                     <TextField
                                         label="Special Label"
                                         type="text"
-                                        value={data.value}
+                                        defaultValue={data.specialLabel}
+                                        onBlur={e => {
+                                            props.updateImageValue(
+                                                data.id,
+                                                'specialLabel',
+                                                e.target.value
+                                            )
+                                        }}
                                         style={{ width: '100%' }}
                                     />
                                 </div>
@@ -132,9 +143,13 @@ export default function EditCard(props) {
                                         <InputLabel shrink>Language</InputLabel>
                                         <Select
                                             native
-                                            value="bo"
-                                            onChange={x => {
-                                                console.log('selected', x)
+                                            value={data.language || 'en'} // todo: default this to volume language
+                                            onChange={e => {
+                                                props.updateImageValue(
+                                                    data.id,
+                                                    'language',
+                                                    e.target.value
+                                                )
                                             }}
                                         >
                                             <option value="bo">བོད</option>
@@ -153,11 +168,15 @@ export default function EditCard(props) {
                                     style={{ display: 'block' }}
                                     control={
                                         <Checkbox
-                                            checked={true}
+                                            checked={data.belongsToVolume}
                                             onChange={e => {
+                                                props.updateImageValue(
+                                                    data.id,
+                                                    'belongsToVolume',
+                                                    e.target.value
+                                                )
                                                 console.log(e)
                                             }}
-                                            value="input-whole-margin"
                                             color="primary"
                                             inputProps={{
                                                 'aria-label':
@@ -172,7 +191,14 @@ export default function EditCard(props) {
                                 <TextField
                                     label="Volume Id"
                                     type="text"
-                                    value={data.value}
+                                    defaultValue={data.belongsToVolId}
+                                    onBlur={e => {
+                                        props.updateImageValue(
+                                            data.id,
+                                            'belongsToVolId',
+                                            e.target.value
+                                        )
+                                    }}
                                     style={{ width: '100%' }}
                                 />
                             </div>
@@ -185,8 +211,9 @@ export default function EditCard(props) {
                                 <Select
                                     value={data.pageSide || ''}
                                     onChange={e => {
-                                        props.updatePageSide(
+                                        props.updateImageValue(
                                             data.id,
+                                            'pageSide',
                                             e.target.value
                                         )
                                     }}

@@ -276,11 +276,11 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-    const updatePageSide = (imageId, pageSide) => {
 
+    const updateImageValue = (imageId, key, value) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
-                return assoc('pageSide', pageSide, image)
+                return assoc(key, value, image)
             } else {
                 return image
             }
@@ -395,12 +395,12 @@ function App() {
                                         />
                                     )}
                                     <Cards
-                                        updatePageSide={updatePageSide}
                                         setPagination={setPagination}
                                         updateImageSection={updateImageSection}
                                         sectionInputs={
                                             settings.inputOne.sectionInputs
                                         }
+                                        updateImageValue={updateImageValue}
                                         selectType={selectType}
                                         addNote={addNote}
                                         imageView={imageView}

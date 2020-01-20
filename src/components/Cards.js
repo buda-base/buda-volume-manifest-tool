@@ -236,7 +236,7 @@ export default function ImageCard(props) {
                 removeImageTag={props.removeImageTag}
                 addNote={props.addNote}
                 removeNote={props.removeNote}
-                updatePageSide={props.updatePageSide}
+                updateImageValue={props.updateImageValue}
             />
             <CardHeader className={classes.cardHeader} component={Header} />
             {!image.hide && (
