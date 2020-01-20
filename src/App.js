@@ -5,6 +5,7 @@ import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles'
 import Cards from './components/Cards'
 import data from './manifest-simple'
 import {DndProvider} from 'react-dnd'
+import FilterList from './components/FilterList'
 import Backend from 'react-dnd-html5-backend'
 import {
     addIndex,
@@ -19,7 +20,6 @@ import {
     inc,
     insert,
     lensPath,
-    lensProp,
     map,
     prop,
     propEq,
@@ -31,10 +31,8 @@ import {
     trim,
     view,
 } from 'ramda'
-import {Checkbox} from '@material-ui/core'
 import SettingsIcon from '@material-ui/icons/Settings'
 import Dialog from './components/Dialog'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
 import uuidv4 from 'uuid/v4'
 
 import CardDropZone from './components/CardDropZone'
@@ -343,7 +341,7 @@ function App() {
                                 Volume:
                             </span>
                             <span className="text-sm font-bold text-xl mb-3">
-                                S4SAD2SD34{' '}
+                                {settings.volume}
                                 <span
                                     onClick={() => setSettingsDialog(true)}
                                     className="underline text-md font-medium cursor-pointer"
@@ -369,41 +367,11 @@ function App() {
                             </div>
                         </div>
                     </div>
-                    <div className="container mx-auto flex flex-row justify-end">
-                        <FormControlLabel
-                            style={{ display: 'block' }}
-                            control={
-                                <Checkbox
-                                    checked={settings.showCheckedImages}
-                                    onChange={e => {
-                                        handleSettingsUpdate(
-                                            lensProp('showCheckedImages'),
-                                            !settings.showCheckedImages
-                                        )
-                                    }}
-                                    value="show-checked-images"
-                                    color="primary"
-                                />
-                            }
-                            label="Show Checked Images"
-                        />
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={settings.showHiddenImages}
-                                    onChange={e => {
-                                        handleSettingsUpdate(
-                                            lensProp('showHiddenImages'),
-                                            !settings.showHiddenImages
-                                        )
-                                    }}
-                                    value="show-hidden-images"
-                                    color="primary"
-                                />
-                            }
-                            label="Show Hidden Images"
-                        />
-                    </div>
+                    <FilterList
+                        showCheckedImages={settings.showCheckedImages}
+                        handleSettingsUpdate={handleSettingsUpdate}
+                        showHiddenImages={settings.showHiddenImages}
+                    />
                     <div className="container mx-auto">
                         {mapIndex(
                             (item, i) => (
