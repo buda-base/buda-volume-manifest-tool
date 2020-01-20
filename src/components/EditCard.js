@@ -178,6 +178,29 @@ export default function EditCard(props) {
                             </div>
                         </div>
                     </div>
+                    <div className="w-full my-4">
+                        <div className="w-2/4">
+                            <FormControl style={{ width: '100%' }}>
+                                <InputLabel shrink>Page Side</InputLabel>
+                                <Select
+                                    value={data.pageSide || ''}
+                                    onChange={e => {
+                                        props.updatePageSide(
+                                            data.id,
+                                            e.target.value
+                                        )
+                                    }}
+                                    native
+                                >
+                                    <option value=""></option>
+                                    <option value="left">left</option>
+                                    <option value="right">right</option>
+                                    <option value="recto">recto</option>
+                                    <option value="verso">verso</option>
+                                </Select>
+                            </FormControl>
+                        </div>
+                    </div>
                     <div className="w-full flex mb-6 flex-col">
                         <h3 className="block">Tags:</h3>
                         <div className="flex flex-row">

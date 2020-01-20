@@ -118,13 +118,6 @@ export default function ImageCard(props) {
         )
     }
 
-    // function a11yProps(index) {
-    //     return {
-    //         id: `simple-tab-${index}`,
-    //         'aria-controls': `simple-tabpanel-${index}`,
-    //     }
-    // }
-
     function TabPanel(props) {
         const { children, value, index, ...other } = props
 
@@ -243,6 +236,7 @@ export default function ImageCard(props) {
                 removeImageTag={props.removeImageTag}
                 addNote={props.addNote}
                 removeNote={props.removeNote}
+                updatePageSide={props.updatePageSide}
             />
             <CardHeader className={classes.cardHeader} component={Header} />
             {!image.hide && (
@@ -450,7 +444,6 @@ export default function ImageCard(props) {
                                                         )
                                                     }}
                                                 />
-                                                {/*<TextField type="text" />*/}
                                             </div>
                                         </FormControl>
                                     </div>

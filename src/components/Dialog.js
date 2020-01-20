@@ -249,6 +249,40 @@ export default function SettingsDialog(props) {
                     }
                     label="add input for whole margin"
                 />
+                <div className="w-full my-4">
+                    <div className="w-2/4">
+                        <FormControl style={{ width: '100%' }}>
+                            <InputLabel shrink>Viewing Direction</InputLabel>
+                            <Select
+                                value={settings.viewingDirection || ''}
+                                onChange={e => {
+                                    handleSettingsUpdate(
+                                        lensPath(['viewingDirection']),
+                                        e.target.value
+                                    )
+                                }}
+                                native
+                            >
+                                <option value=""></option>
+                                <option value="top-to-bottom">
+                                    top to bottom
+                                </option>
+                                <option value="left-to-right">
+                                    left to right
+                                </option>
+                                <option value="right-to-left">
+                                    right to left
+                                </option>
+                                <option value="bottom-to-top">
+                                    bottom to top
+                                </option>
+                                <option value="continuous">
+                                    continuous (for scrolls and leporellos)
+                                </option>
+                            </Select>
+                        </FormControl>
+                    </div>
+                </div>
                 {settings.inputOne.sectionInputs.map((data, i) => {
                     return (
                         <SectionInput

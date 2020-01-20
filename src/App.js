@@ -61,6 +61,7 @@ function App() {
         volumeLanguage: 'tibetan',
         showCheckedImages: true,
         showHiddenImages: true,
+        viewingDirection: 'left-to-right',
         inputOne: {
             paginationType: 'folio',
             inputForWholeMargin: true,
@@ -275,6 +276,17 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
+    const updatePageSide = (imageId, pageSide) => {
+
+        const updatedImageList = map(image => {
+            if (image.id === imageId) {
+                return assoc('pageSide', pageSide, image)
+            } else {
+                return image
+            }
+        }, imageList)
+        updateImageList(updatedImageList)
+    }
 
     const markPreviousAsReviewed = imageIdx => {
         const updatedImageList = mapIndex((image, idx) => {
@@ -383,6 +395,7 @@ function App() {
                                         />
                                     )}
                                     <Cards
+                                        updatePageSide={updatePageSide}
                                         setPagination={setPagination}
                                         updateImageSection={updateImageSection}
                                         sectionInputs={
