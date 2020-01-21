@@ -3,9 +3,12 @@ import AppBar from '@material-ui/core/AppBar/AppBar'
 import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
 import {lensProp} from 'ramda'
+import {useTranslation} from 'react-i18next'
 
 function AppBarTwo(props) {
     const { settings, handleSettingsUpdate } = props
+    const { i18n } = useTranslation()
+
     return (
         <header>
             <div>
@@ -18,6 +21,7 @@ function AppBarTwo(props) {
                                     <Select
                                         value={settings.defaultLanguage}
                                         onChange={e => {
+                                            i18n.changeLanguage(e.target.value)
                                             handleSettingsUpdate(
                                                 lensProp('defaultLanguage'),
                                                 e.target.value
@@ -30,8 +34,8 @@ function AppBarTwo(props) {
                                         }}
                                         native
                                     >
-                                        <option value="eng">English</option>
-                                        <option value="bo">Tibetan</option>
+                                        <option value="en">English</option>
+                                        <option value="bo">བོད</option>
                                     </Select>
                                 </FormControl>
                             </div>

@@ -7,6 +7,7 @@ import data from './manifest-simple'
 import {DndProvider} from 'react-dnd'
 import FilterList from './components/FilterList'
 import Backend from 'react-dnd-html5-backend'
+import {useTranslation} from 'react-i18next'
 import {
     addIndex,
     append,
@@ -329,6 +330,8 @@ function App() {
         updateImageList(updatedImageList)
     }
 
+    const { t } = useTranslation()
+
     return (
         <ThemeProvider theme={theme}>
             <DndProvider backend={Backend}>
@@ -350,7 +353,7 @@ function App() {
                     <div className="container mx-auto flex flex-row py-6">
                         <div className="w-1/2 flex flex-col">
                             <span className="text-gray-600 text-sm">
-                                Volume:
+                                {t('Volume')}
                             </span>
                             <span className="text-sm font-bold text-xl mb-3">
                                 {settings.volume}
