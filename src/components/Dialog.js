@@ -17,6 +17,7 @@ import FormControl from '@material-ui/core/FormControl'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
 import uuidv4 from 'uuid/v4'
+import {useTranslation} from 'react-i18next'
 
 const styles = theme => ({
     root: {
@@ -61,12 +62,13 @@ function SectionInput(props) {
         sectionInUseCount,
         key,
     } = props
+    const { t } = useTranslation()
     const inputValid = sectionValue.length > 0
     return (
         <div className="w-full flex mb-6" key={key}>
             <div className="w-1/2">
                 <TextField
-                    label="Section"
+                    label={t('Section')}
                     type="text"
                     disabled={!props.new}
                     value={sectionValue}
@@ -79,7 +81,7 @@ function SectionInput(props) {
             <div className="w-1/2 pl-8 flex flex-row">
                 <div className="w-3/4">
                     <FormControl style={{ width: '100%' }}>
-                        <InputLabel shrink>Language</InputLabel>
+                        <InputLabel shrink>{t('Language')}</InputLabel>
                         <Select
                             native
                             disabled={!props.new}
@@ -88,7 +90,7 @@ function SectionInput(props) {
                                 setLanguageValue(e.target.value)
                             }}
                         >
-                            <option value="bo">Tibetan</option>
+                            <option value="bo">བོ</option>
                             <option value="eng">English</option>
                         </Select>
                     </FormControl>
@@ -109,7 +111,7 @@ function SectionInput(props) {
                                         languageValue
                                     )
                                 } else {
-                                    alert('Section name must not be empty!')
+                                    alert(t('Section name must not be empty!'))
                                 }
                             }}
                         />
@@ -120,7 +122,9 @@ function SectionInput(props) {
                                 const count = sectionInUseCount(id)
                                 if (count > 0) {
                                     alert(
-                                        `This section is set to ${count} images. Unselect these to remove the section`
+                                        `${t(
+                                            'alert before count'
+                                        )} ${count} ${t('alert after count')}`
                                     )
                                 } else {
                                     handleRemoveSection(id)
@@ -161,6 +165,8 @@ export default function SettingsDialog(props) {
         handleSettingsUpdate(sectionsLens, updatedSections)
     }
 
+    const { t } = useTranslation()
+
     return (
         <Dialog
             onClose={props.handleClose}
@@ -172,14 +178,16 @@ export default function SettingsDialog(props) {
                 id="customized-dialog-title"
                 onClose={props.handleClose}
             >
-                Edit
+                {t('Edit')}
             </DialogTitle>
             <div className="p-3">
                 <div>
                     <div className="w-full">
                         <div className="w-2/4">
                             <FormControl style={{ width: '100%' }}>
-                                <InputLabel shrink>Volume Language</InputLabel>
+                                <InputLabel shrink>
+                                    {t('Volume Language')}
+                                </InputLabel>
                                 <Select
                                     value={settings.volumeLanguage}
                                     onChange={e => {
@@ -190,18 +198,20 @@ export default function SettingsDialog(props) {
                                     }}
                                     native
                                 >
-                                    <option value="bo">Tibetan</option>
+                                    <option value="bo">བོ</option>
                                     <option value="eng">English</option>
                                 </Select>
                             </FormControl>
                         </div>
                     </div>
                 </div>
-                <h2 className="mb-3 font-bold">Input 1</h2>
+                <h2 className="mb-3 font-bold">{t('Input 1')}</h2>
                 <div className="w-full">
                     <div className="w-2/4">
                         <FormControl style={{ width: '100%' }}>
-                            <InputLabel shrink>Pagination Type</InputLabel>
+                            <InputLabel shrink>
+                                {t('Pagination Type')}
+                            </InputLabel>
                             <Select
                                 value={settings.inputOne.paginationType}
                                 onChange={e => {
@@ -215,12 +225,12 @@ export default function SettingsDialog(props) {
                                 }}
                                 native
                             >
-                                <option value="folio">Folio</option>
+                                <option value="folio">{t('Folio')}</option>
                                 <option value="folio-with-sections">
-                                    Folio With Sections
+                                    {t('Folio With Sections')}
                                 </option>
                                 <option value="normal">
-                                    Normal Pagination
+                                    {t('Normal Pagination')}
                                 </option>
                             </Select>
                         </FormControl>
@@ -247,12 +257,14 @@ export default function SettingsDialog(props) {
                             }}
                         />
                     }
-                    label="add input for whole margin"
+                    label={t('add input for whole margin')}
                 />
                 <div className="w-full my-4">
                     <div className="w-2/4">
                         <FormControl style={{ width: '100%' }}>
-                            <InputLabel shrink>Viewing Direction</InputLabel>
+                            <InputLabel shrink>
+                                {t('Viewing Direction')}
+                            </InputLabel>
                             <Select
                                 value={settings.viewingDirection || ''}
                                 onChange={e => {
@@ -265,19 +277,19 @@ export default function SettingsDialog(props) {
                             >
                                 <option value=""></option>
                                 <option value="top-to-bottom">
-                                    top to bottom
+                                    {t('top to bottom')}
                                 </option>
                                 <option value="left-to-right">
-                                    left to right
+                                    {t('left to right')}
                                 </option>
                                 <option value="right-to-left">
-                                    right to left
+                                    {t('right to left')}
                                 </option>
                                 <option value="bottom-to-top">
-                                    bottom to top
+                                    {t('bottom to top')}
                                 </option>
                                 <option value="continuous">
-                                    continuous (for scrolls and leporellos)
+                                    {t('continuous')}
                                 </option>
                             </Select>
                         </FormControl>
@@ -303,7 +315,7 @@ export default function SettingsDialog(props) {
                 />
                 <div className="w-full">
                     <TextField
-                        label="Indication (odd)"
+                        label={t('Indication (odd)')}
                         type="text"
                         defaultValue={settings.inputOne.indicationOdd}
                         onBlur={e => {
@@ -317,7 +329,7 @@ export default function SettingsDialog(props) {
                 </div>
                 <div className="w-full">
                     <TextField
-                        label="Indication (even)"
+                        label={t('Indication (even)')}
                         type="text"
                         defaultValue={settings.inputOne.indicationEven}
                         style={{ width: '50%' }}
@@ -329,7 +341,7 @@ export default function SettingsDialog(props) {
                         }}
                     />
                 </div>
-                <h3>Comments</h3>
+                <h3>{t('Comments')}</h3>
                 <div className="block">
                     <TextField
                         defaultValue={settings.comments}
@@ -350,7 +362,7 @@ export default function SettingsDialog(props) {
                         onClick={props.handleClose}
                         color="primary"
                     >
-                        OK
+                        {t('OK')}
                     </Button>
                 </DialogActions>
             </div>

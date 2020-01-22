@@ -2,9 +2,11 @@ import FormControlLabel from '@material-ui/core/FormControlLabel'
 import {Checkbox} from '@material-ui/core'
 import {lensProp} from 'ramda'
 import React from 'react'
+import {useTranslation} from 'react-i18next'
 
 export default function FilterList(props) {
     const { showCheckedImages, handleSettingsUpdate, showHiddenImages } = props
+    const { t } = useTranslation()
     return (
         <div className="container mx-auto flex flex-row justify-end">
             <FormControlLabel
@@ -22,7 +24,7 @@ export default function FilterList(props) {
                         color="primary"
                     />
                 }
-                label="Show Checked Images"
+                label={t('Show Checked Images')}
             />
             <FormControlLabel
                 control={
@@ -38,7 +40,7 @@ export default function FilterList(props) {
                         color="primary"
                     />
                 }
-                label="Show Hidden Images"
+                label={t('Show Hidden Images')}
             />
         </div>
     )

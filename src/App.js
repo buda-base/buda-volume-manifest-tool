@@ -365,13 +365,13 @@ function App() {
                                 </span>
                             </span>
                             <span className="underline text-blue-600 cursor-pointer">
-                                Preview
+                                {t('Preview')}
                             </span>
                         </div>
                         <div className="w-1/2 flex flex-col">
                             <div className="self-end">
                                 <span className="underline text-md font-medium cursor-pointer mr-5">
-                                    SAVE
+                                    {t('SAVE')}
                                 </span>
                                 {/*<span*/}
                                 {/*    onClick={() => setSettingsDialog(true)}*/}

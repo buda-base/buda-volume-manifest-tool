@@ -1,8 +1,7 @@
 import i18n from 'i18next'
 import {initReactI18next} from 'react-i18next'
 import getTranslations from '../src/translations/index'
-// the translations
-// (tip move them in a JSON file and import them)
+
 const translations = getTranslations()
 
 const resources = {
