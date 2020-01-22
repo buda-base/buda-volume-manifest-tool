@@ -3,7 +3,6 @@ import {withStyles} from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import MuiDialogTitle from '@material-ui/core/DialogTitle'
-import MuiDialogContent from '@material-ui/core/DialogContent'
 import MuiDialogActions from '@material-ui/core/DialogActions'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
@@ -22,6 +21,7 @@ import Select from '@material-ui/core/Select'
 import Chip from '@material-ui/core/Chip'
 import AddIcon from '@material-ui/icons/Add'
 import tags from '../tags'
+import {useTranslation} from 'react-i18next'
 
 const styles = theme => ({
     root: {
@@ -54,12 +54,6 @@ const DialogTitle = withStyles(styles)(props => {
     )
 })
 
-const DialogContent = withStyles(theme => ({
-    root: {
-        padding: theme.spacing(2),
-    },
-}))(MuiDialogContent)
-
 const DialogActions = withStyles(theme => ({
     root: {
         margin: 0,
@@ -73,6 +67,7 @@ export default function EditCard(props) {
     }
 
     const { data } = props
+    const { t } = useTranslation()
 
     const [selectedTag, setSelectedTag] = React.useState('initial')
     const [tagOptions, setTagOptions] = React.useState([])
@@ -83,7 +78,9 @@ export default function EditCard(props) {
             ([tag]) => includes(tag, propOr([], 'tags', data)),
             toPairs(tags)
         )
-        setSelectedTag(options[0][0])
+        if (options[0]) {
+            setSelectedTag(options[0][0])
+        }
         setTagOptions(options)
     }, [data.tags])
 
@@ -96,7 +93,7 @@ export default function EditCard(props) {
                 fullWidth
             >
                 <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-                    Edit {data.filename || data.type}
+                    {t('Edit-image')} {data.filename || data.type}
                 </DialogTitle>
                 <div className="p-3">
                     <div className="w-full">
@@ -115,17 +112,14 @@ export default function EditCard(props) {
                                         }}
                                         value="input-whole-margin"
                                         color="primary"
-                                        inputProps={{
-                                            'aria-label': 'primary checkbox',
-                                        }}
                                     />
                                 }
-                                label="Thumbnail for Volume"
+                                label={t('Thumbnail for Volume')}
                             />
                             <div className="w-full flex mb-6">
                                 <div className="w-1/2">
                                     <TextField
-                                        label="Special Label"
+                                        label={t('Special Label')}
                                         type="text"
                                         defaultValue={data.specialLabel}
                                         onBlur={e => {
@@ -140,7 +134,9 @@ export default function EditCard(props) {
                                 </div>
                                 <div className="w-1/2 pl-8">
                                     <FormControl style={{ width: '100%' }}>
-                                        <InputLabel shrink>Language</InputLabel>
+                                        <InputLabel shrink>
+                                            {t('Language')}
+                                        </InputLabel>
                                         <Select
                                             native
                                             value={data.language || 'en'} // todo: default this to volume language
@@ -178,18 +174,14 @@ export default function EditCard(props) {
                                                 console.log(e)
                                             }}
                                             color="primary"
-                                            inputProps={{
-                                                'aria-label':
-                                                    'primary checkbox',
-                                            }}
                                         />
                                     }
-                                    label="Belongs to vol:"
+                                    label={t('Belongs to vol')}
                                 />
                             </div>
                             <div className="w-1/3">
                                 <TextField
-                                    label="Volume Id"
+                                    label={t('Volume Id')}
                                     type="text"
                                     defaultValue={data.belongsToVolId}
                                     onBlur={e => {
@@ -207,7 +199,7 @@ export default function EditCard(props) {
                     <div className="w-full my-4">
                         <div className="w-2/4">
                             <FormControl style={{ width: '100%' }}>
-                                <InputLabel shrink>Page Side</InputLabel>
+                                <InputLabel shrink>{t('Page Side')}</InputLabel>
                                 <Select
                                     value={data.pageSide || ''}
                                     onChange={e => {
@@ -220,16 +212,16 @@ export default function EditCard(props) {
                                     native
                                 >
                                     <option value=""></option>
-                                    <option value="left">left</option>
-                                    <option value="right">right</option>
-                                    <option value="recto">recto</option>
-                                    <option value="verso">verso</option>
+                                    <option value="left">{t('left')}</option>
+                                    <option value="right">{t('right')}</option>
+                                    <option value="recto">{t('recto')}</option>
+                                    <option value="verso">{t('verso')}</option>
                                 </Select>
                             </FormControl>
                         </div>
                     </div>
                     <div className="w-full flex mb-6 flex-col">
-                        <h3 className="block">Tags:</h3>
+                        <h3 className="block">{t('Tags:')}</h3>
                         <div className="flex flex-row">
                             <div className="w-1/2">
                                 <Select
@@ -243,7 +235,12 @@ export default function EditCard(props) {
                                     {tagOptions.map((tag, i) => {
                                         return (
                                             <option key={i} value={tag[0]}>
-                                                {path(['label', 'eng'], tag[1])}
+                                                {t(
+                                                    path(
+                                                        ['label', 'eng'],
+                                                        tag[1]
+                                                    )
+                                                )}
                                             </option>
                                         )
                                     })}
@@ -267,9 +264,8 @@ export default function EditCard(props) {
                                     <div className="m-2" key={tagId}>
                                         <Chip
                                             key={tagId}
-                                            label={path(
-                                                ['label', 'eng'],
-                                                tagData
+                                            label={t(
+                                                path(['label', 'eng'], tagData)
                                             )}
                                             onDelete={() => {
                                                 props.removeImageTag(
@@ -287,7 +283,7 @@ export default function EditCard(props) {
                     {/*    <h3 className="block">Crop:</h3>*/}
                     {/*</div>*/}
                     <div className="w-full flex mb-6 flex-col">
-                        <h3 className="block">Notes:</h3>
+                        <h3 className="block">{t('Notes')}</h3>
                         <div className="flex flex-row">
                             <TextField
                                 value={notesInput}
@@ -324,7 +320,7 @@ export default function EditCard(props) {
                 </div>
                 <DialogActions>
                     <Button autoFocus onClick={handleClose} color="primary">
-                        OK
+                        {t('OK')}
                     </Button>
                 </DialogActions>
             </Dialog>

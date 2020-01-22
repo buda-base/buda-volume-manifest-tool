@@ -4,6 +4,7 @@ import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import {withStyles} from '@material-ui/core'
 import Icon from '@material-ui/core/Icon'
+import {useTranslation} from 'react-i18next'
 
 export default class PreviewImage extends React.Component {
     constructor(props) {
@@ -55,6 +56,7 @@ export default class PreviewImage extends React.Component {
     render() {
         const ImageMenu = props => {
             const [anchorEl, setAnchorEl] = React.useState(null)
+            const { t } = useTranslation()
             const { classes } = props
 
             const handleClick = event => {
@@ -112,7 +114,7 @@ export default class PreviewImage extends React.Component {
                                 })
                             }}
                         >
-                            Set Preview
+                            {t('Set Preview')}
                         </MenuItem>
                     </Menu>
                 </div>

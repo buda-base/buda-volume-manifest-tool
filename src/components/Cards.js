@@ -30,6 +30,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import {useDrag} from 'react-dnd'
 import tags from '../tags'
+import {useTranslation} from 'react-i18next'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -138,6 +139,8 @@ export default function ImageCard(props) {
     function SimpleMenu() {
         const [anchorEl, setAnchorEl] = React.useState(null)
 
+        const { t } = useTranslation()
+
         const handleClick = event => {
             setAnchorEl(event.currentTarget)
         }
@@ -166,13 +169,13 @@ export default function ImageCard(props) {
                         onClick={() => props.insertMissing(props.i, 'before')}
                     >
                         <ArrowUpwardIcon className="mr-2" />
-                        Insert One Above
+                        {t('Insert One Above')}
                     </MenuItem>
                     <MenuItem
                         onClick={() => props.insertMissing(props.i, 'after')}
                     >
                         <ArrowDownwardIcon className="mr-2" />
-                        Insert One Below
+                        {t('Insert One Below')}
                     </MenuItem>
                     <MenuItem
                         onClick={() => {
@@ -180,7 +183,7 @@ export default function ImageCard(props) {
                             setEditDialogOpen(true)
                         }}
                     >
-                        <Edit className="mr-2" /> Edit
+                        <Edit className="mr-2" /> {t('Edit')}
                     </MenuItem>
                     <MenuItem
                         onClick={() => {
@@ -193,21 +196,23 @@ export default function ImageCard(props) {
                             <VisibilityOffIcon className="mr-2" />
                         )}
 
-                        {image.hide ? 'Unhide' : 'Hide'}
+                        {image.hide ? t('Unhide') : t('Hide')}
                     </MenuItem>
                     <MenuItem onClick={() => {}}>
                         <BeenhereIcon className="mr-2" />
-                        Update following unchecked items
+                        {t('Update following unchecked items')}
                     </MenuItem>
                     <MenuItem onClick={() => {}}>
                         <ReorderIcon className="mr-2" />
-                        Reorder this image according to indicated pagination
+                        {t(
+                            'Reorder this image according to indicated pagination'
+                        )}
                     </MenuItem>
                     <MenuItem
                         onClick={() => props.markPreviousAsReviewed(props.i)}
                     >
                         <CheckBoxIcon className="mr-2" />
-                        Mark all images down to this one as checked
+                        {t('Mark all images down to this one as checked')}
                     </MenuItem>
                 </Menu>
             </div>
@@ -225,6 +230,8 @@ export default function ImageCard(props) {
     const hideCard =
         (!props.showHiddenImages && !!image.hide) ||
         (!!image.reviewed && !props.showCheckedImages)
+
+    const { t } = useTranslation()
 
     return hideCard ? null : (
         <Card className={classes.card} style={{ opacity }} ref={dragRef}>
@@ -284,14 +291,16 @@ export default function ImageCard(props) {
                                             <option value="file"></option>
                                             {type === 'missing' && (
                                                 <option value="missing">
-                                                    Missing
+                                                    {t('Missing')}
                                                 </option>
                                             )}
                                             <option value="duplicate">
-                                                Duplicate
+                                                {t('Duplicate')}
                                             </option>
                                         </Select>
-                                        <FormHelperText>Type</FormHelperText>
+                                        <FormHelperText>
+                                            {t('Type')}
+                                        </FormHelperText>
                                     </div>
                                 </FormControl>
                                 {type === 'duplicate' && (
@@ -325,7 +334,9 @@ export default function ImageCard(props) {
                                                     renderInput={params => {
                                                         return (
                                                             <TextField
-                                                                helperText="of File"
+                                                                helperText={t(
+                                                                    'of File'
+                                                                )}
                                                                 {...params}
                                                                 fullWidth
                                                             />
@@ -350,15 +361,19 @@ export default function ImageCard(props) {
                                                     style={{ width: 250 }}
                                                 >
                                                     <option value="dup-in-original">
-                                                        Duplicate in Original
+                                                        {t(
+                                                            'Duplicate in Original'
+                                                        )}
                                                     </option>
                                                     <option value="dif-pic-same-page">
-                                                        Different Picture of
-                                                        Same Page
+                                                        {t(
+                                                            'Different Picture of Same Page'
+                                                        )}
                                                     </option>
                                                     <option value="same-pic-same-page">
-                                                        Same Picture of Same
-                                                        Page
+                                                        {t(
+                                                            'Same Picture of Same Page'
+                                                        )}
                                                     </option>
                                                 </Select>
                                             </div>
@@ -372,7 +387,7 @@ export default function ImageCard(props) {
                                 <TabPanel value={0} index={0} className="p-0">
                                     <div className="mb-2">
                                         <TextField
-                                            label="Margin Indication"
+                                            label={t('Margin Indication')}
                                             type="text"
                                         />
                                         <Checkbox
@@ -382,10 +397,6 @@ export default function ImageCard(props) {
                                             }}
                                             value="reviewed"
                                             color="primary"
-                                            inputProps={{
-                                                'aria-label':
-                                                    'primary checkbox',
-                                            }}
                                         />
                                     </div>
                                     <div className="w-full">
@@ -411,7 +422,9 @@ export default function ImageCard(props) {
                                                         }}
                                                     >
                                                         <option value={'none'}>
-                                                            Choose Section
+                                                            {t(
+                                                                'Choose Section'
+                                                            )}
                                                         </option>
                                                         )
                                                         {sectionInputs.map(
@@ -433,7 +446,7 @@ export default function ImageCard(props) {
                                                     </Select>
                                                 )}
                                                 <TextField
-                                                    helperText="Pagination"
+                                                    helperText={t('Pagination')}
                                                     defaultValue={
                                                         image.pagination
                                                     }
