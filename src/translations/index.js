@@ -1,5 +1,4 @@
-import {compose, fromPairs, map, reduce, toPairs} from 'ramda'
-import React from 'react'
+import { compose, fromPairs, map, reduce, toPairs } from 'ramda'
 
 export default () => {
     const LANGUAGES = ['en', 'bo']

@@ -1,3 +1,5 @@
+import uuidv4 from 'uuid/v4'
+
 const data = {
     'for-volume': 'bdr:V4CZ5369_I1KG9128',
     'spec-version': '0.1.0',
@@ -69,6 +71,25 @@ const data = {
                 },
             ],
         },
+    },
+    volumeData: {
+        volume: 'bdr:V22084_I0888',
+        defaultLanguage: 'en',
+        volumeLanguage: 'tibetan',
+        showCheckedImages: true,
+        showHiddenImages: true,
+        viewingDirection: 'left-to-right',
+        inputOne: {
+            paginationType: 'folio',
+            inputForWholeMargin: true,
+            sectionInputs: [
+                { value: 'Section 1a', language: 'bo', id: uuidv4() },
+                { value: 'Section 2a', language: 'bo', id: uuidv4() },
+            ],
+            indicationOdd: '{volname}-{sectionname}-{pagenum:bo}',
+            indicationEven: '{volname}',
+        },
+        comments: '',
     },
 }
 

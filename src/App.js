@@ -1,23 +1,27 @@
 import React from 'react'
 import './index.css'
 import AppBar from './components/AppBar'
-import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles'
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
 import Cards from './components/Cards'
 import data from './manifest-simple'
-import {DndProvider} from 'react-dnd'
+import { DndProvider } from 'react-dnd'
 import FilterList from './components/FilterList'
 import Backend from 'react-dnd-html5-backend'
-import {useTranslation} from 'react-i18next'
+import { useTranslation } from 'react-i18next'
+import postUpdate from './api/postUpdate'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import {
     addIndex,
     append,
     assoc,
     complement,
+    concat,
     compose,
     curry,
     dec,
     dissoc,
     has,
+    splitEvery,
     inc,
     insert,
     lensPath,
@@ -25,6 +29,7 @@ import {
     prop,
     propEq,
     propOr,
+    isEmpty,
     reduce,
     reject,
     remove,
@@ -35,8 +40,9 @@ import {
 import SettingsIcon from '@material-ui/icons/Settings'
 import Dialog from './components/Dialog'
 import uuidv4 from 'uuid/v4'
-
+import InfiniteScroll from 'react-infinite-scroller'
 import CardDropZone from './components/CardDropZone'
+import getManifest from './api/getManifest'
 
 const mapIndex = addIndex(map)
 const theme = createMuiTheme({
@@ -49,52 +55,61 @@ const theme = createMuiTheme({
 
 const imageListLens = lensPath(['view', 'view1', 'imagelist'])
 function App() {
-    const [workingData, setWorkingData] = React.useState(data)
+    const [workingData, setWorkingData] = React.useState({})
     const [settingsDialogOpen, setSettingsDialog] = React.useState(false)
     const [imageView, setImageView] = React.useState({
         zoom: 0,
         center: { x: null, y: null },
     })
     const imageList = view(imageListLens, workingData)
-    const [settings, updateSettings] = React.useState({
-        volume: 'bdr:V22084_I0888',
-        defaultLanguage: 'en',
-        volumeLanguage: 'tibetan',
-        showCheckedImages: true,
-        showHiddenImages: true,
-        viewingDirection: 'left-to-right',
-        inputOne: {
-            paginationType: 'folio',
-            inputForWholeMargin: true,
-            sectionInputs: [
-                { value: 'Section 1a', language: 'bo', id: uuidv4() },
-                { value: 'Section 2a', language: 'bo', id: uuidv4() },
-            ],
-            indicationOdd: '{volname}-{sectionname}-{pagenum:bo}',
-            indicationEven: '{volname}',
-        },
-        comments: '',
-    })
+    const [settings, updateSettings] = React.useState(data.volumeData)
+    const [images, setImages] = React.useState([])
+    const [currentImageScrollIdx, setCurrentImageScrollIdx] = React.useState(0)
+
+    React.useEffect(() => {
+        const search = window.location.search
+        const params = new URLSearchParams(search)
+        const volume = params.get('volume')
+        const getData = async () => {
+            const { manifest, images } = await getManifest(volume)
+            const splitImages = splitEvery(10, images)
+            const updatedManifest = set(imageListLens, splitImages[0], manifest)
+            setWorkingData(updatedManifest)
+            setImages(splitImages)
+            setCurrentImageScrollIdx(0)
+        }
+        getData()
+    }, [])
+
+    const updateImageList = updatedImageList => {
+        setWorkingData(set(imageListLens, updatedImageList, workingData))
+    }
+    const handleLoadMore = num => {
+        const imagesToRender = images[num] || []
+        if (!isEmpty(imagesToRender)) {
+            const updatedManifestImages = concat(
+                view(imageListLens, workingData),
+                imagesToRender
+            )
+            updateImageList(updatedManifestImages)
+        }
+        setCurrentImageScrollIdx(inc(currentImageScrollIdx))
+    }
 
     const sectionInUseCount = sectionId => {
-        const count = reduce(
+        return reduce(
             (acc, val) => {
                 return val.sectionId === sectionId ? ++acc : acc
             },
             0,
             imageList
         )
-        return count
     }
 
     const handleSettingsUpdate = curry((lens, value) => {
         const updatedSettings = set(lens, value, settings)
         updateSettings(updatedSettings)
     })
-
-    const updateImageList = updatedImageList => {
-        setWorkingData(set(imageListLens, updatedImageList, workingData))
-    }
 
     const updateImageSection = (imageId, sectionId) => {
         const updatedImageList = map(image => {
@@ -300,10 +315,11 @@ function App() {
         updateImageList(updatedImageList)
     }
 
-    const duplicateImageOptions = compose(
-        map(({ id, filename }) => ({ id, name: filename })),
-        reject(complement(has)('filename'))
-    )(imageList)
+    const duplicateImageOptions = () =>
+        compose(
+            map(({ id, filename }) => ({ id, name: filename })),
+            reject(complement(has)('filename'))
+        )(imageList)
 
     const handleDrop = (imageId, idx) => {
         const { image, images } = reduce(
@@ -335,114 +351,150 @@ function App() {
     return (
         <ThemeProvider theme={theme}>
             <DndProvider backend={Backend}>
-                <div className="App">
-                    <Dialog
-                        sectionInUseCount={sectionInUseCount}
-                        open={settingsDialogOpen}
-                        handleClose={() => setSettingsDialog(false)}
-                        setImageView={setImageView}
-                        imageView={imageView}
-                        volume={workingData}
-                        handleSettingsUpdate={handleSettingsUpdate}
-                        settings={settings}
-                    />
-                    <AppBar
-                        settings={settings}
-                        handleSettingsUpdate={handleSettingsUpdate}
-                    />
-                    <div className="container mx-auto flex flex-row py-6">
-                        <div className="w-1/2 flex flex-col">
-                            <span className="text-gray-600 text-sm">
-                                {t('Volume')}
-                            </span>
-                            <span className="text-sm font-bold text-xl mb-3">
-                                {settings.volume}
-                                <span
-                                    onClick={() => setSettingsDialog(true)}
-                                    className="underline text-md font-medium cursor-pointer"
-                                >
-                                    <SettingsIcon />
+                <AppBar
+                    settings={settings}
+                    handleSettingsUpdate={handleSettingsUpdate}
+                />
+                {isEmpty(workingData) ? (
+                    <div className="container mx-auto flex items-center justify-center">
+                        <CircularProgress />
+                    </div>
+                ) : (
+                    <div className="App">
+                        <Dialog
+                            sectionInUseCount={sectionInUseCount}
+                            open={settingsDialogOpen}
+                            handleClose={() => setSettingsDialog(false)}
+                            setImageView={setImageView}
+                            imageView={imageView}
+                            volume={workingData}
+                            handleSettingsUpdate={handleSettingsUpdate}
+                            settings={settings}
+                        />
+                        <div className="container mx-auto flex flex-row py-6">
+                            <div className="w-1/2 flex flex-col">
+                                <span className="text-gray-600 text-sm">
+                                    {t('Volume')}
                                 </span>
-                            </span>
-                            <span className="underline text-blue-600 cursor-pointer">
-                                {t('Preview')}
-                            </span>
-                        </div>
-                        <div className="w-1/2 flex flex-col">
-                            <div className="self-end">
-                                <span className="underline text-md font-medium cursor-pointer mr-5">
-                                    {t('SAVE')}
+                                <span className="text-sm font-bold text-xl mb-3">
+                                    {settings.volume}
+                                    <span
+                                        onClick={() => setSettingsDialog(true)}
+                                        className="underline text-md font-medium cursor-pointer"
+                                    >
+                                        <SettingsIcon />
+                                    </span>
                                 </span>
-                                {/*<span*/}
-                                {/*    onClick={() => setSettingsDialog(true)}*/}
-                                {/*    className="underline text-md font-medium cursor-pointer"*/}
-                                {/*>*/}
-                                {/*    <SettingsIcon />*/}
-                                {/*</span>*/}
+                                <span className="underline text-blue-600 cursor-pointer">
+                                    {t('Preview')}
+                                </span>
+                            </div>
+                            <div className="w-1/2 flex flex-col">
+                                <div className="self-end">
+                                    <span
+                                        className="underline text-md font-medium cursor-pointer mr-5"
+                                        onClick={() => postUpdate(workingData)}
+                                    >
+                                        {t('SAVE')}
+                                    </span>
+                                    {/*<span*/}
+                                    {/*    onClick={() => setSettingsDialog(true)}*/}
+                                    {/*    className="underline text-md font-medium cursor-pointer"*/}
+                                    {/*>*/}
+                                    {/*    <SettingsIcon />*/}
+                                    {/*</span>*/}
+                                </div>
                             </div>
                         </div>
+                        <FilterList
+                            showCheckedImages={settings.showCheckedImages}
+                            handleSettingsUpdate={handleSettingsUpdate}
+                            showHiddenImages={settings.showHiddenImages}
+                        />
+                        <div className="container mx-auto">
+                            <InfiniteScroll
+                                pageStart={0}
+                                key={0}
+                                loadMore={handleLoadMore}
+                                hasMore={images.length > currentImageScrollIdx}
+                                loader={
+                                    <div className="container mx-auto flex items-center justify-center">
+                                        <CircularProgress />
+                                    </div>
+                                }
+                                useWindow={true}
+                            >
+                                {mapIndex(
+                                    (item, i) => (
+                                        <React.Fragment key={i}>
+                                            {i === 0 && (
+                                                <CardDropZone
+                                                    i={-1}
+                                                    handleDrop={handleDrop}
+                                                />
+                                            )}
+                                            <Cards
+                                                volumeId={
+                                                    workingData['for-volume']
+                                                }
+                                                setPagination={setPagination}
+                                                updateImageSection={
+                                                    updateImageSection
+                                                }
+                                                sectionInputs={
+                                                    settings.inputOne
+                                                        .sectionInputs
+                                                }
+                                                updateImageValue={
+                                                    updateImageValue
+                                                }
+                                                selectType={selectType}
+                                                addNote={addNote}
+                                                imageView={imageView}
+                                                data={item}
+                                                deleteImageChip={
+                                                    deleteImageChip
+                                                }
+                                                toggleReview={toggleReview}
+                                                insertMissing={insertMissing}
+                                                toggleHideImage={
+                                                    toggleHideImage
+                                                }
+                                                key={item.id}
+                                                duplicateImageOptions={duplicateImageOptions()}
+                                                setImageView={setImageView}
+                                                i={i}
+                                                updateDuplicateOf={
+                                                    updateDuplicateOf
+                                                }
+                                                setDuplicateType={
+                                                    setDuplicateType
+                                                }
+                                                addImageTag={addImageTag}
+                                                removeImageTag={removeImageTag}
+                                                removeNote={removeNote}
+                                                markPreviousAsReviewed={
+                                                    markPreviousAsReviewed
+                                                }
+                                                showHiddenImages={
+                                                    settings.showHiddenImages
+                                                }
+                                                showCheckedImages={
+                                                    settings.showCheckedImages
+                                                }
+                                            />
+                                            <CardDropZone
+                                                i={i}
+                                                handleDrop={handleDrop}
+                                            />
+                                        </React.Fragment>
+                                    ),
+                                    imageList
+                                )}
+                            </InfiniteScroll>
+                        </div>
                     </div>
-                    <FilterList
-                        showCheckedImages={settings.showCheckedImages}
-                        handleSettingsUpdate={handleSettingsUpdate}
-                        showHiddenImages={settings.showHiddenImages}
-                    />
-                    <div className="container mx-auto">
-                        {mapIndex(
-                            (item, i) => (
-                                <React.Fragment key={i}>
-                                    {i === 0 && (
-                                        <CardDropZone
-                                            i={-1}
-                                            handleDrop={handleDrop}
-                                        />
-                                    )}
-                                    <Cards
-                                        setPagination={setPagination}
-                                        updateImageSection={updateImageSection}
-                                        sectionInputs={
-                                            settings.inputOne.sectionInputs
-                                        }
-                                        updateImageValue={updateImageValue}
-                                        selectType={selectType}
-                                        addNote={addNote}
-                                        imageView={imageView}
-                                        data={item}
-                                        deleteImageChip={deleteImageChip}
-                                        toggleReview={toggleReview}
-                                        insertMissing={insertMissing}
-                                        toggleHideImage={toggleHideImage}
-                                        key={item.id}
-                                        duplicateImageOptions={
-                                            duplicateImageOptions
-                                        }
-                                        setImageView={setImageView}
-                                        i={i}
-                                        updateDuplicateOf={updateDuplicateOf}
-                                        setDuplicateType={setDuplicateType}
-                                        addImageTag={addImageTag}
-                                        removeImageTag={removeImageTag}
-                                        removeNote={removeNote}
-                                        markPreviousAsReviewed={
-                                            markPreviousAsReviewed
-                                        }
-                                        showHiddenImages={
-                                            settings.showHiddenImages
-                                        }
-                                        showCheckedImages={
-                                            settings.showCheckedImages
-                                        }
-                                    />
-                                    <CardDropZone
-                                        i={i}
-                                        handleDrop={handleDrop}
-                                    />
-                                </React.Fragment>
-                            ),
-                            imageList
-                        )}
-                    </div>
-                </div>
+                )}
             </DndProvider>
         </ThemeProvider>
     )

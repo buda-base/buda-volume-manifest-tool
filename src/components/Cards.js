@@ -1,9 +1,9 @@
 import React from 'react'
-import {makeStyles} from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import Card from '@material-ui/core/Card'
 import CardHeader from '@material-ui/core/CardHeader'
 import CardContent from '@material-ui/core/CardContent'
-import {red} from '@material-ui/core/colors'
+import { red } from '@material-ui/core/colors'
 import TextField from '@material-ui/core/TextField'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import DragHandleIcon from '@material-ui/icons/DragHandle'
@@ -11,7 +11,7 @@ import Select from '@material-ui/core/Select'
 import FormControl from '@material-ui/core/FormControl'
 import Chip from '@material-ui/core/Chip'
 import Typography from '@material-ui/core/Typography'
-import {Box, Checkbox} from '@material-ui/core'
+import { Box, Checkbox } from '@material-ui/core'
 import Edit from '@material-ui/icons/Edit'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -20,7 +20,7 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import VisibilityOnIcon from '@material-ui/icons/Visibility'
 import EditCard from './EditCard'
-import {always, cond, map, path, propEq, propOr, reject} from 'ramda'
+import { always, cond, map, path, propEq, propOr, reject } from 'ramda'
 import PreviewImage from './PreviewImage'
 import axios from 'axios'
 import BeenhereIcon from '@material-ui/icons/Beenhere'
@@ -28,9 +28,9 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import ReorderIcon from '@material-ui/icons/Reorder'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import FormHelperText from '@material-ui/core/FormHelperText'
-import {useDrag} from 'react-dnd'
+import { useDrag } from 'react-dnd'
 import tags from '../tags'
-import {useTranslation} from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -84,7 +84,9 @@ export default function ImageCard(props) {
         const getData = async () => {
             try {
                 const data = await axios.get(
-                    `https://iiif.bdrc.io/bdr:V4CZ5369_I1KG9128::${image.filename}/info.json`
+                    `https://iiif.bdrc.io/${props.volumeId}::${
+                        image.filename
+                    }/info.json`
                 )
                 const iiif = data.data
                 setiiif(iiif)
