@@ -1,13 +1,13 @@
 import React from 'react'
 import './index.css'
 import AppBar from './components/AppBar'
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
+import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles'
 import Cards from './components/Cards'
 import data from './manifest-simple'
-import { DndProvider } from 'react-dnd'
+import {DndProvider} from 'react-dnd'
 import FilterList from './components/FilterList'
 import Backend from 'react-dnd-html5-backend'
-import { useTranslation } from 'react-i18next'
+import {useTranslation} from 'react-i18next'
 import postUpdate from './api/postUpdate'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import {
@@ -15,25 +15,25 @@ import {
     append,
     assoc,
     complement,
-    concat,
     compose,
+    concat,
     curry,
     dec,
     dissoc,
     has,
-    splitEvery,
     inc,
     insert,
+    isEmpty,
     lensPath,
     map,
     prop,
     propEq,
     propOr,
-    isEmpty,
     reduce,
     reject,
     remove,
     set,
+    splitEvery,
     trim,
     view,
 } from 'ramda'
@@ -377,7 +377,7 @@ function App() {
                                     {t('Volume')}
                                 </span>
                                 <span className="text-sm font-bold text-xl mb-3">
-                                    {settings.volume}
+                                    {workingData['for-volume']}
                                     <span
                                         onClick={() => setSettingsDialog(true)}
                                         className="underline text-md font-medium cursor-pointer"
