@@ -57,7 +57,6 @@ export default class PreviewImage extends React.Component {
         const ImageMenu = props => {
             const [anchorEl, setAnchorEl] = React.useState(null)
             const { t } = useTranslation()
-            const { classes } = props
 
             const handleClick = event => {
                 setAnchorEl(event.currentTarget)
@@ -128,10 +127,10 @@ export default class PreviewImage extends React.Component {
         }))(ImageMenu)
 
         return (
-            <div>
+            <div className="border-r border-gray-300 mr-2">
                 <div
                     style={{ width: 300, height: 192, position: 'relative' }}
-                    className="items-center flex justify-center bg-black mr-2 border-black border-2"
+                    className="items-center flex justify-center mr-2"
                     id={`openseadragon${this.props.i}`}
                 >
                     <div

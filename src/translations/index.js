@@ -1,4 +1,4 @@
-import { compose, fromPairs, map, reduce, toPairs } from 'ramda'
+import {compose, fromPairs, map, reduce, toPairs} from 'ramda'
 
 export default () => {
     const LANGUAGES = ['en', 'bo']
@@ -157,7 +157,7 @@ export default () => {
         },
         Tags: {
             bo: 'བོའའའའདད།',
-            en: 'Tags:',
+            en: 'Tags',
         },
         Notes: {
             bo: 'བོའའའའདད།',
