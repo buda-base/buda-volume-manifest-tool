@@ -10,6 +10,7 @@ import Backend from 'react-dnd-html5-backend'
 import {useTranslation} from 'react-i18next'
 import postUpdate from './api/postUpdate'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import getPagination from './utils/pagination-predication'
 import {
     addIndex,
     append,
@@ -346,6 +347,26 @@ function App() {
         updateImageList(updatedImageList)
     }
 
+    const updateUncheckedItems = (id, marginIndication, idx) => {
+        const getMargin = getPagination(
+            settings.inputOne.paginationType,
+            marginIndication
+        )
+        const updatedImageList = mapIndex((image, i) => {
+            const diff = i - idx
+            if (diff > 0 && !image.reviewed) {
+                return assoc(
+                    'marginIndication',
+                    getMargin(diff).join(' '),
+                    image
+                )
+            } else {
+                return image
+            }
+        }, imageList)
+        updateImageList(updatedImageList)
+    }
+
     const { t } = useTranslation()
 
     return (
@@ -481,6 +502,9 @@ function App() {
                                                 }
                                                 showCheckedImages={
                                                     settings.showCheckedImages
+                                                }
+                                                updateUncheckedItems={
+                                                    updateUncheckedItems
                                                 }
                                             />
                                             <CardDropZone
