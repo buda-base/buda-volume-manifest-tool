@@ -20,7 +20,6 @@ import InputLabel from '@material-ui/core/InputLabel'
 import Select from '@material-ui/core/Select'
 import AddIcon from '@material-ui/icons/Add'
 import {useTranslation} from 'react-i18next'
-import Tags from './Tags'
 
 const styles = theme => ({
     root: {
@@ -206,11 +205,6 @@ export default function EditCard(props) {
                             </FormControl>
                         </div>
                     </div>
-                    <Tags
-                        id={data.id}
-                        tags={data.tags}
-                        addImageTag={props.addImageTag}
-                    />
                     <div className="w-full flex mb-6 flex-col">
                         <h3 className="block">{t('Notes')}</h3>
                         <div className="flex flex-row">
