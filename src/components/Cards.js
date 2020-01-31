@@ -1,17 +1,14 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import Card from '@material-ui/core/Card'
+import {makeStyles} from '@material-ui/core/styles'
 import CardHeader from '@material-ui/core/CardHeader'
 import CardContent from '@material-ui/core/CardContent'
-import { red } from '@material-ui/core/colors'
+import {red} from '@material-ui/core/colors'
 import TextField from '@material-ui/core/TextField'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import DragHandleIcon from '@material-ui/icons/DragHandle'
 import Select from '@material-ui/core/Select'
 import FormControl from '@material-ui/core/FormControl'
-import Chip from '@material-ui/core/Chip'
-import Typography from '@material-ui/core/Typography'
-import { Box, Checkbox } from '@material-ui/core'
+import {Checkbox} from '@material-ui/core'
 import Edit from '@material-ui/icons/Edit'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -20,17 +17,15 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import VisibilityOnIcon from '@material-ui/icons/Visibility'
 import EditCard from './EditCard'
-import { always, cond, map, path, propEq, propOr, reject } from 'ramda'
 import PreviewImage from './PreviewImage'
 import axios from 'axios'
 import BeenhereIcon from '@material-ui/icons/Beenhere'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import ReorderIcon from '@material-ui/icons/Reorder'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import FormHelperText from '@material-ui/core/FormHelperText'
-import { useDrag } from 'react-dnd'
-import tags from '../tags'
-import { useTranslation } from 'react-i18next'
+import {useDrag} from 'react-dnd'
+import {useTranslation} from 'react-i18next'
+import Tags from './Tags'
+import TypeSelect from './TypeSelect'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -73,7 +68,7 @@ export default function ImageCard(props) {
     const { imageView, setImageView } = props
     const { data: image, sectionInputs } = props
 
-    const [{ opacity }, dragRef] = useDrag({
+    const [, dragRef] = useDrag({
         item: { type: 'CARD', imageId: image.id },
         collect: monitor => ({
             opacity: monitor.isDragging() ? 0.3 : 1,
@@ -84,9 +79,7 @@ export default function ImageCard(props) {
         const getData = async () => {
             try {
                 const data = await axios.get(
-                    `https://iiif.bdrc.io/${props.volumeId}::${
-                        image.filename
-                    }/info.json`
+                    `https://iiif.bdrc.io/${props.volumeId}::${image.filename}/info.json`
                 )
                 const iiif = data.data
                 setiiif(iiif)
@@ -115,26 +108,8 @@ export default function ImageCard(props) {
                 </div>
                 <div className="self-end flex">
                     <SimpleMenu />
-                    {/*<KeyboardArrowDownIcon style={{ cursor: 'pointer' }} />*/}
                 </div>
             </div>
-        )
-    }
-
-    function TabPanel(props) {
-        const { children, value, index, ...other } = props
-
-        return (
-            <Typography
-                component="div"
-                role="tabpanel"
-                hidden={value !== index}
-                id={`simple-tabpanel-${index}`}
-                aria-labelledby={`simple-tab-${index}`}
-                {...other}
-            >
-                {value === index && <Box className="mt-2">{children}</Box>}
-            </Typography>
         )
     }
 
@@ -221,12 +196,6 @@ export default function ImageCard(props) {
         )
     }
 
-    const type = cond([
-        [propEq('type', 'duplicate'), always('duplicate')],
-        [({ filename }) => filename, always('file')],
-        [propEq('type', 'missing'), always('missing')],
-    ])(image)
-
     const sectionId = image.sectionId || 'none'
 
     const hideCard =
@@ -236,11 +205,13 @@ export default function ImageCard(props) {
     const { t } = useTranslation()
 
     return hideCard ? null : (
-        <Card className={classes.card} style={{ opacity }} ref={dragRef}>
+        <div
+            className="shadow-sm hover:shadow-md w-full border-2 rounded border-gray-200 bg-white"
+            ref={dragRef}
+        >
             <EditCard
                 open={editDialogOpen}
                 setEditDialogOpen={setEditDialogOpen}
-                addImageTag={props.addImageTag}
                 data={image}
                 removeImageTag={props.removeImageTag}
                 addNote={props.addNote}
@@ -260,238 +231,117 @@ export default function ImageCard(props) {
                             iiif={iiif}
                         />
                     ) : (
-                        <div>
+                        <div className="border-r border-gray-300 mr-2">
                             <div
                                 style={{
                                     width: 300,
                                     height: 192,
                                     position: 'relative',
                                 }}
-                                className="items-center flex justify-center bg-black mr-2"
-                            />
+                                className="items-center flex justify-centermr-2"
+                            ></div>
                         </div>
                     )}
 
                     <div className="flex flex-col w-full">
-                        <div className="flex w-full">
-                            <div>
-                                <FormControl className={classes.formControl}>
+                        <div className="w-full flex flex-row  w-1/3">
+                            <div className="mb-2">
+                                <TextField
+                                    label={t('Margin Indication')}
+                                    type="text"
+                                />
+                                <Checkbox
+                                    checked={image.reviewed}
+                                    onChange={() => {
+                                        props.toggleReview(image.id)
+                                    }}
+                                    value="reviewed"
+                                    color="primary"
+                                />
+                            </div>
+
+                            <div className="mt-3 w-2/3">
+                                <Tags
+                                    id={image.id}
+                                    tags={image.tags}
+                                    addImageTag={props.addImageTag}
+                                    removeImageTag={props.removeImageTag}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="w-1/2 flex flex-col content-center">
+                            <div className="w-full">
+                                <FormControl style={{ marginTop: '.5rem' }}>
                                     <div>
-                                        <Select
-                                            native
-                                            disabled={type === 'missing'}
-                                            value={type}
-                                            onChange={e => {
-                                                props.selectType(
+                                        {sectionInputs.length > 0 && (
+                                            <Select
+                                                native
+                                                value={sectionId}
+                                                onChange={e => {
+                                                    props.updateImageSection(
+                                                        image.id,
+                                                        e.target.value
+                                                    )
+                                                }}
+                                                className="mr-2"
+                                                style={{ width: 155 }}
+                                                inputProps={{
+                                                    name: 'type',
+                                                    id: 'type',
+                                                }}
+                                            >
+                                                <option value={'none'}>
+                                                    {t('Choose Section')}
+                                                </option>
+                                                )
+                                                {sectionInputs.map(
+                                                    (section, i) => {
+                                                        return (
+                                                            <option
+                                                                key={i}
+                                                                value={
+                                                                    section.id
+                                                                }
+                                                            >
+                                                                {section.value}
+                                                            </option>
+                                                        )
+                                                    }
+                                                )}
+                                            </Select>
+                                        )}
+                                        <TextField
+                                            helperText={t('Pagination')}
+                                            defaultValue={image.pagination}
+                                            onBlur={e => {
+                                                props.setPagination(
                                                     image.id,
-                                                    e,
-                                                    props.i
+                                                    e.target.value
                                                 )
                                             }}
-                                            style={{ width: 155 }}
-                                        >
-                                            <option value="file"></option>
-                                            {type === 'missing' && (
-                                                <option value="missing">
-                                                    {t('Missing')}
-                                                </option>
-                                            )}
-                                            <option value="duplicate">
-                                                {t('Duplicate')}
-                                            </option>
-                                        </Select>
-                                        <FormHelperText>
-                                            {t('Type')}
-                                        </FormHelperText>
+                                        />
                                     </div>
                                 </FormControl>
-                                {type === 'duplicate' && (
-                                    <>
-                                        <FormControl
-                                            className={classes.formControl}
-                                        >
-                                            <div>
-                                                <Autocomplete
-                                                    autoComplete
-                                                    options={reject(
-                                                        propEq('id', image.id),
-                                                        props.duplicateImageOptions
-                                                    )}
-                                                    style={{ width: 250 }}
-                                                    autoSelect
-                                                    autoHighlight
-                                                    value={image.duplicateOf}
-                                                    getOptionLabel={({
-                                                        name,
-                                                    }) => name}
-                                                    onChange={(
-                                                        event,
-                                                        newValue
-                                                    ) => {
-                                                        props.updateDuplicateOf(
-                                                            image.id,
-                                                            newValue
-                                                        )
-                                                    }}
-                                                    renderInput={params => {
-                                                        return (
-                                                            <TextField
-                                                                helperText={t(
-                                                                    'of File'
-                                                                )}
-                                                                {...params}
-                                                                fullWidth
-                                                            />
-                                                        )
-                                                    }}
-                                                />
-                                            </div>
-                                        </FormControl>
-                                        <FormControl
-                                            className={classes.formControl}
-                                        >
-                                            <div>
-                                                <Select
-                                                    native
-                                                    value={image.duplicateType}
-                                                    onChange={e => {
-                                                        props.setDuplicateType(
-                                                            image.id,
-                                                            e.target.value
-                                                        )
-                                                    }}
-                                                    style={{ width: 250 }}
-                                                >
-                                                    <option value="dup-in-original">
-                                                        {t(
-                                                            'Duplicate in Original'
-                                                        )}
-                                                    </option>
-                                                    <option value="dif-pic-same-page">
-                                                        {t(
-                                                            'Different Picture of Same Page'
-                                                        )}
-                                                    </option>
-                                                    <option value="same-pic-same-page">
-                                                        {t(
-                                                            'Same Picture of Same Page'
-                                                        )}
-                                                    </option>
-                                                </Select>
-                                            </div>
-                                        </FormControl>
-                                    </>
-                                )}
                             </div>
                         </div>
-                        <div className="w-full flex">
-                            <div className="w-1/2 flex flex-col content-center">
-                                <TabPanel value={0} index={0} className="p-0">
-                                    <div className="mb-2">
-                                        <TextField
-                                            label={t('Margin Indication')}
-                                            type="text"
-                                        />
-                                        <Checkbox
-                                            checked={image.reviewed}
-                                            onChange={() => {
-                                                props.toggleReview(image.id)
-                                            }}
-                                            value="reviewed"
-                                            color="primary"
-                                        />
-                                    </div>
-                                    <div className="w-full">
-                                        <FormControl
-                                            style={{ marginTop: '.5rem' }}
-                                        >
-                                            <div>
-                                                {sectionInputs.length > 0 && (
-                                                    <Select
-                                                        native
-                                                        value={sectionId}
-                                                        onChange={e => {
-                                                            props.updateImageSection(
-                                                                image.id,
-                                                                e.target.value
-                                                            )
-                                                        }}
-                                                        className="mr-2"
-                                                        style={{ width: 155 }}
-                                                        inputProps={{
-                                                            name: 'type',
-                                                            id: 'type',
-                                                        }}
-                                                    >
-                                                        <option value={'none'}>
-                                                            {t(
-                                                                'Choose Section'
-                                                            )}
-                                                        </option>
-                                                        )
-                                                        {sectionInputs.map(
-                                                            (section, i) => {
-                                                                return (
-                                                                    <option
-                                                                        key={i}
-                                                                        value={
-                                                                            section.id
-                                                                        }
-                                                                    >
-                                                                        {
-                                                                            section.value
-                                                                        }
-                                                                    </option>
-                                                                )
-                                                            }
-                                                        )}
-                                                    </Select>
-                                                )}
-                                                <TextField
-                                                    helperText={t('Pagination')}
-                                                    defaultValue={
-                                                        image.pagination
-                                                    }
-                                                    onBlur={e => {
-                                                        props.setPagination(
-                                                            image.id,
-                                                            e.target.value
-                                                        )
-                                                    }}
-                                                />
-                                            </div>
-                                        </FormControl>
-                                    </div>
-                                </TabPanel>
-                            </div>
-                            <div className="flex flex-row content-center mt-3 w-1/2">
-                                <div className="flex flex-wrap  max-w-full">
-                                    {map(tagId => {
-                                        const tagData = tags[tagId]
-                                        return (
-                                            <div className="m-2">
-                                                <Chip
-                                                    key={tagId}
-                                                    label={path(
-                                                        ['label', 'eng'],
-                                                        tagData
-                                                    )}
-                                                    onDelete={() => {
-                                                        props.removeImageTag(
-                                                            image.id,
-                                                            tagId
-                                                        )
-                                                    }}
-                                                />
-                                            </div>
-                                        )
-                                    }, propOr([], 'tags', image))}
-                                </div>
-                            </div>
-                        </div>
+
+                        <TypeSelect
+                            image={image}
+                            type={image.type}
+                            setDuplicateType={props.setDuplicateType}
+                            updateDuplicateOf={props.updateDuplicateOf}
+                            id={image.id}
+                            duplicateType={image.duplicateType}
+                            selectType={props.selectType}
+                            i={props.i}
+                            duplicateImageOptions={props.duplicateImageOptions}
+                            duplicateOf={image.duplicateOf}
+                            filename={image.filename}
+                        />
                     </div>
                 </CardContent>
             )}
-        </Card>
+        </div>
     )
 }
