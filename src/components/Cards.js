@@ -26,6 +26,8 @@ import {useDrag} from 'react-dnd'
 import {useTranslation} from 'react-i18next'
 import Tags from './Tags'
 import TypeSelect from './TypeSelect'
+import NoteIcon from '@material-ui/icons/Note'
+import {Formik} from 'formik'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -107,6 +109,25 @@ export default function ImageCard(props) {
                     </h3>
                 </div>
                 <div className="self-end flex">
+                    {image.note && image.note.length > 0 && (
+                        <NoteIcon className="mr-4" />
+                    )}
+                    <span
+                        className="cursor-pointer"
+                        onClick={() => props.toggleHideImage(image.id)}
+                    >
+                        {image.hide ? (
+                            <VisibilityOnIcon className="mr-4" />
+                        ) : (
+                            <VisibilityOffIcon className="mr-4" />
+                        )}
+                    </span>
+
+                    <Edit
+                        onClick={() => setEditDialogOpen(true)}
+                        className="mr-4 cursor-pointer"
+                    />
+
                     <SimpleMenu />
                 </div>
             </div>
@@ -154,28 +175,16 @@ export default function ImageCard(props) {
                         <ArrowDownwardIcon className="mr-2" />
                         {t('Insert One Below')}
                     </MenuItem>
-                    <MenuItem
-                        onClick={() => {
-                            handleClose()
-                            setEditDialogOpen(true)
-                        }}
-                    >
-                        <Edit className="mr-2" /> {t('Edit')}
-                    </MenuItem>
-                    <MenuItem
-                        onClick={() => {
-                            props.toggleHideImage(image.id)
-                        }}
-                    >
-                        {image.hide ? (
-                            <VisibilityOnIcon className="mr-2" />
-                        ) : (
-                            <VisibilityOffIcon className="mr-2" />
-                        )}
 
-                        {image.hide ? t('Unhide') : t('Hide')}
-                    </MenuItem>
-                    <MenuItem onClick={() => {}}>
+                    <MenuItem
+                        onClick={() =>
+                            props.updateUncheckedItems(
+                                image.id,
+                                image.marginIndication,
+                                props.i
+                            )
+                        }
+                    >
                         <BeenhereIcon className="mr-2" />
                         {t('Update following unchecked items')}
                     </MenuItem>
@@ -246,10 +255,51 @@ export default function ImageCard(props) {
                     <div className="flex flex-col w-full">
                         <div className="w-full flex flex-row  w-1/3">
                             <div className="mb-2">
-                                <TextField
-                                    label={t('Margin Indication')}
-                                    type="text"
-                                />
+                                <Formik
+                                    initialValues={{
+                                        marginIndication:
+                                            image.marginIndication,
+                                    }}
+                                    onSubmit={({ marginIndication }) => {
+                                        props.updateImageValue(
+                                            image.id,
+                                            'marginIndication',
+                                            marginIndication
+                                        )
+                                    }}
+                                    enableReinitialize
+                                >
+                                    {({
+                                        values,
+                                        handleChange,
+                                        handleSubmit,
+                                    }) => (
+                                        <TextField
+                                            label={' '}
+                                            type="text"
+                                            value={values.marginIndication}
+                                            onChange={handleChange}
+                                            onBlur={handleSubmit}
+                                            inputProps={{
+                                                id: 'marginIndication',
+                                            }}
+                                            id="margin-indication"
+                                            helperText={t('Margin Indication')}
+                                        />
+                                    )}
+                                </Formik>
+                                {/*<TextField*/}
+                                {/*    label={t('Margin Indication')}*/}
+                                {/*    type="text"*/}
+                                {/*    defaultValue={image.marginIndication}*/}
+                                {/*    onBlur={e => {*/}
+                                {/*        props.updateImageValue(*/}
+                                {/*            image.id,*/}
+                                {/*            'marginIndication',*/}
+                                {/*            e.target.value*/}
+                                {/*        )*/}
+                                {/*    }}*/}
+                                {/*/>*/}
                                 <Checkbox
                                     checked={image.reviewed}
                                     onChange={() => {

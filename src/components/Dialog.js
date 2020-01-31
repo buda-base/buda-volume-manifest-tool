@@ -225,7 +225,7 @@ export default function SettingsDialog(props) {
                                 }}
                                 native
                             >
-                                <option value="folio">{t('Folio')}</option>
+                                <option value="folios">{t('Folio')}</option>
                                 <option value="folio-with-sections">
                                     {t('Folio With Sections')}
                                 </option>
