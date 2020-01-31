@@ -26,6 +26,7 @@ import {useDrag} from 'react-dnd'
 import {useTranslation} from 'react-i18next'
 import Tags from './Tags'
 import TypeSelect from './TypeSelect'
+import NoteIcon from '@material-ui/icons/Note'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -107,6 +108,9 @@ export default function ImageCard(props) {
                     </h3>
                 </div>
                 <div className="self-end flex">
+                    {image.note && image.note.length > 0 && (
+                        <NoteIcon classes="mr-2" />
+                    )}
                     <SimpleMenu />
                 </div>
             </div>
