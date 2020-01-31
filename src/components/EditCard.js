@@ -8,7 +8,7 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import Typography from '@material-ui/core/Typography'
 import {Checkbox} from '@material-ui/core'
-import {includes, map, path, propOr, reject, toPairs} from 'ramda'
+import {propOr} from 'ramda'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
@@ -18,10 +18,9 @@ import TextField from '@material-ui/core/TextField'
 import FormControl from '@material-ui/core/FormControl'
 import InputLabel from '@material-ui/core/InputLabel'
 import Select from '@material-ui/core/Select'
-import Chip from '@material-ui/core/Chip'
 import AddIcon from '@material-ui/icons/Add'
-import tags from '../tags'
 import {useTranslation} from 'react-i18next'
+import Tags from './Tags'
 
 const styles = theme => ({
     root: {
@@ -69,20 +68,7 @@ export default function EditCard(props) {
     const { data } = props
     const { t } = useTranslation()
 
-    const [selectedTag, setSelectedTag] = React.useState('initial')
-    const [tagOptions, setTagOptions] = React.useState([])
     const [notesInput, setNotesInput] = React.useState('')
-
-    React.useEffect(() => {
-        const options = reject(
-            ([tag]) => includes(tag, propOr([], 'tags', data)),
-            toPairs(tags)
-        )
-        if (options[0]) {
-            setSelectedTag(options[0][0])
-        }
-        setTagOptions(options)
-    }, [data.tags])
 
     return (
         <div>
@@ -220,68 +206,11 @@ export default function EditCard(props) {
                             </FormControl>
                         </div>
                     </div>
-                    <div className="w-full flex mb-6 flex-col">
-                        <h3 className="block">{t('Tags:')}</h3>
-                        <div className="flex flex-row">
-                            <div className="w-1/2">
-                                <Select
-                                    native
-                                    value={selectedTag}
-                                    onChange={e => {
-                                        setSelectedTag(e.target.value)
-                                    }}
-                                    style={{ width: '100%' }}
-                                >
-                                    {tagOptions.map((tag, i) => {
-                                        return (
-                                            <option key={i} value={tag[0]}>
-                                                {t(
-                                                    path(
-                                                        ['label', 'eng'],
-                                                        tag[1]
-                                                    )
-                                                )}
-                                            </option>
-                                        )
-                                    })}
-                                </Select>
-                            </div>
-
-                            {tagOptions.length > 0 && (
-                                <AddIcon
-                                    className="self-center cursor-pointer"
-                                    onClick={() => {
-                                        setSelectedTag('')
-                                        props.addImageTag(data.id, selectedTag)
-                                    }}
-                                />
-                            )}
-                        </div>
-                        <div className="flex flex-wrap  max-w-full">
-                            {map(tagId => {
-                                const tagData = tags[tagId]
-                                return (
-                                    <div className="m-2" key={tagId}>
-                                        <Chip
-                                            key={tagId}
-                                            label={t(
-                                                path(['label', 'eng'], tagData)
-                                            )}
-                                            onDelete={() => {
-                                                props.removeImageTag(
-                                                    data.id,
-                                                    tagId
-                                                )
-                                            }}
-                                        />
-                                    </div>
-                                )
-                            }, propOr([], 'tags', data))}
-                        </div>
-                    </div>
-                    {/*<div className="w-full flex mb-6 flex-col">*/}
-                    {/*    <h3 className="block">Crop:</h3>*/}
-                    {/*</div>*/}
+                    <Tags
+                        id={data.id}
+                        tags={data.tags}
+                        addImageTag={props.addImageTag}
+                    />
                     <div className="w-full flex mb-6 flex-col">
                         <h3 className="block">{t('Notes')}</h3>
                         <div className="flex flex-row">
