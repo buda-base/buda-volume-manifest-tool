@@ -56,7 +56,7 @@ function buildManifest(images, volumeId) {
             showHiddenImages: true,
             viewingDirection: 'left-to-right',
             inputOne: {
-                paginationType: 'folio',
+                paginationType: 'folios',
                 inputForWholeMargin: true,
                 sectionInputs: [
                     { value: 'Section 1a', language: 'bo', id: uuidv4() },
