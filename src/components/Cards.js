@@ -109,8 +109,24 @@ export default function ImageCard(props) {
                 </div>
                 <div className="self-end flex">
                     {image.note && image.note.length > 0 && (
-                        <NoteIcon classes="mr-2" />
+                        <NoteIcon classes="mr-4" />
                     )}
+                    <span
+                        className="cursor-pointer"
+                        onClick={() => props.toggleHideImage(image.id)}
+                    >
+                        {image.hide ? (
+                            <VisibilityOnIcon className="mr-4" />
+                        ) : (
+                            <VisibilityOffIcon className="mr-4" />
+                        )}
+                    </span>
+
+                    <Edit
+                        onClick={() => setEditDialogOpen(true)}
+                        className="mr-2 cursor-pointer"
+                    />
+
                     <SimpleMenu />
                 </div>
             </div>
@@ -158,27 +174,7 @@ export default function ImageCard(props) {
                         <ArrowDownwardIcon className="mr-2" />
                         {t('Insert One Below')}
                     </MenuItem>
-                    <MenuItem
-                        onClick={() => {
-                            handleClose()
-                            setEditDialogOpen(true)
-                        }}
-                    >
-                        <Edit className="mr-2" /> {t('Edit')}
-                    </MenuItem>
-                    <MenuItem
-                        onClick={() => {
-                            props.toggleHideImage(image.id)
-                        }}
-                    >
-                        {image.hide ? (
-                            <VisibilityOnIcon className="mr-2" />
-                        ) : (
-                            <VisibilityOffIcon className="mr-2" />
-                        )}
 
-                        {image.hide ? t('Unhide') : t('Hide')}
-                    </MenuItem>
                     <MenuItem onClick={() => {}}>
                         <BeenhereIcon className="mr-2" />
                         {t('Update following unchecked items')}
