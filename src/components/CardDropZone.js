@@ -22,6 +22,7 @@ function CardDropZone({ i, handleDrop }) {
                 padding: isOver ? '2em 0' : 0,
                 backgroundColor: 'white',
             }}
+            className="my-4"
         >
             {isOver && (
                 <div
