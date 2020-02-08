@@ -381,141 +381,157 @@ function App() {
                         <CircularProgress />
                     </div>
                 ) : (
-                    <div className="App">
-                        <Dialog
-                            sectionInUseCount={sectionInUseCount}
-                            open={settingsDialogOpen}
-                            handleClose={() => setSettingsDialog(false)}
-                            setImageView={setImageView}
-                            imageView={imageView}
-                            volume={workingData}
-                            handleSettingsUpdate={handleSettingsUpdate}
-                            settings={settings}
-                        />
-                        <div className="container mx-auto flex flex-row py-6">
-                            <div className="w-1/2 flex flex-col">
-                                <span className="text-gray-600 text-sm">
-                                    {t('Volume')}
-                                </span>
-                                <span className="text-sm font-bold text-xl mb-3">
-                                    {workingData['for-volume']}
-                                    <span
-                                        onClick={() => setSettingsDialog(true)}
-                                        className="underline text-md font-medium cursor-pointer"
-                                    >
-                                        <SettingsIcon />
+                    <div className="App" style={{ paddingTop: 60 }}>
+                        <div>
+                            <Dialog
+                                sectionInUseCount={sectionInUseCount}
+                                open={settingsDialogOpen}
+                                handleClose={() => setSettingsDialog(false)}
+                                setImageView={setImageView}
+                                imageView={imageView}
+                                volume={workingData}
+                                handleSettingsUpdate={handleSettingsUpdate}
+                                settings={settings}
+                            />
+                            <div className="container mx-auto flex flex-row py-6">
+                                <div className="w-1/2 flex flex-col">
+                                    <span className="text-gray-600 text-sm">
+                                        {t('Volume')}
                                     </span>
-                                </span>
-                                <span className="underline text-blue-600 cursor-pointer">
-                                    {t('Preview')}
-                                </span>
-                            </div>
-                            <div className="w-1/2 flex flex-col">
-                                <div className="self-end">
-                                    <span
-                                        className="underline text-md font-medium cursor-pointer mr-5"
-                                        onClick={() => postUpdate(workingData)}
-                                    >
-                                        {t('SAVE')}
+                                    <span className="text-sm font-bold text-xl mb-3">
+                                        {workingData['for-volume']}
+                                        <span
+                                            onClick={() =>
+                                                setSettingsDialog(true)
+                                            }
+                                            className="underline text-md font-medium cursor-pointer"
+                                        >
+                                            <SettingsIcon />
+                                        </span>
                                     </span>
-                                    {/*<span*/}
-                                    {/*    onClick={() => setSettingsDialog(true)}*/}
-                                    {/*    className="underline text-md font-medium cursor-pointer"*/}
-                                    {/*>*/}
-                                    {/*    <SettingsIcon />*/}
-                                    {/*</span>*/}
+                                    <span className="underline text-blue-600 cursor-pointer">
+                                        {t('Preview')}
+                                    </span>
+                                </div>
+                                <div className="w-1/2 flex flex-col">
+                                    <div className="self-end">
+                                        <span
+                                            className="underline text-md font-medium cursor-pointer mr-5"
+                                            onClick={() =>
+                                                postUpdate(workingData)
+                                            }
+                                        >
+                                            {t('SAVE')}
+                                        </span>
+                                        {/*<span*/}
+                                        {/*    onClick={() => setSettingsDialog(true)}*/}
+                                        {/*    className="underline text-md font-medium cursor-pointer"*/}
+                                        {/*>*/}
+                                        {/*    <SettingsIcon />*/}
+                                        {/*</span>*/}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <FilterList
-                            showCheckedImages={settings.showCheckedImages}
-                            handleSettingsUpdate={handleSettingsUpdate}
-                            showHiddenImages={settings.showHiddenImages}
-                        />
-                        <div className="container mx-auto">
-                            <InfiniteScroll
-                                pageStart={0}
-                                key={0}
-                                loadMore={handleLoadMore}
-                                hasMore={images.length > currentImageScrollIdx}
-                                loader={
-                                    <div className="container mx-auto flex items-center justify-center">
-                                        <CircularProgress />
-                                    </div>
-                                }
-                                useWindow={true}
-                            >
-                                {mapIndex(
-                                    (item, i) => (
-                                        <React.Fragment key={i}>
-                                            {i === 0 && (
+                            <FilterList
+                                showCheckedImages={settings.showCheckedImages}
+                                handleSettingsUpdate={handleSettingsUpdate}
+                                showHiddenImages={settings.showHiddenImages}
+                            />
+                            <div className="container mx-auto">
+                                <InfiniteScroll
+                                    pageStart={0}
+                                    key={0}
+                                    loadMore={handleLoadMore}
+                                    hasMore={
+                                        images.length > currentImageScrollIdx
+                                    }
+                                    loader={
+                                        <div className="container mx-auto flex items-center justify-center">
+                                            <CircularProgress />
+                                        </div>
+                                    }
+                                    useWindow={true}
+                                >
+                                    {mapIndex(
+                                        (item, i) => (
+                                            <React.Fragment key={i}>
+                                                {i === 0 && (
+                                                    <CardDropZone
+                                                        i={-1}
+                                                        handleDrop={handleDrop}
+                                                    />
+                                                )}
+                                                <Cards
+                                                    volumeId={
+                                                        workingData[
+                                                            'for-volume'
+                                                        ]
+                                                    }
+                                                    setPagination={
+                                                        setPagination
+                                                    }
+                                                    updateImageSection={
+                                                        updateImageSection
+                                                    }
+                                                    sectionInputs={
+                                                        settings.inputOne
+                                                            .sectionInputs
+                                                    }
+                                                    updateImageValue={
+                                                        updateImageValue
+                                                    }
+                                                    selectType={selectType}
+                                                    addNote={addNote}
+                                                    imageView={imageView}
+                                                    data={item}
+                                                    deleteImageChip={
+                                                        deleteImageChip
+                                                    }
+                                                    toggleReview={toggleReview}
+                                                    insertMissing={
+                                                        insertMissing
+                                                    }
+                                                    toggleHideImage={
+                                                        toggleHideImage
+                                                    }
+                                                    key={item.id}
+                                                    duplicateImageOptions={duplicateImageOptions()}
+                                                    setImageView={setImageView}
+                                                    i={i}
+                                                    updateDuplicateOf={
+                                                        updateDuplicateOf
+                                                    }
+                                                    setDuplicateType={
+                                                        setDuplicateType
+                                                    }
+                                                    addImageTag={addImageTag}
+                                                    removeImageTag={
+                                                        removeImageTag
+                                                    }
+                                                    removeNote={removeNote}
+                                                    markPreviousAsReviewed={
+                                                        markPreviousAsReviewed
+                                                    }
+                                                    showHiddenImages={
+                                                        settings.showHiddenImages
+                                                    }
+                                                    showCheckedImages={
+                                                        settings.showCheckedImages
+                                                    }
+                                                    updateUncheckedItems={
+                                                        updateUncheckedItems
+                                                    }
+                                                />
                                                 <CardDropZone
-                                                    i={-1}
+                                                    i={i}
                                                     handleDrop={handleDrop}
                                                 />
-                                            )}
-                                            <Cards
-                                                volumeId={
-                                                    workingData['for-volume']
-                                                }
-                                                setPagination={setPagination}
-                                                updateImageSection={
-                                                    updateImageSection
-                                                }
-                                                sectionInputs={
-                                                    settings.inputOne
-                                                        .sectionInputs
-                                                }
-                                                updateImageValue={
-                                                    updateImageValue
-                                                }
-                                                selectType={selectType}
-                                                addNote={addNote}
-                                                imageView={imageView}
-                                                data={item}
-                                                deleteImageChip={
-                                                    deleteImageChip
-                                                }
-                                                toggleReview={toggleReview}
-                                                insertMissing={insertMissing}
-                                                toggleHideImage={
-                                                    toggleHideImage
-                                                }
-                                                key={item.id}
-                                                duplicateImageOptions={duplicateImageOptions()}
-                                                setImageView={setImageView}
-                                                i={i}
-                                                updateDuplicateOf={
-                                                    updateDuplicateOf
-                                                }
-                                                setDuplicateType={
-                                                    setDuplicateType
-                                                }
-                                                addImageTag={addImageTag}
-                                                removeImageTag={removeImageTag}
-                                                removeNote={removeNote}
-                                                markPreviousAsReviewed={
-                                                    markPreviousAsReviewed
-                                                }
-                                                showHiddenImages={
-                                                    settings.showHiddenImages
-                                                }
-                                                showCheckedImages={
-                                                    settings.showCheckedImages
-                                                }
-                                                updateUncheckedItems={
-                                                    updateUncheckedItems
-                                                }
-                                            />
-                                            <CardDropZone
-                                                i={i}
-                                                handleDrop={handleDrop}
-                                            />
-                                        </React.Fragment>
-                                    ),
-                                    imageList
-                                )}
-                            </InfiniteScroll>
+                                            </React.Fragment>
+                                        ),
+                                        imageList
+                                    )}
+                                </InfiniteScroll>
+                            </div>
                         </div>
                     </div>
                 )}

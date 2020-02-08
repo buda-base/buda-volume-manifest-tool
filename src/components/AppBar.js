@@ -7,14 +7,14 @@ import {useTranslation} from 'react-i18next'
 
 function AppBarTwo(props) {
     const { settings, handleSettingsUpdate } = props
-    const { i18n } = useTranslation()
+    const { i18n, t } = useTranslation()
 
     return (
-        <header>
+        <header className="fixed top-0 left-0 w-full z-50">
             <div>
                 <AppBar position="static" className="p-3">
                     <div className="container mx-auto flex justify-between">
-                        <span className="text-2xl">BUDA</span>
+                        <span className="text-2xl">{t('siteName')}</span>
                         <div className="w-1/6">
                             <div className="w-full">
                                 <FormControl style={{ width: '100%' }}>
