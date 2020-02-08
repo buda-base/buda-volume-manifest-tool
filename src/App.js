@@ -21,6 +21,7 @@ import {
     curry,
     dec,
     dissoc,
+    flatten,
     has,
     inc,
     insert,
@@ -62,7 +63,7 @@ function App() {
         zoom: 0,
         center: { x: null, y: null },
     })
-    const imageList = view(imageListLens, workingData)
+    const imageList = view(imageListLens, workingData) || []
     const [settings, updateSettings] = React.useState(data.volumeData)
     const [images, setImages] = React.useState([])
     const [currentImageScrollIdx, setCurrentImageScrollIdx] = React.useState(0)
@@ -320,7 +321,7 @@ function App() {
         compose(
             map(({ id, filename }) => ({ id, name: filename })),
             reject(complement(has)('filename'))
-        )(imageList)
+        )(flatten(concat(imageList, images)))
 
     const handleDrop = (imageId, idx) => {
         const { image, images } = reduce(
