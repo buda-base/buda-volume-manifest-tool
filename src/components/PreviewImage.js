@@ -72,7 +72,7 @@ export default class PreviewImage extends React.Component {
                         position: 'absolute',
                         top: '0',
                         right: '0',
-                        zIndex: '99',
+                        zIndex: '40',
                     }}
                 >
                     <div
