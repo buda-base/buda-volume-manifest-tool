@@ -299,6 +299,10 @@ export default () => {
             bo: 'བོའའའའདད།',
             en: 'color cards / rules',
         },
+        siteName: {
+            bo: 'བོའའའའདད།',
+            en: 'BUDA Volume Manifest Tool',
+        },
     }
 
     const initialReduceVal = fromPairs(LANGUAGES.map(lang => [lang, []]))
