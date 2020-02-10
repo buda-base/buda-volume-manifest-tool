@@ -3,7 +3,6 @@ import './index.css'
 import AppBar from './components/AppBar'
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles'
 import Cards from './components/Cards'
-import data from './manifest-simple'
 import {DndProvider} from 'react-dnd'
 import FilterList from './components/FilterList'
 import Backend from 'react-dnd-html5-backend'
@@ -11,6 +10,7 @@ import {useTranslation} from 'react-i18next'
 import postUpdate from './api/postUpdate'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import getPagination from './utils/pagination-predication'
+
 import {
     addIndex,
     append,
@@ -45,6 +45,7 @@ import uuidv4 from 'uuid/v4'
 import InfiniteScroll from 'react-infinite-scroller'
 import CardDropZone from './components/CardDropZone'
 import getManifest from './api/getManifest'
+import VolumeSearch from './components/VolumeSearch'
 
 const mapIndex = addIndex(map)
 const theme = createMuiTheme({
@@ -64,24 +65,57 @@ function App() {
         center: { x: null, y: null },
     })
     const imageList = view(imageListLens, workingData) || []
-    const [settings, updateSettings] = React.useState(data.volumeData)
+    const [settings, updateSettings] = React.useState({})
     const [images, setImages] = React.useState([])
     const [currentImageScrollIdx, setCurrentImageScrollIdx] = React.useState(0)
+    const [isFetching, setIsFetching] = React.useState(false)
+    const [fetchErr, setFetchErr] = React.useState(null)
 
     React.useEffect(() => {
         const search = window.location.search
         const params = new URLSearchParams(search)
         const volume = params.get('volume')
-        const getData = async () => {
-            const { manifest, images } = await getManifest(volume)
-            const splitImages = splitEvery(10, images)
-            const updatedManifest = set(imageListLens, splitImages[0], manifest)
-            setWorkingData(updatedManifest)
-            setImages(splitImages)
-            setCurrentImageScrollIdx(0)
+        setFetchErr(null)
+        if (!volume) {
+            setIsFetching(false)
+        } else {
+            const getData = async () => {
+                setIsFetching(true)
+                try {
+                    const { manifest, images } = await getManifest(volume)
+
+                    setIsFetching(false)
+
+                    const splitImages = splitEvery(10, images)
+                    const updatedManifest = set(
+                        imageListLens,
+                        splitImages[0],
+                        manifest
+                    )
+                    updateSettings(manifest.volumeData)
+                    setWorkingData(updatedManifest)
+                    setImages(splitImages)
+                    setCurrentImageScrollIdx(0)
+                } catch (err) {
+                    setIsFetching(false)
+                    setFetchErr(err.message)
+                }
+            }
+            getData()
         }
-        getData()
     }, [])
+
+    const saveUpdatesToManifest = () => {
+        const settingsWithImagePreview = assoc(
+            'imagePreview',
+            imageView,
+            settings
+        )
+        const updatedManifest = compose(
+            assoc('volumeData', settingsWithImagePreview)
+        )(workingData)
+        postUpdate(updatedManifest)
+    }
 
     const updateImageList = updatedImageList => {
         setWorkingData(set(imageListLens, updatedImageList, workingData))
@@ -378,9 +412,7 @@ function App() {
                     handleSettingsUpdate={handleSettingsUpdate}
                 />
                 {isEmpty(workingData) ? (
-                    <div className="container mx-auto flex items-center justify-center">
-                        <CircularProgress />
-                    </div>
+                    <VolumeSearch isFetching={isFetching} fetchErr={fetchErr} />
                 ) : (
                     <div className="App" style={{ paddingTop: 60 }}>
                         <div>
@@ -418,9 +450,7 @@ function App() {
                                     <div className="self-end">
                                         <span
                                             className="underline text-md font-medium cursor-pointer mr-5"
-                                            onClick={() =>
-                                                postUpdate(workingData)
-                                            }
+                                            onClick={saveUpdatesToManifest}
                                         >
                                             {t('SAVE')}
                                         </span>
