@@ -10,6 +10,7 @@ import {useTranslation} from 'react-i18next'
 import postUpdate from './api/postUpdate'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import getPagination from './utils/pagination-predication'
+
 import {
     addIndex,
     append,
@@ -44,6 +45,7 @@ import uuidv4 from 'uuid/v4'
 import InfiniteScroll from 'react-infinite-scroller'
 import CardDropZone from './components/CardDropZone'
 import getManifest from './api/getManifest'
+import VolumeSearch from './components/VolumeSearch'
 
 const mapIndex = addIndex(map)
 const theme = createMuiTheme({
@@ -66,22 +68,41 @@ function App() {
     const [settings, updateSettings] = React.useState({})
     const [images, setImages] = React.useState([])
     const [currentImageScrollIdx, setCurrentImageScrollIdx] = React.useState(0)
+    const [isFetching, setIsFetching] = React.useState(false)
+    const [fetchErr, setFetchErr] = React.useState(null)
 
     React.useEffect(() => {
         const search = window.location.search
         const params = new URLSearchParams(search)
         const volume = params.get('volume')
-        const getData = async () => {
-            const { manifest, images } = await getManifest(volume)
+        setFetchErr(null)
+        if (!volume) {
+            setIsFetching(false)
+        } else {
+            const getData = async () => {
+                setIsFetching(true)
+                try {
+                    const { manifest, images } = await getManifest(volume)
 
-            const splitImages = splitEvery(10, images)
-            const updatedManifest = set(imageListLens, splitImages[0], manifest)
-            updateSettings(manifest.volumeData)
-            setWorkingData(updatedManifest)
-            setImages(splitImages)
-            setCurrentImageScrollIdx(0)
+                    setIsFetching(false)
+
+                    const splitImages = splitEvery(10, images)
+                    const updatedManifest = set(
+                        imageListLens,
+                        splitImages[0],
+                        manifest
+                    )
+                    updateSettings(manifest.volumeData)
+                    setWorkingData(updatedManifest)
+                    setImages(splitImages)
+                    setCurrentImageScrollIdx(0)
+                } catch (err) {
+                    setIsFetching(false)
+                    setFetchErr(err.message)
+                }
+            }
+            getData()
         }
-        getData()
     }, [])
 
     const saveUpdatesToManifest = () => {
@@ -391,9 +412,7 @@ function App() {
                     handleSettingsUpdate={handleSettingsUpdate}
                 />
                 {isEmpty(workingData) ? (
-                    <div className="container mx-auto flex items-center justify-center">
-                        <CircularProgress />
-                    </div>
+                    <VolumeSearch isFetching={isFetching} fetchErr={fetchErr} />
                 ) : (
                     <div className="App" style={{ paddingTop: 60 }}>
                         <div>
