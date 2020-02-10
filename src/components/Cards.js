@@ -342,7 +342,7 @@ export default function ImageCard(props) {
                                                 }}
                                             >
                                                 <option value={'none'}>
-                                                    {t('Pagination')}
+                                                    {t('Choose Section')}
                                                 </option>
                                                 )
                                                 {sectionInputs.map(

@@ -205,7 +205,7 @@ export default () => {
         },
         Pagination: {
             bo: 'བོའའའའདད།',
-            en: 'Choose Section',
+            en: 'Pagination',
         },
         'Insert One Above': {
             bo: 'བོའའའའདད།',

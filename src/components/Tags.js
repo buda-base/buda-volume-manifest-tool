@@ -23,7 +23,7 @@ const Tags = props => {
         setTagOptions(options)
     }, [props.tags])
     return (
-        <div className="w-full flex mb-6 flex-col overflow-scroll">
+        <div className="w-full flex mb-6 flex-col overflow-auto">
             <h3 className="block">{t('Tags:')}</h3>
             <div>
                 <div className="flex flex-row w-1/3 inline-block">
