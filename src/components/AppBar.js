@@ -14,7 +14,9 @@ function AppBarTwo(props) {
             <div>
                 <AppBar position="static" className="p-3">
                     <div className="container mx-auto flex justify-between">
-                        <span className="text-2xl">{t('siteName')}</span>
+                        <a href="/">
+                            <span className="text-2xl">{t('siteName')}</span>
+                        </a>
                         <div className="w-1/6">
                             <div className="w-full">
                                 <FormControl style={{ width: '100%' }}>
