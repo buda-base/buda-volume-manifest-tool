@@ -303,6 +303,19 @@ export default () => {
             bo: 'བོའའའའདད།',
             en: 'BUDA Volume Manifest Tool',
         },
+        volumeLabel: {
+            bo: 'བོའའའའདད།',
+            en: 'Volume',
+        },
+        submit: {
+            bo: 'བོའའའའདད།',
+            en: 'Submit',
+        },
+        submitErrorMsg: {
+            bo: 'བོའའའའདད།',
+            en:
+                'There was an error making your request. Check to make sure the volume is correct.',
+        },
     }
 
     const initialReduceVal = fromPairs(LANGUAGES.map(lang => [lang, []]))
