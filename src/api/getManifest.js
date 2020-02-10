@@ -18,17 +18,26 @@ async function getManifest(volume) {
     return data
 }
 
-async function getOrInitManifest(volumeId) {
-    // if getManifest fails, then
-    // getImageList then initManifestFromImageList
+async function getOrInitManifest(volume) {
+    var manifest
+    try {
+        manifest = getManifest(volume)
+    } catch (err) {
+        if (err.response.status != 404) {
+            throw err
+        }
+        images = getImageList(volume)
+        manifest = initManifestFromImageList(images, volume)
+    }
+    return manifest
 }
 
 export default getManifest
 
-function initManifestFromImageList(images, volumeId) {
+function initManifestFromImageList(images, volume) {
     console.log('images', images)
     return {
-        'for-volume': volumeId,
+        'for-volume': volume,
         'spec-version': '0.1.0',
         attribution: 'data produced by BVMT',
         // instead of "en", it should be the language of the interface
