@@ -1,7 +1,7 @@
 import uuidv4 from 'uuid/v4'
 import axios from 'axios'
 
-async function mockGet(volume) {
+async function getImegeList(volume) {
     const data = await axios.get(`https://iiifpres.bdrc.io/il/v:${volume}`)
     const images = data.data.map(({ filename }) => ({
         id: uuidv4(),
@@ -9,32 +9,32 @@ async function mockGet(volume) {
         subtype: 'from-scan',
     }))
 
-    const manifest = buildManifest([], volume)
-    return { manifest, images }
+    return images
 }
 
-async function getManifest(volumeId) {
-    return await mockGet(volumeId)
+async function getManifest(volume) {
+    // this returns an existing manifest, might return a 404
+    const data = await axios.get(`https://iiifpres.bdrc.io/bvm/v:${volume}`)
+    return data
+}
+
+async function getOrInitManifest(volumeId) {
+    // if getManifest fails, then
+    // getImageList then initManifestFromImageList
 }
 
 export default getManifest
 
-function buildManifest(images, volumeId) {
+function initManifestFromImageList(images, volumeId) {
     console.log('images', images)
     return {
         'for-volume': volumeId,
         'spec-version': '0.1.0',
-        rev: '860f508e-608e-484d-9fc3-62392fab0b12',
-        attribution: 'data contributed by rKTs',
+        attribution: 'data produced by BVMT',
+        // instead of "en", it should be the language of the interface
         'default-string-lang': 'en',
-        note: 'not sure about the order of page 2',
-        'changes-history': [
-            {
-                timestamp: 1568463794,
-                user: 'bdr:U0002',
-                log: 'initial version',
-            },
-        ],
+        note: [],
+        changelog: [],
         pagination: {
             folios1: {
                 type: 'potifolios',
@@ -49,70 +49,32 @@ function buildManifest(images, volumeId) {
             },
         },
         volumeData: {
-            volume: 'bdr:V22084_I0888',
+            // same here, language of the interface
             defaultLanguage: 'en',
-            volumeLanguage: 'tibetan',
-            showCheckedImages: true,
-            showHiddenImages: true,
-            viewingDirection: 'left-to-right',
+            // bo by default is fine here, next 3 properties
+            // should be set in the volume info
+            volumeLanguage: 'bo',
+            volname-margin: null,
+            vollabel: [],
+            // here it should be modifyable in the settings
+            // TODO: top-to-bottom should be the default for volumes 
+            // where the typical page has width > heigth
+            // it still needs to be modifying in the UI because some
+            // Chinese books are right-to-left, others are left-to-right
+            viewingDirection: 'top-to-bottom',
             inputOne: {
                 paginationType: 'folios',
                 inputForWholeMargin: true,
-                sectionInputs: [
-                    { value: 'Section 1a', language: 'bo', id: uuidv4() },
-                    { value: 'Section 2a', language: 'bo', id: uuidv4() },
-                ],
-                indicationOdd: '{volname}-{sectionname}-{pagenum:bo}',
+                sectionInputs: [],
+                indicationOdd: '{volname}-{pagenum:bo}',
                 indicationEven: '{volname}',
             },
             comments: '',
+            bvmt_props: {
+                // any prop that has to do with the UI
+                showCheckedImages: true,
+                showHiddenImages: true,
+            }
         },
     }
 }
-
-// [
-// {
-//     id: 1,
-//     subtype: 'cover',
-//     filename: 'I1KG91280001.tif',
-//     chips: [{ id: 2, text: 'Cover Page' }],
-// },
-// {
-//     id: 2,
-//     subtype: 'blank',
-//     filename: 'I1KG91280002.tif',
-//     pagination: '1a',
-//     chips: [{ id: 1, text: 'Title Page' }],
-// },
-// {
-//     id: 3,
-//     subtype: 'title',
-//     thumbnail: true,
-//     filename: 'I1KG91280003.jpg',
-//     pagination: '1b',
-// },
-// {
-//     id: 4,
-//     filename: 'I1KG91280005.jpg',
-//     pagination: "1'a",
-//     rotation: 180,
-//     'rotation-reason': 'scan',
-//     note: [
-//         'rotating 180° because of the scan being upside down',
-//     ],
-// },
-// {
-//     id: 5,
-//     type: 'missing',
-//     subtype: 'from-scan',
-//     pagination: "1'b",
-// },
-// {
-//     id: 6,
-//     type: 'duplicate',
-//     filename: 'I1KG91280006.jpg',
-//     subtype: 'from-scan',
-//     display: false,
-//     'of-file': 'I1KG9128004.tif',
-// },
-// ],
