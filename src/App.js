@@ -3,7 +3,6 @@ import './index.css'
 import AppBar from './components/AppBar'
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles'
 import Cards from './components/Cards'
-import data from './manifest-simple'
 import {DndProvider} from 'react-dnd'
 import FilterList from './components/FilterList'
 import Backend from 'react-dnd-html5-backend'
@@ -64,7 +63,7 @@ function App() {
         center: { x: null, y: null },
     })
     const imageList = view(imageListLens, workingData) || []
-    const [settings, updateSettings] = React.useState(data.volumeData)
+    const [settings, updateSettings] = React.useState({})
     const [images, setImages] = React.useState([])
     const [currentImageScrollIdx, setCurrentImageScrollIdx] = React.useState(0)
 
@@ -74,14 +73,28 @@ function App() {
         const volume = params.get('volume')
         const getData = async () => {
             const { manifest, images } = await getManifest(volume)
+
             const splitImages = splitEvery(10, images)
             const updatedManifest = set(imageListLens, splitImages[0], manifest)
+            updateSettings(manifest.volumeData)
             setWorkingData(updatedManifest)
             setImages(splitImages)
             setCurrentImageScrollIdx(0)
         }
         getData()
     }, [])
+
+    const saveUpdatesToManifest = () => {
+        const settingsWithImagePreview = assoc(
+            'imagePreview',
+            imageView,
+            settings
+        )
+        const updatedManifest = compose(
+            assoc('volumeData', settingsWithImagePreview)
+        )(workingData)
+        postUpdate(updatedManifest)
+    }
 
     const updateImageList = updatedImageList => {
         setWorkingData(set(imageListLens, updatedImageList, workingData))
@@ -418,9 +431,7 @@ function App() {
                                     <div className="self-end">
                                         <span
                                             className="underline text-md font-medium cursor-pointer mr-5"
-                                            onClick={() =>
-                                                postUpdate(workingData)
-                                            }
+                                            onClick={saveUpdatesToManifest}
                                         >
                                             {t('SAVE')}
                                         </span>
