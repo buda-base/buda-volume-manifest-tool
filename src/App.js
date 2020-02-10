@@ -9,7 +9,7 @@ import Backend from 'react-dnd-html5-backend'
 import {useTranslation} from 'react-i18next'
 import postUpdate from './api/postUpdate'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import getPagination from './utils/pagination-predication'
+import getPagination from './utils/pagination-prediction'
 
 import {
     addIndex,
