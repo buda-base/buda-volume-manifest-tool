@@ -1,5 +1,5 @@
 {
-  "name": "buda",
+  "name": "buda-volume-manifest-tool",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
