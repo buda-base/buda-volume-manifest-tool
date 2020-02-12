@@ -17,11 +17,9 @@ import {
     assoc,
     complement,
     compose,
-    concat,
     curry,
     dec,
     dissoc,
-    flatten,
     has,
     inc,
     insert,
@@ -35,7 +33,6 @@ import {
     reject,
     remove,
     set,
-    splitEvery,
     trim,
     view,
 } from 'ramda'
@@ -66,10 +63,10 @@ function App() {
     })
     const imageList = view(imageListLens, workingData) || []
     const [settings, updateSettings] = React.useState({})
-    const [images, setImages] = React.useState([])
-    const [currentImageScrollIdx, setCurrentImageScrollIdx] = React.useState(0)
     const [isFetching, setIsFetching] = React.useState(false)
     const [fetchErr, setFetchErr] = React.useState(null)
+    const [renderToIdx, setRenderToIdx] = React.useState(9)
+    const [isLoadingMore, setIsLoadingMore] = React.useState(false)
 
     React.useEffect(() => {
         const search = window.location.search
@@ -83,19 +80,14 @@ function App() {
                 setIsFetching(true)
                 try {
                     const { manifest, images } = await getManifest(volume)
-
                     setIsFetching(false)
-
-                    const splitImages = splitEvery(10, images)
                     const updatedManifest = set(
                         imageListLens,
-                        splitImages[0],
+                        images.slice(0, 51),
                         manifest
                     )
                     updateSettings(manifest.volumeData)
                     setWorkingData(updatedManifest)
-                    setImages(splitImages)
-                    setCurrentImageScrollIdx(0)
                 } catch (err) {
                     setIsFetching(false)
                     setFetchErr(err.message)
@@ -121,15 +113,12 @@ function App() {
         setWorkingData(set(imageListLens, updatedImageList, workingData))
     }
     const handleLoadMore = num => {
-        const imagesToRender = images[num] || []
-        if (!isEmpty(imagesToRender)) {
-            const updatedManifestImages = concat(
-                view(imageListLens, workingData),
-                imagesToRender
-            )
-            updateImageList(updatedManifestImages)
-        }
-        setCurrentImageScrollIdx(inc(currentImageScrollIdx))
+        setRenderToIdx(renderToIdx + 10)
+        // setting this isfetching stops the infinite scroll from getting caught in a loop
+        setIsLoadingMore(true)
+        setTimeout(() => {
+            setIsLoadingMore(false)
+        }, 3000)
     }
 
     const sectionInUseCount = sectionId => {
@@ -355,7 +344,7 @@ function App() {
         compose(
             map(({ id, filename }) => ({ id, name: filename })),
             reject(complement(has)('filename'))
-        )(flatten(concat(imageList, images)))
+        )(imageList)
 
     const handleDrop = (imageId, idx) => {
         const { image, images } = reduce(
@@ -474,7 +463,8 @@ function App() {
                                     key={0}
                                     loadMore={handleLoadMore}
                                     hasMore={
-                                        images.length > currentImageScrollIdx
+                                        imageList.length > renderToIdx &&
+                                        !isLoadingMore
                                     }
                                     loader={
                                         <div className="container mx-auto flex items-center justify-center">
@@ -559,7 +549,7 @@ function App() {
                                                 />
                                             </React.Fragment>
                                         ),
-                                        imageList
+                                        imageList.slice(0, renderToIdx)
                                     )}
                                 </InfiniteScroll>
                             </div>
