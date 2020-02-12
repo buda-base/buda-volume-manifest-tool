@@ -10,7 +10,7 @@ function AppBarTwo(props) {
     const { i18n, t } = useTranslation()
 
     return (
-        <header className="fixed top-0 left-0 w-full z-50">
+        <header className="fixed top-0 left-0 w-full" style={{zIndex: 9999}}>
             <div>
                 <AppBar position="static" className="p-3">
                     <div className="container mx-auto flex justify-between">
