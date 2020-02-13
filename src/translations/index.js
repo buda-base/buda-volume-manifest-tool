@@ -205,7 +205,7 @@ export default () => {
         },
         Pagination: {
             bo: 'བོའའའའདད།',
-            en: 'Choose Section',
+            en: 'Pagination',
         },
         'Insert One Above': {
             bo: 'བོའའའའདད།',
@@ -315,6 +315,18 @@ export default () => {
             bo: 'བོའའའའདད།',
             en:
                 'There was an error making your request. Check to make sure the volume is correct.',
+        },
+        'Fold Checked Images': {
+            bo: 'བོའའའའདད།',
+            en: 'Fold Checked Images',
+        },
+        'Hide Deleted Images': {
+            bo: 'བོའའའའདད།',
+            en: 'Hide Deleted Images',
+        },
+        Delete: {
+            bo: 'བོའའའའདད།',
+            en: 'Delete',
         },
     }
 

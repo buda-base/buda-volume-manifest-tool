@@ -3,44 +3,36 @@ import {Checkbox} from '@material-ui/core'
 import {lensProp} from 'ramda'
 import React from 'react'
 import {useTranslation} from 'react-i18next'
+import Button from '@material-ui/core/Button'
 
 export default function FilterList(props) {
-    const { showCheckedImages, handleSettingsUpdate, showHiddenImages } = props
+    const { handleSettingsUpdate, hideDeletedImages } = props
     const { t } = useTranslation()
     return (
         <div className="container mx-auto flex flex-row justify-end">
-            <FormControlLabel
-                style={{ display: 'block' }}
-                control={
-                    <Checkbox
-                        checked={showCheckedImages}
-                        onChange={e => {
-                            handleSettingsUpdate(
-                                lensProp('showCheckedImages'),
-                                !showCheckedImages
-                            )
-                        }}
-                        value="show-checked-images"
-                        color="primary"
-                    />
-                }
-                label={t('Show Checked Images')}
-            />
+            <Button
+                onClick={props.foldCheckedImages}
+                color="primary"
+                variant="contained"
+                style={{ marginRight: '2em' }}
+            >
+                {t('Fold Checked Images')}
+            </Button>
             <FormControlLabel
                 control={
                     <Checkbox
-                        checked={showHiddenImages}
+                        checked={hideDeletedImages}
                         onChange={e => {
                             handleSettingsUpdate(
-                                lensProp('showHiddenImages'),
-                                !showHiddenImages
+                                lensProp('hideDeletedImages'),
+                                !hideDeletedImages
                             )
                         }}
                         value="show-hidden-images"
                         color="primary"
                     />
                 }
-                label={t('Show Hidden Images')}
+                label={t('Hide Deleted Images')}
             />
         </div>
     )
