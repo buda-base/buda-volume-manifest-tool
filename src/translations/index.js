@@ -316,6 +316,18 @@ export default () => {
             en:
                 'There was an error making your request. Check to make sure the volume is correct.',
         },
+        'Fold Checked Images': {
+            bo: 'བོའའའའདད།',
+            en: 'Fold Checked Images',
+        },
+        'Hide Deleted Images': {
+            bo: 'བོའའའའདད།',
+            en: 'Hide Deleted Images',
+        },
+        Delete: {
+            bo: 'བོའའའའདད།',
+            en: 'Delete',
+        },
     }
 
     const initialReduceVal = fromPairs(LANGUAGES.map(lang => [lang, []]))

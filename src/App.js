@@ -41,7 +41,7 @@ import Dialog from './components/Dialog'
 import uuidv4 from 'uuid/v4'
 import InfiniteScroll from 'react-infinite-scroller'
 import CardDropZone from './components/CardDropZone'
-import getManifest from './api/getManifest'
+import {getOrInitManifest} from './api/getManifest'
 import VolumeSearch from './components/VolumeSearch'
 
 const mapIndex = addIndex(map)
@@ -79,7 +79,7 @@ function App() {
             const getData = async () => {
                 setIsFetching(true)
                 try {
-                    const { manifest, images } = await getManifest(volume)
+                    const { manifest, images } = await getOrInitManifest(volume)
                     setIsFetching(false)
                     const updatedManifest = set(
                         imageListLens,
@@ -186,7 +186,10 @@ function App() {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 const reviewed = prop('reviewed', image)
-                return assoc('reviewed', !reviewed, image)
+                return compose(
+                    image => (!reviewed ? assoc('hide', true, image) : image),
+                    assoc('reviewed', !reviewed)
+                )(image)
             } else {
                 return image
             }
@@ -391,8 +394,15 @@ function App() {
         updateImageList(updatedImageList)
     }
 
-    const { t } = useTranslation()
+    const foldCheckedImages = () => {
+        const updatedImageList = map(
+            image => (image.reviewed ? assoc('hide', true, image) : image),
+            imageList
+        )
+        updateImageList(updatedImageList)
+    }
 
+    const { t } = useTranslation()
     return (
         <ThemeProvider theme={theme}>
             <DndProvider backend={Backend}>
@@ -453,9 +463,10 @@ function App() {
                                 </div>
                             </div>
                             <FilterList
-                                showCheckedImages={settings.showCheckedImages}
                                 handleSettingsUpdate={handleSettingsUpdate}
-                                showHiddenImages={settings.showHiddenImages}
+                                hideDeletedImages={settings.hideDeletedImages}
+                                foldCheckedImages={foldCheckedImages}
+                                updateImageValue={updateImageValue}
                             />
                             <div className="container mx-auto">
                                 <InfiniteScroll
@@ -533,11 +544,8 @@ function App() {
                                                     markPreviousAsReviewed={
                                                         markPreviousAsReviewed
                                                     }
-                                                    showHiddenImages={
-                                                        settings.showHiddenImages
-                                                    }
-                                                    showCheckedImages={
-                                                        settings.showCheckedImages
+                                                    hideDeletedImages={
+                                                        settings.hideDeletedImages
                                                     }
                                                     updateUncheckedItems={
                                                         updateUncheckedItems

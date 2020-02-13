@@ -1,41 +1,36 @@
 import uuidv4 from 'uuid/v4'
 import axios from 'axios'
 
-async function getImegeList(volume) {
+async function getImageList(volume) {
     const data = await axios.get(`https://iiifpres.bdrc.io/il/v:${volume}`)
-    const images = data.data.map(({ filename }) => ({
+    return data.data.map(({ filename }) => ({
         id: uuidv4(),
         filename,
         subtype: 'from-scan',
     }))
-
-    return images
 }
 
 async function getManifest(volume) {
     // this returns an existing manifest, might return a 404
-    const data = await axios.get(`https://iiifpres.bdrc.io/bvm/v:${volume}`)
-    return data
+    return await axios.get(`https://iiifpres.bdrc.io/bvm/v:${volume}`)
 }
 
-async function getOrInitManifest(volume) {
+export async function getOrInitManifest(volume) {
     var manifest
+    var images
     try {
-        manifest = getManifest(volume)
+        manifest = await getManifest(volume)
     } catch (err) {
-        if (err.response.status != 404) {
-            throw err
-        }
-        images = getImageList(volume)
+        // if (err.response.status != 404) {
+        //     throw err
+        // }
+        images = await getImageList(volume)
         manifest = initManifestFromImageList(images, volume)
     }
-    return manifest
+    return { manifest, images }
 }
 
-export default getManifest
-
 function initManifestFromImageList(images, volume) {
-    console.log('images', images)
     return {
         'for-volume': volume,
         'spec-version': '0.1.0',
@@ -63,10 +58,10 @@ function initManifestFromImageList(images, volume) {
             // bo by default is fine here, next 3 properties
             // should be set in the volume info
             volumeLanguage: 'bo',
-            volname-margin: null,
+            'volname-margin': null,
             vollabel: [],
             // here it should be modifyable in the settings
-            // TODO: top-to-bottom should be the default for volumes 
+            // TODO: top-to-bottom should be the default for volumes
             // where the typical page has width > heigth
             // it still needs to be modifying in the UI because some
             // Chinese books are right-to-left, others are left-to-right
@@ -79,11 +74,11 @@ function initManifestFromImageList(images, volume) {
                 indicationEven: '{volname}',
             },
             comments: '',
-            bvmt_props: {
-                // any prop that has to do with the UI
-                showCheckedImages: true,
-                showHiddenImages: true,
-            }
+            hideDeletedImages: false, //todo: set this to bvmt props
+            // bvmt_props: {
+            //     // any prop that has to do with the UI
+            //     showDeletedImages: true,
+            // },
         },
     }
 }

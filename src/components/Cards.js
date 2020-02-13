@@ -28,6 +28,7 @@ import Tags from './Tags'
 import TypeSelect from './TypeSelect'
 import NoteIcon from '@material-ui/icons/Note'
 import {Formik} from 'formik'
+import DeleteIcon from '@material-ui/icons/Delete'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -104,7 +105,10 @@ export default function ImageCard(props) {
                         className="mr-2"
                         style={{ cursor: 'move' }}
                     />
-                    <h3 className="font-bold">
+                    <h3 className={`font-bold ${image.deleted && 'text-red-600'} flex align-center`}>
+                        {image.deleted && (
+                            <DeleteIcon className="mr-2" style={{ color: 'red' }} />
+                        )}
                         {image.filename || image.type}
                     </h3>
                 </div>
@@ -176,6 +180,20 @@ export default function ImageCard(props) {
                         {t('Insert One Below')}
                     </MenuItem>
 
+                    {!image.deleted && (
+                        <MenuItem
+                            onClick={() =>
+                                props.updateImageValue(
+                                    image.id,
+                                    'deleted',
+                                    true
+                                )
+                            }
+                        >
+                            <DeleteIcon className="mr-2" />
+                            {t('Delete')}
+                        </MenuItem>
+                    )}
                     <MenuItem
                         onClick={() =>
                             props.updateUncheckedItems(
@@ -207,13 +225,11 @@ export default function ImageCard(props) {
 
     const sectionId = image.sectionId || 'none'
 
-    const hideCard =
-        (!props.showHiddenImages && !!image.hide) ||
-        (!!image.reviewed && !props.showCheckedImages)
-
     const { t } = useTranslation()
 
-    return hideCard ? null : (
+    const hideImage = props.hideDeletedImages && image.deleted
+
+    return hideImage ? null : (
         <div
             className="shadow-sm hover:shadow-md w-full border-2 rounded border-gray-200 bg-white"
             ref={dragRef}
