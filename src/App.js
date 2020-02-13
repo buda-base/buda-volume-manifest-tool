@@ -394,8 +394,15 @@ function App() {
         updateImageList(updatedImageList)
     }
 
-    const { t } = useTranslation()
+    const foldCheckedImages = () => {
+        const updatedImageList = map(
+            image => (image.reviewed ? assoc('hide', true, image) : image),
+            imageList
+        )
+        updateImageList(updatedImageList)
+    }
 
+    const { t } = useTranslation()
     return (
         <ThemeProvider theme={theme}>
             <DndProvider backend={Backend}>
@@ -456,9 +463,10 @@ function App() {
                                 </div>
                             </div>
                             <FilterList
-                                showCheckedImages={settings.showCheckedImages}
                                 handleSettingsUpdate={handleSettingsUpdate}
-                                showHiddenImages={settings.showHiddenImages}
+                                hideDeletedImages={settings.hideDeletedImages}
+                                foldCheckedImages={foldCheckedImages}
+                                updateImageValue={updateImageValue}
                             />
                             <div className="container mx-auto">
                                 <InfiniteScroll
@@ -536,11 +544,8 @@ function App() {
                                                     markPreviousAsReviewed={
                                                         markPreviousAsReviewed
                                                     }
-                                                    showHiddenImages={
-                                                        settings.showHiddenImages
-                                                    }
-                                                    showCheckedImages={
-                                                        settings.showCheckedImages
+                                                    hideDeletedImages={
+                                                        settings.hideDeletedImages
                                                     }
                                                     updateUncheckedItems={
                                                         updateUncheckedItems
