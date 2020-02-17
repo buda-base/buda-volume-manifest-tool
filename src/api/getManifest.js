@@ -21,9 +21,9 @@ export async function getOrInitManifest(volume) {
     try {
         manifest = await getManifest(volume)
     } catch (err) {
-        // if (err.response.status != 404) {
-        //     throw err
-        // }
+        if (err.response.status != 404) {
+            throw err
+        }
         images = await getImageList(volume)
         manifest = initManifestFromImageList(images, volume)
     }
