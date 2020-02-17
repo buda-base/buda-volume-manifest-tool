@@ -15,7 +15,7 @@ async function getManifest(volume) {
     return await axios.get(`https://iiifpres.bdrc.io/bvm/v:${volume}`)
 }
 
-export async function getOrInitManifest(volume) {
+export async function getOrInitManifest(volume, options) {
     var manifest
     var images
     try {
@@ -25,18 +25,17 @@ export async function getOrInitManifest(volume) {
             throw err
         }
         images = await getImageList(volume)
-        manifest = initManifestFromImageList(images, volume)
+        manifest = initManifestFromImageList(images, volume, options)
     }
     return { manifest, images }
 }
 
-function initManifestFromImageList(images, volume) {
+function initManifestFromImageList(images, volume, options) {
     return {
         'for-volume': volume,
         'spec-version': '0.1.0',
         attribution: 'data produced by BVMT',
-        // instead of "en", it should be the language of the interface
-        'default-string-lang': 'en',
+        'default-string-lang': options.uiLanguage,
         note: [],
         changelog: [],
         pagination: {
@@ -54,7 +53,7 @@ function initManifestFromImageList(images, volume) {
         },
         volumeData: {
             // same here, language of the interface
-            defaultLanguage: 'en',
+            defaultLanguage: options.uiLanguage,
             // bo by default is fine here, next 3 properties
             // should be set in the volume info
             volumeLanguage: 'bo',
