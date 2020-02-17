@@ -23,7 +23,6 @@ import {
     has,
     inc,
     insert,
-    isEmpty,
     lensPath,
     map,
     prop,
@@ -55,18 +54,24 @@ const theme = createMuiTheme({
 
 const imageListLens = lensPath(['view', 'view1', 'imagelist'])
 function App() {
-    const [workingData, setWorkingData] = React.useState({})
+    const [manifest, updateManifest] = React.useState({
+        isDefault: true,
+        volumeData: {
+            defaultLanguage: 'en',
+        },
+    })
     const [settingsDialogOpen, setSettingsDialog] = React.useState(false)
     const [imageView, setImageView] = React.useState({
         zoom: 0,
         center: { x: null, y: null },
     })
-    const imageList = view(imageListLens, workingData) || []
-    const [settings, updateSettings] = React.useState({})
+    const imageList = view(imageListLens, manifest) || []
     const [isFetching, setIsFetching] = React.useState(false)
     const [fetchErr, setFetchErr] = React.useState(null)
     const [renderToIdx, setRenderToIdx] = React.useState(9)
     const [isLoadingMore, setIsLoadingMore] = React.useState(false)
+
+    const settings = prop('volumeData', manifest)
 
     React.useEffect(() => {
         const search = window.location.search
@@ -79,15 +84,17 @@ function App() {
             const getData = async () => {
                 setIsFetching(true)
                 try {
-                    const { manifest, images } = await getOrInitManifest(volume)
+                    const { manifest, images } = await getOrInitManifest(
+                        volume,
+                        { uiLanguage: settings.defaultLanguage }
+                    )
                     setIsFetching(false)
                     const updatedManifest = set(
                         imageListLens,
                         images.slice(0, 51),
                         manifest
                     )
-                    updateSettings(manifest.volumeData)
-                    setWorkingData(updatedManifest)
+                    updateManifest(updatedManifest)
                 } catch (err) {
                     setIsFetching(false)
                     setFetchErr(err.message)
@@ -105,12 +112,12 @@ function App() {
         )
         const updatedManifest = compose(
             assoc('volumeData', settingsWithImagePreview)
-        )(workingData)
+        )(manifest)
         postUpdate(updatedManifest)
     }
 
     const updateImageList = updatedImageList => {
-        setWorkingData(set(imageListLens, updatedImageList, workingData))
+        updateManifest(set(imageListLens, updatedImageList, manifest))
     }
     const handleLoadMore = num => {
         setRenderToIdx(renderToIdx + 10)
@@ -132,8 +139,9 @@ function App() {
     }
 
     const handleSettingsUpdate = curry((lens, value) => {
-        const updatedSettings = set(lens, value, settings)
-        updateSettings(updatedSettings)
+        const updatedVolumeData = set(lens, value, settings)
+        const updatedManifest = assoc('volumeData', updatedVolumeData, manifest)
+        updateManifest(updatedManifest)
     })
 
     const updateImageSection = (imageId, sectionId) => {
@@ -410,7 +418,7 @@ function App() {
                     settings={settings}
                     handleSettingsUpdate={handleSettingsUpdate}
                 />
-                {isEmpty(workingData) ? (
+                {manifest.isDefault ? (
                     <VolumeSearch isFetching={isFetching} fetchErr={fetchErr} />
                 ) : (
                     <div className="App" style={{ paddingTop: 60 }}>
@@ -421,7 +429,7 @@ function App() {
                                 handleClose={() => setSettingsDialog(false)}
                                 setImageView={setImageView}
                                 imageView={imageView}
-                                volume={workingData}
+                                volume={manifest}
                                 handleSettingsUpdate={handleSettingsUpdate}
                                 settings={settings}
                             />
@@ -431,7 +439,7 @@ function App() {
                                         {t('Volume')}
                                     </span>
                                     <span className="text-sm font-bold text-xl mb-3">
-                                        {workingData['for-volume']}
+                                        {manifest['for-volume']}
                                         <span
                                             onClick={() =>
                                                 setSettingsDialog(true)
@@ -495,9 +503,7 @@ function App() {
                                                 )}
                                                 <Cards
                                                     volumeId={
-                                                        workingData[
-                                                            'for-volume'
-                                                        ]
+                                                        manifest['for-volume']
                                                     }
                                                     setPagination={
                                                         setPagination
