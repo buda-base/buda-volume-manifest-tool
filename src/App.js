@@ -70,8 +70,8 @@ function App() {
     const [fetchErr, setFetchErr] = React.useState(null)
     const [renderToIdx, setRenderToIdx] = React.useState(9)
     const [isLoadingMore, setIsLoadingMore] = React.useState(false)
-
     const settings = prop('volumeData', manifest)
+
 
     React.useEffect(() => {
         const search = window.location.search
@@ -89,11 +89,7 @@ function App() {
                         { uiLanguage: settings.defaultLanguage }
                     )
                     setIsFetching(false)
-                    const updatedManifest = set(
-                        imageListLens,
-                        images.slice(0, 51),
-                        manifest
-                    )
+                    const updatedManifest = set(imageListLens, images, manifest)
                     updateManifest(updatedManifest)
                 } catch (err) {
                     setIsFetching(false)
@@ -104,7 +100,7 @@ function App() {
         }
     }, [])
 
-    const saveUpdatesToManifest = () => {
+    const saveUpdatesToManifest = async () => {
         const settingsWithImagePreview = assoc(
             'imagePreview',
             imageView,
@@ -113,7 +109,7 @@ function App() {
         const updatedManifest = compose(
             assoc('volumeData', settingsWithImagePreview)
         )(manifest)
-        postUpdate(updatedManifest)
+        await postUpdate(updatedManifest)
     }
 
     const updateImageList = updatedImageList => {
@@ -139,8 +135,7 @@ function App() {
     }
 
     const handleSettingsUpdate = curry((lens, value) => {
-        const updatedVolumeData = set(lens, value, settings)
-        const updatedManifest = assoc('volumeData', updatedVolumeData, manifest)
+        const updatedManifest = set(lens, value, manifest)
         updateManifest(updatedManifest)
     })
 
@@ -154,6 +149,7 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
+
     const updateDuplicateOf = (imageId, val) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
@@ -348,6 +344,7 @@ function App() {
                 return image
             }
         }, imageList)
+        console.log('updatedImageList', updatedImageList)
         updateImageList(updatedImageList)
     }
 
@@ -411,11 +408,12 @@ function App() {
     }
 
     const { t } = useTranslation()
+
     return (
         <ThemeProvider theme={theme}>
             <DndProvider backend={Backend}>
                 <AppBar
-                    settings={settings}
+                    manifest={manifest}
                     handleSettingsUpdate={handleSettingsUpdate}
                 />
                 {manifest.isDefault ? (
@@ -429,9 +427,8 @@ function App() {
                                 handleClose={() => setSettingsDialog(false)}
                                 setImageView={setImageView}
                                 imageView={imageView}
-                                volume={manifest}
+                                manifest={manifest}
                                 handleSettingsUpdate={handleSettingsUpdate}
-                                settings={settings}
                             />
                             <div className="container mx-auto flex flex-row py-6">
                                 <div className="w-1/2 flex flex-col">
@@ -472,7 +469,7 @@ function App() {
                             </div>
                             <FilterList
                                 handleSettingsUpdate={handleSettingsUpdate}
-                                hideDeletedImages={settings.hideDeletedImages}
+                                manifest={manifest}
                                 foldCheckedImages={foldCheckedImages}
                                 updateImageValue={updateImageValue}
                             />
@@ -550,11 +547,13 @@ function App() {
                                                     markPreviousAsReviewed={
                                                         markPreviousAsReviewed
                                                     }
-                                                    hideDeletedImages={
-                                                        settings.hideDeletedImages
-                                                    }
                                                     updateUncheckedItems={
                                                         updateUncheckedItems
+                                                    }
+                                                    hideDeletedImages={
+                                                        manifest.volumeData
+                                                            .bvmt_props
+                                                            .hideDeletedImages
                                                     }
                                                 />
                                                 <CardDropZone

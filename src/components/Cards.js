@@ -105,9 +105,15 @@ export default function ImageCard(props) {
                         className="mr-2"
                         style={{ cursor: 'move' }}
                     />
-                    <h3 className={`font-bold ${image.deleted && 'text-red-600'} flex align-center`}>
+                    <h3
+                        className={`font-bold ${image.deleted &&
+                            'text-red-600'} flex align-center`}
+                    >
                         {image.deleted && (
-                            <DeleteIcon className="mr-2" style={{ color: 'red' }} />
+                            <DeleteIcon
+                                className="mr-2"
+                                style={{ color: 'red' }}
+                            />
                         )}
                         {image.filename || image.type}
                     </h3>
@@ -226,9 +232,7 @@ export default function ImageCard(props) {
     const sectionId = image.sectionId || 'none'
 
     const { t } = useTranslation()
-
     const hideImage = props.hideDeletedImages && image.deleted
-
     return hideImage ? null : (
         <div
             className="shadow-sm hover:shadow-md w-full border-2 rounded border-gray-200 bg-white"
@@ -304,20 +308,9 @@ export default function ImageCard(props) {
                                         />
                                     )}
                                 </Formik>
-                                {/*<TextField*/}
-                                {/*    label={t('Margin Indication')}*/}
-                                {/*    type="text"*/}
-                                {/*    defaultValue={image.marginIndication}*/}
-                                {/*    onBlur={e => {*/}
-                                {/*        props.updateImageValue(*/}
-                                {/*            image.id,*/}
-                                {/*            'marginIndication',*/}
-                                {/*            e.target.value*/}
-                                {/*        )*/}
-                                {/*    }}*/}
-                                {/*/>*/}
+
                                 <Checkbox
-                                    checked={image.reviewed}
+                                    checked={!!image.reviewed}
                                     onChange={() => {
                                         props.toggleReview(image.id)
                                     }}
