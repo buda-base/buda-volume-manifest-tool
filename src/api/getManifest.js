@@ -59,6 +59,7 @@ function initManifestFromImageList(images, volume, options) {
             volumeLanguage: 'bo',
             'volname-margin': null,
             vollabel: [],
+            changelog: [],
             // here it should be modifyable in the settings
             // TODO: top-to-bottom should be the default for volumes
             // where the typical page has width > heigth
