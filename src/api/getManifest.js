@@ -73,11 +73,9 @@ function initManifestFromImageList(images, volume, options) {
                 indicationEven: '{volname}',
             },
             comments: '',
-            hideDeletedImages: false, //todo: set this to bvmt props
-            // bvmt_props: {
-            //     // any prop that has to do with the UI
-            //     showDeletedImages: true,
-            // },
+            bvmt_props: {
+                hideDeletedImages: false,
+            },
         },
     }
 }
