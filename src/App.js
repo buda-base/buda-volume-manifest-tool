@@ -42,6 +42,7 @@ import InfiniteScroll from 'react-infinite-scroller'
 import CardDropZone from './components/CardDropZone'
 import {getOrInitManifest} from './api/getManifest'
 import VolumeSearch from './components/VolumeSearch'
+import UpdateManifestError from './components/UpdateManifestError'
 
 const mapIndex = addIndex(map)
 const theme = createMuiTheme({
@@ -70,8 +71,8 @@ function App() {
     const [fetchErr, setFetchErr] = React.useState(null)
     const [renderToIdx, setRenderToIdx] = React.useState(9)
     const [isLoadingMore, setIsLoadingMore] = React.useState(false)
+    const [postErr, setPostErr] = React.useState(null)
     const settings = prop('volumeData', manifest)
-
 
     React.useEffect(() => {
         const search = window.location.search
@@ -101,15 +102,25 @@ function App() {
     }, [])
 
     const saveUpdatesToManifest = async () => {
-        const settingsWithImagePreview = assoc(
-            'imagePreview',
-            imageView,
-            settings
-        )
-        const updatedManifest = compose(
-            assoc('volumeData', settingsWithImagePreview)
-        )(manifest)
-        await postUpdate(updatedManifest)
+        try {
+            const settingsWithImagePreview = assoc(
+                'imagePreview',
+                imageView,
+                settings
+            )
+            const updatedManifest = compose(
+                assoc('volumeData', settingsWithImagePreview)
+            )(manifest)
+            await postUpdate(updatedManifest)
+        } catch (error) {
+            if (error.response) {
+                setPostErr(error.response.data)
+            } else if (error.request) {
+                setPostErr(error.request)
+            } else {
+                setPostErr(error.message)
+            }
+        }
     }
 
     const updateImageList = updatedImageList => {
@@ -415,6 +426,10 @@ function App() {
                 <AppBar
                     manifest={manifest}
                     handleSettingsUpdate={handleSettingsUpdate}
+                />
+                <UpdateManifestError
+                    postErr={postErr}
+                    setPostErr={setPostErr}
                 />
                 {manifest.isDefault ? (
                     <VolumeSearch isFetching={isFetching} fetchErr={fetchErr} />

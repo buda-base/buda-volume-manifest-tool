@@ -328,6 +328,10 @@ export default () => {
             bo: 'བོའའའའདད།',
             en: 'Delete',
         },
+        PostErrMsg: {
+            en: 'There was an error updating the volume.',
+            bo: 'Delete',
+        },
     }
 
     const initialReduceVal = fromPairs(LANGUAGES.map(lang => [lang, []]))
