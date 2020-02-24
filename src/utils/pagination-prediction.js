@@ -79,12 +79,14 @@ function intToTibStr(i, method) {
     return hundredss + rests
 }
 
+const folioRtest = RegExp(/^\d+'*[ab]/);
+const folioR = RegExp(/^(\d+)('*)([ab])(.*)$/);
+
 var pagination_types = {
     folios: {
         // see https://github.com/buda-base/manifest-tk/blob/master/pagination-spec.md
         is_well_formed: function(s) {
-            // actual regexp should be converted in JS (see aforementionned url)
-            return true
+            return folioRtest.test(s);
         },
         // 1a -> 1
         // 1b -> 2
@@ -93,12 +95,10 @@ var pagination_types = {
         // this works only in the simple cases where there is no duplicate
         // we cannot know anything about other cases, use with caution!
         str_to_seqnum: function(s) {
-            apo_idx = s.indexOf("'")
-            final = s.substring(s.length - 1, s.length)
-            if (apo_idx == -1) first_part = s.substring(0, s.length - 1)
-            else first_part = s.substring(0, apo_idx)
-            first_part_i = parseInt(first_part, 10)
-            return 2 * first_part_i + (final == 'b' ? 1 : 0)
+            let matchedS = folioR.exec(s);
+            if (!matchedS) return 0;
+            let first_part_i = parseInt(matchedS[1], 10);
+            return 2 * first_part_i + (matchedS[3] == 'b' ? 1 : 0)
         },
         // 1a -> 1b
         // 1b -> 2a
@@ -122,16 +122,31 @@ var pagination_types = {
             folio_i = Math.floor(i / 2)
             return intToTibStr(folio_i)
         },
+        compare: function(a, b) {
+            let matchedA = folioR.exec(a);
+            let matchedB = folioR.exec(b);
+            if (!matchedA || !matchedB) return 0;
+            let fnumA = parseInt(matchedA[1], 10);
+            let fnumB = parseInt(matchedB[1], 10);
+            if (fnumA != fnumB) return fnumA - fnumB;
+            let lenQuotA = matchedA[2].length;
+            let lenQuotB = matchedB[2].length;
+            if (lenQuotA != lenQuotB) return lenQuotA - lenQuotB;
+            if (matchedA[3] == 'a' && matchedB[3] == 'b') return -1;
+            if (matchedA[3] == 'b' && matchedB[3] == 'a') return 1;
+            return matchedA[4].localeCompare(matchedB[4]);
+        }
     },
     simple: {
         is_well_formed: function(s) {
-            return !isNaN(parseInt(n, 10))
+            let i = parseInt(s, 10)
+            return !isNaN(i) && i > -1;
         },
         str_to_seqnum: function(s) {
-            return parseInt(n, 10)
+            return parseInt(s, 10)
         },
         next_str: function(s) {
-            return (parseInt(n, 10) + 1).toString()
+            return (parseInt(s, 10) + 1).toString()
         },
         seqnum_to_str: function(i) {
             return i.toString()
@@ -142,6 +157,9 @@ var pagination_types = {
             // Tibetan or Chinese numerals, we can see that later
             return i.toString()
         },
+        compare: function(a, b) {
+            return parseInt(a, 10) - parseInt(b, 10);
+        }
     },
     // one boring TODO: roman numerals (preferably lower case)
 }
@@ -215,3 +233,8 @@ export default get_get_info
 // same for the next ones:
 // var img04info = get_info(2)
 // var img05info = get_info(3)
+// var compare = pagination_types.folios.compare;
+// console.log(compare("1b", "1a"));
+// console.log(compare("1b", "1b"));
+// console.log(compare("10b", "1b"));
+// console.log(compare("1'a", "1b"));
