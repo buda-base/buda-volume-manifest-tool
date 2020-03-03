@@ -43,7 +43,7 @@
     },
     "T0007": {
         "label": {
-            "eng": "picture of edge"
+            "eng": "picture of a side of a volume"
         },
         "helpMessage": ""
     },
@@ -85,19 +85,52 @@
     },
     "T0014": {
         "label": {
-            "eng": "illustration page"
+            "eng": "has illustrations"
         },
         "helpMessage": ""
     },
     "T0015": {
         "label": {
-            "eng": "color cards / rules"
+            "eng": "color/lens checker"
         },
-        "helpMessage": ""
+        "helpMessage": "for pictures containing only checkers (no artefact)"
     },
     "T0016": {
         "label": {
-            "eng": "picture of close volume"
+            "eng": "detail"
+        },
+        "helpMessage": "used to tag picture that are detail of a feature of a page (seal, etc.)",
+        "requiresOfField": true
+    },
+    "T0017": {
+        "label": {
+            "eng": "duplicate in scans"
+        },
+        "helpMessage": "",
+        "requiresOfField": true
+    },
+    "T0018": {
+        "label": {
+            "eng": "duplicate in original"
+        },
+        "helpMessage": "",
+        "requiresOfField": true
+    },
+    "T0019": {
+        "label": {
+            "eng": "missing from scans"
+        },
+        "helpMessage": ""
+    },
+    "T0020": {
+        "label": {
+            "eng": "missing from original"
+        },
+        "helpMessage": ""
+    },
+    "T0021": {
+        "label": {
+            "eng": "thumbnail for volume"
         },
         "helpMessage": ""
     }
