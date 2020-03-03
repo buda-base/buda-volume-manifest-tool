@@ -3,9 +3,10 @@ import uuidv4 from 'uuid/v4'
 const data = {
     "for-volume": "bdr:I1KG9128",
     "spec-version": "0.1.0",
+    "volume-label": [{"@value": "the label of the volume", "@language": "bo"}],
     "rev": "860f508e-608e-484d-9fc3-62392fab0b12",
     "attribution": [{"@value": "data contributed by rKTs", "@language": "en"}],
-    "note": [{"@value":"not sure about the order of page 2"}],
+    "note": [{"@value":"not sure about the order of page 2", "@language": "en"}],
     "viewing-direction": "left-to-right",
     "changes": [
         {
@@ -81,7 +82,7 @@ const data = {
     "appData": {
         "bvmt": {
             "metadata-for-bvmt-ver": "0.1.0",
-            "default-string-lang": "en",
+            "default-vol-string-lang": "bo",
             "show-checked-images": true,
             "show-hidden-images": true,
             "margin-indication-odd": "{volname}-{sectionname}-{pagenum:bo}",

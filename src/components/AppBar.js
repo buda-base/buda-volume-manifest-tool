@@ -22,20 +22,17 @@ function AppBarTwo(props) {
                                 <FormControl style={{ width: '100%' }}>
                                     <Select
                                         value={
-                                            manifest.volumeData.defaultLanguage
+                                            // TODO: the defalt ui lang shouldn't be in the manifest
+                                            // at all, it should be a global variable for the user
+                                            manifest.appData.bvmt["default-ui-string-lang"]
                                         }
                                         onChange={e => {
                                             i18n.changeLanguage(e.target.value)
                                             handleSettingsUpdate(
                                                 lensPath([
-                                                    'default-string-lang',
-                                                ]),
-                                                e.target.value
-                                            )
-                                            handleSettingsUpdate(
-                                                lensPath([
-                                                    'volumeData',
-                                                    'defaultLanguage',
+                                                    'appData',
+                                                    'bvmt',
+                                                    'default-ui-string-lang',
                                                 ]),
                                                 e.target.value
                                             )

@@ -90,7 +90,7 @@ function SectionInput(props) {
                                 setLanguageValue(e.target.value)
                             }}
                         >
-                            <option value="bo">བོ</option>
+                            <option value="bo">བོད</option>
                             <option value="eng">English</option>
                         </Select>
                     </FormControl>
