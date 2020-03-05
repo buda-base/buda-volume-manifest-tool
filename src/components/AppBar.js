@@ -4,6 +4,7 @@ import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
 import {lensPath} from 'ramda'
 import {useTranslation} from 'react-i18next'
+import AuthNavBar from "./AuthNavBar";
 
 function AppBarTwo(props) {
     const { manifest, handleSettingsUpdate } = props
@@ -17,6 +18,7 @@ function AppBarTwo(props) {
                         <a href="/">
                             <span className="text-2xl">{t('siteName')}</span>
                         </a>
+                        <AuthNavBar/>
                         <div className="w-1/6">
                             <div className="w-full">
                                 <FormControl style={{ width: '100%' }}>
