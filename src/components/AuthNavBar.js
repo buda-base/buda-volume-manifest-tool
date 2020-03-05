@@ -6,6 +6,10 @@ import { useAuth0 } from "../react-auth0-spa";
 const AuthNavBar = () => {
   const { isAuthenticated, loginWithRedirect, logout, loading } = useAuth0();
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div>
       {!isAuthenticated && (

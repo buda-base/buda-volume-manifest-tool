@@ -36,6 +36,14 @@ export const Auth0Provider = ({
       if (isAuthenticated) {
         const user = await auth0FromHook.getUser();
         setUser(user);
+
+        
+        const token  = await auth0FromHook.getTokenSilently();
+        const claims = await auth0FromHook.getIdTokenClaims()
+        console.log("tokens",token,claims.__raw);
+        localStorage.setItem('access_token', token);
+        localStorage.setItem('id_token', claims.__raw);
+
       }
 
       setLoading(false);
@@ -79,7 +87,11 @@ export const Auth0Provider = ({
         loginWithRedirect: (...p) => auth0Client.loginWithRedirect(...p),
         getTokenSilently: (...p) => auth0Client.getTokenSilently(...p),
         getTokenWithPopup: (...p) => auth0Client.getTokenWithPopup(...p),
-        logout: (...p) => auth0Client.logout({returnTo:window.location.href})
+        logout: (...p) => { 
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('id_token');
+            auth0Client.logout({returnTo:window.location.href});
+        }
       }}
     >
       {children}
