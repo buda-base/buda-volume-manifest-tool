@@ -1,6 +1,6 @@
 import axios from 'axios'
 import {append, assoc} from 'ramda'
-import config from '../auth_ext_config.json'
+import config from '../auth_config.json'
 
 function add_changelog(manifest, userId, changelogStr) {
     const changelog = {
@@ -19,11 +19,11 @@ async function saveManifest(
 ){
     // first check: users must be logged in 
     if(auth0 && auth0.isAuthenticated) {
-        
+
         console.log("user",auth0.user.email)
 
         // get an app token from IIIFPres Auth0 app
-        const json = await axios.post("https://bdrc-io.auth0.com/oauth/token", config, { headers: { 'content-type': 'application/json' } })
+        const json = await axios.post("https://bdrc-io.auth0.com/oauth/token", config.iiifpres, { headers: { 'content-type': 'application/json' } })
         const app_token = json.data.access_token
 
 
