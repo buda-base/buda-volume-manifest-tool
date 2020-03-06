@@ -10,6 +10,7 @@ import {useTranslation} from 'react-i18next'
 import postUpdate from './api/postUpdate'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import getPagination from './utils/pagination-prediction'
+import { useAuth0 } from "./react-auth0-spa";
 
 import {
     addIndex,
@@ -101,7 +102,7 @@ function App() {
         }
     }, [])
 
-    const saveUpdatesToManifest = async () => {
+    const saveUpdatesToManifest = async (auth) => {
         try {
             const settingsWithImagePreview = assoc(
                 'imagePreview',
@@ -111,7 +112,8 @@ function App() {
             const updatedManifest = compose(
                 assoc('volumeData', settingsWithImagePreview)
             )(manifest)
-            await postUpdate(updatedManifest)
+
+            await postUpdate(updatedManifest,auth)
         } catch (error) {
             if (error.response) {
                 setPostErr(error.response.data)
@@ -420,6 +422,8 @@ function App() {
 
     const { t } = useTranslation()
 
+    const auth = useAuth0();
+
     return (
         <ThemeProvider theme={theme}>
             <DndProvider backend={Backend}>
@@ -469,7 +473,7 @@ function App() {
                                     <div className="self-end">
                                         <span
                                             className="underline text-md font-medium cursor-pointer mr-5"
-                                            onClick={saveUpdatesToManifest}
+                                            onClick={() => saveUpdatesToManifest(auth)}
                                         >
                                             {t('SAVE')}
                                         </span>

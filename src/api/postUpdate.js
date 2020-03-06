@@ -1,5 +1,6 @@
 import axios from 'axios'
 import {append, assoc} from 'ramda'
+import config from '../auth_ext_config.json'
 
 function add_changelog(manifest, userId, changelogStr) {
     const changelog = {
@@ -12,12 +13,19 @@ function add_changelog(manifest, userId, changelogStr) {
 
 async function saveManifest(
     manifest,
+    auth0, // TODO find a way to get Auth0 object outside of a React component
     userId = 'noUser',
     changelogStr = 'defaultChangeStr'
 ){
-    // first check: users must be logged in (let's ignore that for now)
-    const id_token = localStorage.getItem('id_token');
-    if(id_token) {
+    // first check: users must be logged in 
+    if(auth0 && auth0.isAuthenticated) {
+        
+        console.log("user",auth0.user.email)
+
+        // get an app token from IIIFPres Auth0 app
+        const json = await axios.post("https://bdrc-io.auth0.com/oauth/token", config, { headers: { 'content-type': 'application/json' } })
+        const app_token = json.data.access_token
+
 
         // and a changelog string must be provided (when the save button is pressed)
 
@@ -27,15 +35,15 @@ async function saveManifest(
         console.log('formattedManifest', formattedManifest)
         
         const data = await axios.put(`https://iiifpres.bdrc.io/bvm/v:${volume}`,{}, { headers: {
-            "Authorization": "Bearer " + id_token
+            "Authorization": "Bearer " + app_token
         } })
 
         manifest.rev = data.rev
         // if the put fails (http status != 200), then a popup should be presented
         // to the user with the payload of the response
     }
-    else {
-        // users must be logged in 
+    else { 
+        console.error("users must be logged in")
     }
 
 }
