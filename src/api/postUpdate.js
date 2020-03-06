@@ -13,11 +13,31 @@ function add_changelog(manifest, userId, changelogStr) {
 
 async function saveManifest(
     manifest,
-    userId,
-    changelogStr
-) {
+    userId = 'noUser',
+    changelogStr = 'defaultChangeStr'
+){
     // first check: users must be logged in (let's ignore that for now)
-    // and a changelog string must be provided (when the save button is pressed)
+    const id_token = localStorage.getItem('id_token');
+    if(id_token) {
+
+        // and a changelog string must be provided (when the save button is pressed)
+
+        // post updated manifest to api!
+        const volume = manifest['for-volume']
+        const formattedManifest = add_changelog(manifest, userId, changelogStr)
+        console.log('formattedManifest', formattedManifest)
+        
+        const data = await axios.put(`https://iiifpres.bdrc.io/bvm/ig:${volume}`,{}, { headers: {
+            "Authorization": "Bearer " + id_token
+        } })
+
+        manifest.rev = data.rev
+        // if the put fails (http status != 200), then a popup should be presented
+        // to the user with the payload of the response
+    }
+    else {
+        // users must be logged in 
+    }
 
     // post updated manifest to api!
     const volumeQname = manifest['for-volume']
