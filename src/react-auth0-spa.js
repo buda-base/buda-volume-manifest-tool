@@ -21,7 +21,7 @@ export const Auth0Provider = ({
   useEffect(() => {
     const initAuth0 = async () => {
       const auth0FromHook = await createAuth0Client(initOptions);
-      setAuth0(auth0FromHook);
+      setAuth0(auth0FromHook);      
 
       if (window.location.search.includes("code=") &&
           window.location.search.includes("state=")) {
@@ -36,14 +36,6 @@ export const Auth0Provider = ({
       if (isAuthenticated) {
         const user = await auth0FromHook.getUser();
         setUser(user);
-
-        
-        const token  = await auth0FromHook.getTokenSilently();
-        const claims = await auth0FromHook.getIdTokenClaims()
-        console.log("tokens",token,claims.__raw);
-        localStorage.setItem('access_token', token);
-        localStorage.setItem('id_token', claims.__raw);
-
       }
 
       setLoading(false);
