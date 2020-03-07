@@ -37,6 +37,7 @@ function initManifestFromImageList(images, volumeQname, options) {
         'spec-version': '0.1.0',
         "rev": null,
         "viewing-direction": "top-to-bottom",
+        "status": "editing",
         note: [],
         changelog: [],
         "attribution": [], // the attribution of the data in the manifest, if the user wants to be credited
