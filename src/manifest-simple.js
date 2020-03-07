@@ -3,6 +3,7 @@ import uuidv4 from 'uuid/v4'
 const data = {
     "for-volume": "bdr:I1KG9128",
     "spec-version": "0.1.0",
+    "status": "released",
     "volume-label": [{"@value": "the label of the volume", "@language": "bo"}],
     "rev": "860f508e-608e-484d-9fc3-62392fab0b12",
     "attribution": [{"@value": "data contributed by rKTs", "@language": "en"}],
