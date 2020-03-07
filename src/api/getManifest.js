@@ -1,82 +1,69 @@
 import uuidv4 from 'uuid/v4'
 import axios from 'axios'
 
-async function getImageList(volume) {
-    const data = await axios.get(`https://iiifpres.bdrc.io/il/v:${volume}`)
+var apiroot = "https://iiifpres-dev.bdrc.io";
+
+async function getImageList(volumeQname) {
+    const data = await axios.get(`${apiroot}/il/v:${volumeQname}`)
     return data.data.map(({ filename }) => ({
-        id: uuidv4(),
         filename,
-        subtype: 'from-scan',
     }))
 }
 
-async function getManifest(volume) {
+async function getManifest(volumeQname) {
     // this returns an existing manifest, might return a 404
-    return await axios.get(`https://iiifpres.bdrc.io/bvm/v:${volume}`)
+    return await axios.get(`${apiroot}/bvm/ig:${volumeQname}`)
 }
 
-export async function getOrInitManifest(volume, options) {
+export async function getOrInitManifest(volumeQname, options) {
     var manifest
     var images
     try {
-        manifest = await getManifest(volume)
+        manifest = await getManifest(volumeQname)
     } catch (err) {
         if (err.response.status != 404) {
             throw err
         }
-        images = await getImageList(volume)
-        manifest = initManifestFromImageList(images, volume, options)
+        images = await getImageList(volumeQname)
+        manifest = initManifestFromImageList(images, volumeQname, options)
     }
     return { manifest, images }
 }
 
-function initManifestFromImageList(images, volume, options) {
+function initManifestFromImageList(images, volumeQname, options) {
     return {
-        'for-volume': volume,
+        'for-volume': volumeQname,
+        "label": [], // an option
         'spec-version': '0.1.0',
-        attribution: 'data produced by BVMT',
-        'default-string-lang': options.uiLanguage,
+        "rev": null,
+        "viewing-direction": "top-to-bottom",
+        "status": "editing",
         note: [],
         changelog: [],
-        pagination: {
-            folios1: {
-                type: 'potifolios',
-                name: 'original pagination',
-            },
-        },
-        'pagination-default': 'folios1',
-        'view-default': 'view1',
+        "attribution": [], // the attribution of the data in the manifest, if the user wants to be credited
+        // a reasonable default
+        "pagination": [
+            {   
+                "id": "pgfolios",
+                "type": "folios",
+                "note": [{"@value": "from the original blockprint", "@language": "en"}]
+            }
+        ],
+        'default-view': 'view1',
         view: {
             view1: {
                 imagelist: images,
             },
         },
-        volumeData: {
-            // same here, language of the interface
-            defaultLanguage: options.uiLanguage,
-            // bo by default is fine here, next 3 properties
-            // should be set in the volume info
-            volumeLanguage: 'bo',
-            'volname-margin': null,
-            vollabel: [],
-            changelog: [],
-            // here it should be modifyable in the settings
-            // TODO: top-to-bottom should be the default for volumes
-            // where the typical page has width > heigth
-            // it still needs to be modifying in the UI because some
-            // Chinese books are right-to-left, others are left-to-right
-            viewingDirection: 'top-to-bottom',
-            inputOne: {
-                paginationType: 'folios',
-                inputForWholeMargin: true,
-                sectionInputs: [],
-                indicationOdd: '{volname}-{pagenum:bo}',
-                indicationEven: '{volname}',
-            },
-            comments: '',
-            bvmt_props: {
-                hideDeletedImages: false,
-            },
+        appData: {
+            "bvmt": {
+                "metadata-for-bvmt-ver": "0.1.0", // TODO: ajust if necessary
+                "default-ui-string-lang": options.uiLanguage,
+                "default-vol-string-lang": "bo", // reasonable default for now, should be an option
+                "margin-indication-odd": "{volname}-{sectionname}-{pagenum:bo}", // an option
+                "margin-volname": "", // an option too
+                "margin-indication-even": ""
+            }
         },
     }
 }

@@ -1,0 +1,5 @@
+# shouldn't work:
+
+curl -X PUT -H Content-Type:application/json -T bvmt-test.json -G https://iiifpres-dev.bdrc.io/bvm/ig:bdr:INONVALIDID
+
+curl -X PUT -H Content-Type:application/json -T bvmt-test.json -G https://iiifpres-dev.bdrc.io/bvm/ig:bdr:ITEST
