@@ -17,7 +17,7 @@ const AuthNavBar = () => {
         <button onClick={() => loginWithRedirect({})}>Log in</button>
       )}
 
-      {isAuthenticated && <button style={{lineHeight:"15px"}} onClick={() => logout()}><span style={{fontSize:'12px',verticalAlign:"6px"}}>{user.email}</span><br/>Log out</button>}
+      {isAuthenticated && <button style={{lineHeight:"15px"}} onClick={() => logout()}><span style={{fontSize:'12px',verticalAlign:"6px"}}>{user?user.email:"?"}</span><br/>Log out</button>}
     </div>
   );
 };
