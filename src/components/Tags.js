@@ -39,7 +39,7 @@ const Tags = props => {
                             {tagOptions.map((tag, i) => {
                                 return (
                                     <option key={i} value={tag[0]}>
-                                        {t(path(['label', 'eng'], tag[1]))}
+                                        {t(path(['label', 'en'], tag[1]))}
                                     </option>
                                 )
                             })}
@@ -67,7 +67,7 @@ const Tags = props => {
                                     <Chip
                                         key={tagId}
                                         label={t(
-                                            path(['label', 'eng'], tagData)
+                                            path(['label', 'en'], tagData)
                                         )}
                                         onDelete={() => {
                                             props.removeImageTag(id, tagId)

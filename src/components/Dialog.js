@@ -91,7 +91,7 @@ function SectionInput(props) {
                             }}
                         >
                             <option value="bo">བོད</option>
-                            <option value="eng">English</option>
+                            <option value="en">English</option>
                         </Select>
                     </FormControl>
                 </div>
@@ -210,7 +210,7 @@ export default function SettingsDialog(props) {
                                     native
                                 >
                                     <option value="bo">བོ</option>
-                                    <option value="eng">English</option>
+                                    <option value="en">English</option>
                                 </Select>
                             </FormControl>
                         </div>
