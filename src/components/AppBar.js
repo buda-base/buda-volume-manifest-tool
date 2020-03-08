@@ -2,15 +2,13 @@ import React from 'react'
 import AppBar from '@material-ui/core/AppBar/AppBar'
 import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
-import { lensPath } from 'ramda'
-import { useTranslation } from 'react-i18next'
+import {lensPath} from 'ramda'
+import {useTranslation} from 'react-i18next'
 import AuthNavBar from './AuthNavBar'
 
 function AppBarTwo(props) {
-    const { manifest, handleSettingsUpdate } = props
-    const { i18n, t } = useTranslation()
-
-    console.log('manifest', manifest)
+    const { manifest, handleSettingsUpdate } = props;
+    const { i18n, t } = useTranslation();
 
     return (
         <header className="fixed top-0 left-0 w-full" style={{ zIndex: 9999 }}>
@@ -36,7 +34,7 @@ function AppBarTwo(props) {
                                             ]
                                         }
                                         onChange={e => {
-                                            i18n.changeLanguage(e.target.value)
+                                            i18n.changeLanguage(e.target.value);
                                             handleSettingsUpdate(
                                                 lensPath([
                                                     'appData',

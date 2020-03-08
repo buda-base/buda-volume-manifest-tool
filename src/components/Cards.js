@@ -1,14 +1,14 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import CardHeader from '@material-ui/core/CardHeader'
 import CardContent from '@material-ui/core/CardContent'
-import { red } from '@material-ui/core/colors'
+import {red} from '@material-ui/core/colors'
 import TextField from '@material-ui/core/TextField'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import DragHandleIcon from '@material-ui/icons/DragHandle'
 import Select from '@material-ui/core/Select'
 import FormControl from '@material-ui/core/FormControl'
-import { Checkbox } from '@material-ui/core'
+import {Checkbox} from '@material-ui/core'
 import Edit from '@material-ui/icons/Edit'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -22,14 +22,16 @@ import axios from 'axios'
 import BeenhereIcon from '@material-ui/icons/Beenhere'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import ReorderIcon from '@material-ui/icons/Reorder'
-import { useDrag } from 'react-dnd'
-import { useTranslation } from 'react-i18next'
+import {useDrag} from 'react-dnd'
+import {useTranslation} from 'react-i18next'
 import Tags from './Tags'
 import TypeSelect from './TypeSelect'
 import NoteIcon from '@material-ui/icons/Note'
-import { Formik } from 'formik'
+import {Formik} from 'formik'
 import DeleteIcon from '@material-ui/icons/Delete'
-import { pathOr } from 'ramda'
+import {pathOr} from 'ramda'
+import InputLabel from '@material-ui/core/InputLabel'
+import LanguageOptions from './LanguageOptions'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -63,37 +65,38 @@ const useStyles = makeStyles(theme => ({
     avatar: {
         backgroundColor: red[500],
     },
-}))
+}));
 
 export default function ImageCard(props) {
-    const classes = useStyles()
-    const [editDialogOpen, setEditDialogOpen] = React.useState(false)
-    const [iiif, setiiif] = React.useState(null)
-    const { imageView, setImageView } = props
-    const { data: image, sectionInputs } = props
+    const classes = useStyles();
+    const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+    const [iiif, setiiif] = React.useState(null);
+    const {imageView, setImageView} = props;
+    const {data: image, sectionInputs} = props;
 
     const [, dragRef] = useDrag({
-        item: { type: 'CARD', imageId: image.id },
+        item: {type: 'CARD', imageId: image.id},
         collect: monitor => ({
             opacity: monitor.isDragging() ? 0.3 : 1,
         }),
-    })
+    });
 
     React.useEffect(() => {
         const getData = async () => {
             try {
                 const data = await axios.get(
                     `https://iiif.bdrc.io/${props.volumeId}::${image.filename}/info.json`
-                )
-                const iiif = data.data
-                setiiif(iiif)
-                return () => {}
+                );
+                const iiif = data.data;
+                setiiif(iiif);
+                return () => {
+                }
             } catch (err) {
                 console.log('iiifErr', err)
             }
-        }
+        };
         getData()
-    }, [])
+    }, []);
 
     const Header = () => {
         return (
@@ -139,24 +142,24 @@ export default function ImageCard(props) {
                         className="mr-4 cursor-pointer"
                     />
 
-                    <SimpleMenu />
+                    <SimpleMenu/>
                 </div>
             </div>
         )
-    }
+    };
 
     function SimpleMenu() {
-        const [anchorEl, setAnchorEl] = React.useState(null)
+        const [anchorEl, setAnchorEl] = React.useState(null);
 
-        const { t } = useTranslation()
+        const {t} = useTranslation();
 
         const handleClick = event => {
             setAnchorEl(event.currentTarget)
-        }
+        };
 
         const handleClose = () => {
             setAnchorEl(null)
-        }
+        };
 
         return (
             <div className="flex inline-block">
@@ -222,7 +225,7 @@ export default function ImageCard(props) {
                     <MenuItem
                         onClick={() => props.markPreviousAsReviewed(props.i)}
                     >
-                        <CheckBoxIcon className="mr-2" />
+                        <CheckBoxIcon className="mr-2"/>
                         {t('Mark all images down to this one as checked')}
                     </MenuItem>
                 </Menu>
@@ -230,10 +233,8 @@ export default function ImageCard(props) {
         )
     }
 
-    const sectionId = image.pagination || 'none'
-
-    const { t } = useTranslation()
-    const hideImage = props.hideDeletedImages && image.deleted
+    const {t} = useTranslation();
+    const hideImage = props.hideDeletedImages && image.deleted;
     return hideImage ? null : (
         <div
             className="shadow-sm hover:shadow-md w-full border-2 rounded border-gray-200 bg-white"
@@ -242,6 +243,7 @@ export default function ImageCard(props) {
             <EditCard
                 open={editDialogOpen}
                 setEditDialogOpen={setEditDialogOpen}
+                uiLanguage={props.uiLanguage}
                 data={image}
                 removeImageTag={props.removeImageTag}
                 addNote={props.addNote}
@@ -276,6 +278,10 @@ export default function ImageCard(props) {
                     <div className="flex flex-col w-full">
                         <div className="w-full flex flex-row  w-1/3">
                             <div className="mb-2">
+                                {console.log(
+                                    'props.manifestLanguage',
+                                    props.manifestLanguage
+                                )}
                                 <Formik
                                     initialValues={{
                                         marginIndication: pathOr(
@@ -283,14 +289,18 @@ export default function ImageCard(props) {
                                             ['indication', '@value'],
                                             image
                                         ),
+                                        language: props.manifestLanguage,
                                     }}
-                                    onSubmit={({ marginIndication }) => {
+                                    onSubmit={({
+                                                   marginIndication,
+                                                   language,
+                                               }) => {
                                         props.updateImageValue(
                                             image.id,
                                             'indication',
                                             {
                                                 '@value': marginIndication,
-                                                '@language': 'bo-x-ewts',
+                                                '@language': language,
                                             }
                                         )
                                     }}
@@ -301,18 +311,39 @@ export default function ImageCard(props) {
                                         handleChange,
                                         handleSubmit,
                                     }) => (
-                                        <TextField
-                                            label={' '}
-                                            type="text"
-                                            value={values.marginIndication}
-                                            onChange={handleChange}
-                                            onBlur={handleSubmit}
-                                            inputProps={{
-                                                id: 'marginIndication',
-                                            }}
-                                            id="margin-indication"
-                                            helperText={t('Margin Indication')}
-                                        />
+                                        <>
+                                            <TextField
+                                                label={' '}
+                                                type="text"
+                                                value={values.marginIndication}
+                                                onChange={handleChange}
+                                                onBlur={handleSubmit}
+                                                inputProps={{
+                                                    id: 'marginIndication',
+                                                }}
+                                                id="margin-indication"
+                                                helperText={t(
+                                                    'Margin Indication'
+                                                )}
+                                            />
+                                            <FormControl>
+                                                <InputLabel shrink>
+                                                    ''
+                                                </InputLabel>
+                                                <Select
+                                                    native
+                                                    value={values.language}
+                                                    onChange={handleChange}
+                                                    onBlur={handleSubmit}
+                                                    id="margin-indication-lang"
+                                                    inputProps={{
+                                                        id: 'language',
+                                                    }}
+                                                >
+                                                    <LanguageOptions/>
+                                                </Select>
+                                            </FormControl>
+                                        </>
                                     )}
                                 </Formik>
 

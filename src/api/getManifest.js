@@ -1,12 +1,11 @@
 import uuidv4 from 'uuid/v4'
 import axios from 'axios'
 
-var apiroot = 'https://iiifpres.bdrc.io'
+var apiroot = 'https://iiifpres.bdrc.io';
 
 async function getImageList(volumeQname) {
-    const data = await axios.get(`${apiroot}/il/v:${volumeQname}`)
-    console.log('data', data)
-    return data.data.map(({ filename }) => ({
+    const data = await axios.get(`${apiroot}/il/v:${volumeQname}`);
+    return data.data.map(({filename}) => ({
         id: uuidv4(),
         filename,
     }))
@@ -18,19 +17,17 @@ async function getManifest(volumeQname) {
 }
 
 export async function getOrInitManifest(volumeQname, options) {
-    var manifest
-    var images
+    var manifest;
+    var images;
     try {
-        manifest = await getManifest(volumeQname)
-        console.log('manifest', manifest)
+        manifest = await getManifest(volumeQname);
     } catch (err) {
-        console.log('err!', err)
-        console.log('err.response.status', err.response.status)
+        console.log('err!', err);
+        console.log('err.response.status', err.response.status);
         if (err.response.status != 404) {
             throw err
         }
-        console.log('wow!')
-        images = await getImageList(volumeQname)
+        images = await getImageList(volumeQname);
         manifest = initManifestFromImageList(images, volumeQname, options)
     }
     return { manifest, images }
@@ -70,7 +67,7 @@ function initManifestFromImageList(images, volumeQname, options) {
             bvmt: {
                 'metadata-for-bvmt-ver': '0.1.0', // TODO: ajust if necessary
                 'default-ui-string-lang': options.uiLanguage,
-                'default-vol-string-lang': 'bo', // reasonable default for now, should be an option
+                'default-vol-string-lang': 'en', // reasonable default for now, should be an option
                 'margin-indication-odd': '{volname}-{sectionname}-{pagenum:bo}', // an option
                 'margin-volname': '', // an option too
                 'margin-indication-even': '',

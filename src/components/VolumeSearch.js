@@ -7,14 +7,14 @@ import MuiAlert from '@material-ui/lab/Alert'
 import {isNil} from 'ramda'
 
 const VolumeSearch = props => {
-    const { t } = useTranslation()
-    const [volume, setVolume] = React.useState('')
+    const {t} = useTranslation();
+    const [volume, setVolume] = React.useState('');
     return props.isFetching ? (
-        <CircularProgress />
+        <CircularProgress/>
     ) : (
         <div
             className="container mx-auto flex items-center justify-center"
-            style={{ paddingTop: 60 }}
+            style={{paddingTop: 60}}
         >
             <div className="mt-10">
                 <TextField
@@ -42,13 +42,13 @@ const VolumeSearch = props => {
                     {t('submit')}
                 </Button>
                 {!isNil(props.fetchErr) && (
-                    <MuiAlert style={{ marginTop: '2em' }} severity="error">
+                    <MuiAlert style={{marginTop: '2em'}} severity="error">
                         {t('submitErrorMsg')}
                     </MuiAlert>
                 )}
             </div>
         </div>
     )
-}
+};
 
 export default VolumeSearch

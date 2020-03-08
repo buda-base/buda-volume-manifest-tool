@@ -8,7 +8,7 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import Typography from '@material-ui/core/Typography'
 import {Checkbox} from '@material-ui/core'
-import {propOr} from 'ramda'
+import {propOr, trim} from 'ramda'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
@@ -20,6 +20,8 @@ import InputLabel from '@material-ui/core/InputLabel'
 import Select from '@material-ui/core/Select'
 import AddIcon from '@material-ui/icons/Add'
 import {useTranslation} from 'react-i18next'
+import {Formik} from 'formik'
+import LanguageOptions from './LanguageOptions'
 
 const styles = theme => ({
     root: {
@@ -32,10 +34,10 @@ const styles = theme => ({
         top: theme.spacing(1),
         color: theme.palette.grey[500],
     },
-})
+});
 
 const DialogTitle = withStyles(styles)(props => {
-    const { children, classes, onClose, ...other } = props
+    const {children, classes, onClose, ...other} = props;
     return (
         <MuiDialogTitle disableTypography className={classes.root} {...other}>
             <Typography variant="h6">{children}</Typography>
@@ -45,29 +47,27 @@ const DialogTitle = withStyles(styles)(props => {
                     className={classes.closeButton}
                     onClick={onClose}
                 >
-                    <CloseIcon />
+                    <CloseIcon/>
                 </IconButton>
             ) : null}
         </MuiDialogTitle>
     )
-})
+});
 
 const DialogActions = withStyles(theme => ({
     root: {
         margin: 0,
         padding: theme.spacing(1),
     },
-}))(MuiDialogActions)
+}))(MuiDialogActions);
 
 export default function EditCard(props) {
     const handleClose = () => {
         props.setEditDialogOpen(false)
-    }
+    };
 
-    const { data } = props
-    const { t } = useTranslation()
-
-    const [notesInput, setNotesInput] = React.useState('')
+    const {data} = props;
+    const {t} = useTranslation();
 
     return (
         <div>
@@ -134,7 +134,7 @@ export default function EditCard(props) {
                                             }}
                                         >
                                             <option value="bo">བོད</option>
-                                            <option value="eng">English</option>
+                                            <option value="en">English</option>
                                         </Select>
                                     </FormControl>
                                 </div>
@@ -155,7 +155,7 @@ export default function EditCard(props) {
                                                     data.id,
                                                     'belongsToVolume',
                                                     e.target.value
-                                                )
+                                                );
                                                 console.log(e)
                                             }}
                                             color="primary"
@@ -207,24 +207,58 @@ export default function EditCard(props) {
                     </div>
                     <div className="w-full flex mb-6 flex-col">
                         <h3 className="block">{t('Notes')}</h3>
-                        <div className="flex flex-row">
-                            <TextField
-                                value={notesInput}
-                                onChange={e => setNotesInput(e.target.value)}
-                                style={{ width: '50%' }}
-                                multiline
-                                rows="2"
-                            />
-                            <AddIcon
-                                className="self-center cursor-pointer"
-                                onClick={() => {
-                                    if (notesInput.length > 0) {
-                                        props.addNote(data.id, notesInput)
-                                        setNotesInput('')
-                                    }
-                                }}
-                            />
-                        </div>
+
+                        <Formik
+                            initialValues={{
+                                note: '',
+                                language: props.uiLanguage,
+                            }}
+                            onSubmit={({note, language}, {resetForm}) => {
+                                props.addNote(data.id, {
+                                    '@value': trim(note),
+                                    '@language': language,
+                                });
+                                resetForm()
+                            }}
+                            enableReinitialize
+                        >
+                            {({values, handleChange, handleSubmit}) => (
+                                <div className="w-full">
+                                    <div className="flex flex-row w-1/2">
+                                        <TextField
+                                            label={' '}
+                                            value={values.note}
+                                            onChange={handleChange}
+                                            style={{width: '50%'}}
+                                            inputProps={{
+                                                id: 'note',
+                                            }}
+                                            rows={2}
+                                            id="note"
+                                        />
+                                        <FormControl>
+                                            <InputLabel shrink>''</InputLabel>
+                                            <Select
+                                                native
+                                                value={values.language}
+                                                onChange={handleChange}
+                                                id="note-language"
+                                                inputProps={{
+                                                    id: 'language',
+                                                }}
+                                            >
+                                                <LanguageOptions/>
+                                            </Select>
+                                        </FormControl>
+                                        <AddIcon
+                                            className="self-center cursor-pointer"
+                                            onClick={handleSubmit}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </Formik>
+
                         <List>
                             {propOr([], 'note', data).map((note, i) => (
                                 <ListItem key={i} button>
@@ -235,7 +269,10 @@ export default function EditCard(props) {
                                             }}
                                         />
                                     </ListItemIcon>
-                                    <ListItemText primary={note} />
+                                    <ListItemText
+                                        primary={note['@value']}
+                                        secondary={note['@language']}
+                                    />
                                 </ListItem>
                             ))}
                         </List>

@@ -13,16 +13,16 @@ const useStyles = makeStyles(theme => ({
         margin: theme.spacing(1),
         minWidth: 120,
     },
-}))
+}));
 
 const TypeSelect = props => {
-    const { t } = useTranslation()
-    const classes = useStyles()
+    const {t} = useTranslation();
+    const classes = useStyles();
     const type = cond([
         [equals('duplicate'), always('duplicate')],
         [() => props.filename, always('file')],
         [equals('missing'), always('missing')],
-    ])(props.type)
+    ])(props.type);
     return (
         <div className="flex w-full">
             <div>
@@ -109,6 +109,6 @@ const TypeSelect = props => {
             </div>
         </div>
     )
-}
+};
 
 export default TypeSelect

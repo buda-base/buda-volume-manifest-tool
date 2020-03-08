@@ -1,7 +1,7 @@
-import { compose, fromPairs, map, reduce, toPairs } from 'ramda'
+import {compose, fromPairs, map, reduce, toPairs} from 'ramda'
 
 export default () => {
-    const LANGUAGES = ['en', 'bo']
+    const LANGUAGES = ['en', 'bo'];
     const translations = {
         Volume: {
             bo: 'བོའའའའདད།',
@@ -39,9 +39,13 @@ export default () => {
             bo: 'བོའའའའདད།',
             en: 'Pagination Type',
         },
-        Folio: {
+        folios: {
             bo: 'བོའའའའདད།',
             en: 'Folio',
+        },
+        simple: {
+            bo: 'བོའའའའདད།',
+            en: 'Simple',
         },
         'Folio With Sections': {
             bo: 'བོའའའའདད།',
@@ -348,16 +352,16 @@ export default () => {
             en: 'Status',
             bo: 'བོའའའའདད།',
         },
-    }
+    };
 
-    const initialReduceVal = fromPairs(LANGUAGES.map(lang => [lang, []]))
+    const initialReduceVal = fromPairs(LANGUAGES.map(lang => [lang, []]));
     return compose(
         map(fromPairs),
         reduce((acc, val) => {
-            const [key, value] = val
+            const [key, value] = val;
             LANGUAGES.forEach(lang => {
                 return acc[lang].push([key, value[lang]])
-            })
+            });
             return acc
         }, initialReduceVal),
         toPairs
