@@ -100,21 +100,21 @@
             "eng": "detail"
         },
         "helpMessage": "used to tag picture that are detail of a feature of a page (seal, etc.)",
-        "requiresOfField": true
+        "ofField": "detail-of"
     },
     "T0017": {
         "label": {
             "eng": "duplicate in scans"
         },
         "helpMessage": "",
-        "requiresOfField": true
+        "ofField": "duplicate-of"
     },
     "T0018": {
         "label": {
             "eng": "duplicate in original"
         },
         "helpMessage": "",
-        "requiresOfField": true
+        "ofField": "duplicate-of"
     },
     "T0019": {
         "label": {
