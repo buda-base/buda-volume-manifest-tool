@@ -70,7 +70,8 @@ const data = {
                 {
                     "filename": "I1KG9128005.tif",
                     "display": false,
-                    "of": "I1KG9128004.tif"
+                    "tags": ["T0018"]
+                    "duplicate-of": "I1KG9128004.tif"
                 },
                 {
                     "filename": "I1KG9128004.tif",
