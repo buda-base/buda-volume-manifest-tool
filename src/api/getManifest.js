@@ -1,11 +1,13 @@
 import uuidv4 from 'uuid/v4'
 import axios from 'axios'
 
-var apiroot = "https://iiifpres-dev.bdrc.io";
+var apiroot = 'https://iiifpres.bdrc.io'
 
 async function getImageList(volumeQname) {
     const data = await axios.get(`${apiroot}/il/v:${volumeQname}`)
+    console.log('data', data)
     return data.data.map(({ filename }) => ({
+        id: uuidv4(),
         filename,
     }))
 }
@@ -20,10 +22,14 @@ export async function getOrInitManifest(volumeQname, options) {
     var images
     try {
         manifest = await getManifest(volumeQname)
+        console.log('manifest', manifest)
     } catch (err) {
+        console.log('err!', err)
+        console.log('err.response.status', err.response.status)
         if (err.response.status != 404) {
             throw err
         }
+        console.log('wow!')
         images = await getImageList(volumeQname)
         manifest = initManifestFromImageList(images, volumeQname, options)
     }
@@ -33,21 +39,26 @@ export async function getOrInitManifest(volumeQname, options) {
 function initManifestFromImageList(images, volumeQname, options) {
     return {
         'for-volume': volumeQname,
-        "label": [], // an option
+        label: [], // an option
         'spec-version': '0.1.0',
-        "rev": null,
-        "viewing-direction": "top-to-bottom",
-        "status": "editing",
+        rev: null,
+        'viewing-direction': 'top-to-bottom',
+        status: 'editing',
         note: [],
         changelog: [],
-        "attribution": [], // the attribution of the data in the manifest, if the user wants to be credited
+        attribution: [], // the attribution of the data in the manifest, if the user wants to be credited
         // a reasonable default
-        "pagination": [
-            {   
-                "id": "pgfolios",
-                "type": "folios",
-                "note": [{"@value": "from the original blockprint", "@language": "en"}]
-            }
+        pagination: [
+            {
+                id: 'pgfolios',
+                type: 'folios',
+                note: [
+                    {
+                        '@value': 'from the original blockprint',
+                        '@language': 'en',
+                    },
+                ],
+            },
         ],
         'default-view': 'view1',
         view: {
@@ -56,14 +67,14 @@ function initManifestFromImageList(images, volumeQname, options) {
             },
         },
         appData: {
-            "bvmt": {
-                "metadata-for-bvmt-ver": "0.1.0", // TODO: ajust if necessary
-                "default-ui-string-lang": options.uiLanguage,
-                "default-vol-string-lang": "bo", // reasonable default for now, should be an option
-                "margin-indication-odd": "{volname}-{sectionname}-{pagenum:bo}", // an option
-                "margin-volname": "", // an option too
-                "margin-indication-even": ""
-            }
+            bvmt: {
+                'metadata-for-bvmt-ver': '0.1.0', // TODO: ajust if necessary
+                'default-ui-string-lang': options.uiLanguage,
+                'default-vol-string-lang': 'bo', // reasonable default for now, should be an option
+                'margin-indication-odd': '{volname}-{sectionname}-{pagenum:bo}', // an option
+                'margin-volname': '', // an option too
+                'margin-indication-even': '',
+            },
         },
     }
 }

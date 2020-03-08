@@ -1,16 +1,16 @@
 import React from 'react'
 import './index.css'
 import AppBar from './components/AppBar'
-import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles'
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
 import Cards from './components/Cards'
-import {DndProvider} from 'react-dnd'
+import { DndProvider } from 'react-dnd'
 import FilterList from './components/FilterList'
 import Backend from 'react-dnd-html5-backend'
-import {useTranslation} from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import postUpdate from './api/postUpdate'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import getPagination from './utils/pagination-prediction'
-import { useAuth0 } from "./react-auth0-spa";
+import { useAuth0 } from './react-auth0-spa'
 
 import {
     addIndex,
@@ -41,7 +41,7 @@ import Dialog from './components/Dialog'
 import uuidv4 from 'uuid/v4'
 import InfiniteScroll from 'react-infinite-scroller'
 import CardDropZone from './components/CardDropZone'
-import {getOrInitManifest} from './api/getManifest'
+import { getOrInitManifest } from './api/getManifest'
 import VolumeSearch from './components/VolumeSearch'
 import UpdateManifestError from './components/UpdateManifestError'
 
@@ -61,6 +61,11 @@ function App() {
         volumeData: {
             defaultLanguage: 'en',
         },
+        appData: {
+            bvmt: {
+                'default-ui-string-lang': 'en',
+            },
+        },
     })
     const [settingsDialogOpen, setSettingsDialog] = React.useState(false)
     const [imageView, setImageView] = React.useState({
@@ -73,6 +78,10 @@ function App() {
     const [renderToIdx, setRenderToIdx] = React.useState(9)
     const [isLoadingMore, setIsLoadingMore] = React.useState(false)
     const [postErr, setPostErr] = React.useState(null)
+    const [hideDeletedImages, setHideDeletedImages] = React.useState(false)
+
+    console.log('manifest', manifest)
+
     const settings = prop('volumeData', manifest)
 
     React.useEffect(() => {
@@ -88,7 +97,7 @@ function App() {
                 try {
                     const { manifest, images } = await getOrInitManifest(
                         volume,
-                        { uiLanguage: settings.defaultLanguage }
+                        { uiLanguage: 'en' }
                     )
                     setIsFetching(false)
                     const updatedManifest = set(imageListLens, images, manifest)
@@ -102,7 +111,7 @@ function App() {
         }
     }, [])
 
-    const saveUpdatesToManifest = async (auth) => {
+    const saveUpdatesToManifest = async auth => {
         try {
             const settingsWithImagePreview = assoc(
                 'imagePreview',
@@ -113,7 +122,7 @@ function App() {
                 assoc('volumeData', settingsWithImagePreview)
             )(manifest)
 
-            await postUpdate(updatedManifest,auth)
+            await postUpdate(updatedManifest, auth)
         } catch (error) {
             if (error.response) {
                 setPostErr(error.response.data)
@@ -124,7 +133,6 @@ function App() {
             }
         }
     }
-
     const updateImageList = updatedImageList => {
         updateManifest(set(imageListLens, updatedImageList, manifest))
     }
@@ -136,7 +144,6 @@ function App() {
             setIsLoadingMore(false)
         }, 3000)
     }
-
     const sectionInUseCount = sectionId => {
         return reduce(
             (acc, val) => {
@@ -146,23 +153,25 @@ function App() {
             imageList
         )
     }
-
     const handleSettingsUpdate = curry((lens, value) => {
         const updatedManifest = set(lens, value, manifest)
         updateManifest(updatedManifest)
     })
-
-    const updateImageSection = (imageId, sectionId) => {
+    const updateImageSection = (imageId, key, value) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
-                return assoc('sectionId', sectionId, image)
+                const sectionLens = lensPath([
+                    'pagination',
+                    manifest.pagination[0].id,
+                    key,
+                ])
+                return set(sectionLens, value, image)
             } else {
                 return image
             }
         }, imageList)
         updateImageList(updatedImageList)
     }
-
     const updateDuplicateOf = (imageId, val) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
@@ -183,7 +192,6 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-
     const deleteImageChip = (imageId, chipId) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
@@ -198,7 +206,6 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-
     const toggleReview = imageId => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
@@ -213,7 +220,6 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-
     const insertMissing = (i, direction) => {
         const defaultMissingImage = {
             id: uuidv4(),
@@ -225,7 +231,6 @@ function App() {
             updateImageList(insert(i + 1, defaultMissingImage, imageList))
         }
     }
-
     const toggleHideImage = imageId => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
@@ -237,7 +242,6 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-
     const selectType = (imageId, e, i) => {
         const val = e.target.value
         const attachDuplicateOfPreImage = image => {
@@ -268,7 +272,6 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-
     const addImageTag = (imageId, tag) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
@@ -280,7 +283,6 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-
     const removeImageTag = (imageId, tag) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
@@ -295,7 +297,6 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-
     const setPagination = (imageId, pagination) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
@@ -306,7 +307,6 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-
     const addNote = (imageId, note) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
@@ -321,7 +321,6 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-
     const removeNote = (imageId, noteIdx) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
@@ -337,7 +336,6 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-
     const updateImageValue = (imageId, key, value) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
@@ -348,7 +346,6 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-
     const markPreviousAsReviewed = imageIdx => {
         const updatedImageList = mapIndex((image, idx) => {
             if (idx <= imageIdx) {
@@ -360,13 +357,11 @@ function App() {
         console.log('updatedImageList', updatedImageList)
         updateImageList(updatedImageList)
     }
-
     const duplicateImageOptions = () =>
         compose(
             map(({ id, filename }) => ({ id, name: filename })),
             reject(complement(has)('filename'))
         )(imageList)
-
     const handleDrop = (imageId, idx) => {
         const { image, images } = reduce(
             (acc, val) => {
@@ -391,7 +386,6 @@ function App() {
         )
         updateImageList(updatedImageList)
     }
-
     const updateUncheckedItems = (id, marginIndication, idx) => {
         const getMargin = getPagination(
             settings.inputOne.paginationType,
@@ -411,7 +405,6 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-
     const foldCheckedImages = () => {
         const updatedImageList = map(
             image => (image.reviewed ? assoc('hide', true, image) : image),
@@ -419,10 +412,10 @@ function App() {
         )
         updateImageList(updatedImageList)
     }
-
     const { t } = useTranslation()
+    const auth = useAuth0()
 
-    const auth = useAuth0();
+    console.log('manifest', manifest)
 
     return (
         <ThemeProvider theme={theme}>
@@ -441,6 +434,7 @@ function App() {
                     <div className="App" style={{ paddingTop: 60 }}>
                         <div>
                             <Dialog
+                                appData={manifest.appData}
                                 sectionInUseCount={sectionInUseCount}
                                 open={settingsDialogOpen}
                                 handleClose={() => setSettingsDialog(false)}
@@ -473,16 +467,12 @@ function App() {
                                     <div className="self-end">
                                         <span
                                             className="underline text-md font-medium cursor-pointer mr-5"
-                                            onClick={() => saveUpdatesToManifest(auth)}
+                                            onClick={() =>
+                                                saveUpdatesToManifest(auth)
+                                            }
                                         >
                                             {t('SAVE')}
                                         </span>
-                                        {/*<span*/}
-                                        {/*    onClick={() => setSettingsDialog(true)}*/}
-                                        {/*    className="underline text-md font-medium cursor-pointer"*/}
-                                        {/*>*/}
-                                        {/*    <SettingsIcon />*/}
-                                        {/*</span>*/}
                                     </div>
                                 </div>
                             </div>
@@ -521,6 +511,9 @@ function App() {
                                                     volumeId={
                                                         manifest['for-volume']
                                                     }
+                                                    pagination={
+                                                        manifest.pagination
+                                                    }
                                                     setPagination={
                                                         setPagination
                                                     }
@@ -528,8 +521,7 @@ function App() {
                                                         updateImageSection
                                                     }
                                                     sectionInputs={
-                                                        settings.inputOne
-                                                            .sectionInputs
+                                                        manifest.sections || []
                                                     }
                                                     updateImageValue={
                                                         updateImageValue
@@ -570,9 +562,7 @@ function App() {
                                                         updateUncheckedItems
                                                     }
                                                     hideDeletedImages={
-                                                        manifest.volumeData
-                                                            .bvmt_props
-                                                            .hideDeletedImages
+                                                        hideDeletedImages
                                                     }
                                                 />
                                                 <CardDropZone

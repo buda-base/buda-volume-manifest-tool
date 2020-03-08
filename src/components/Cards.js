@@ -1,14 +1,14 @@
 import React from 'react'
-import {makeStyles} from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import CardHeader from '@material-ui/core/CardHeader'
 import CardContent from '@material-ui/core/CardContent'
-import {red} from '@material-ui/core/colors'
+import { red } from '@material-ui/core/colors'
 import TextField from '@material-ui/core/TextField'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import DragHandleIcon from '@material-ui/icons/DragHandle'
 import Select from '@material-ui/core/Select'
 import FormControl from '@material-ui/core/FormControl'
-import {Checkbox} from '@material-ui/core'
+import { Checkbox } from '@material-ui/core'
 import Edit from '@material-ui/icons/Edit'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -22,13 +22,14 @@ import axios from 'axios'
 import BeenhereIcon from '@material-ui/icons/Beenhere'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import ReorderIcon from '@material-ui/icons/Reorder'
-import {useDrag} from 'react-dnd'
-import {useTranslation} from 'react-i18next'
+import { useDrag } from 'react-dnd'
+import { useTranslation } from 'react-i18next'
 import Tags from './Tags'
 import TypeSelect from './TypeSelect'
 import NoteIcon from '@material-ui/icons/Note'
-import {Formik} from 'formik'
+import { Formik } from 'formik'
 import DeleteIcon from '@material-ui/icons/Delete'
+import { pathOr } from 'ramda'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -229,7 +230,7 @@ export default function ImageCard(props) {
         )
     }
 
-    const sectionId = image.sectionId || 'none'
+    const sectionId = image.pagination || 'none'
 
     const { t } = useTranslation()
     const hideImage = props.hideDeletedImages && image.deleted
@@ -277,14 +278,20 @@ export default function ImageCard(props) {
                             <div className="mb-2">
                                 <Formik
                                     initialValues={{
-                                        marginIndication:
-                                            image.marginIndication,
+                                        marginIndication: pathOr(
+                                            '',
+                                            ['indication', '@value'],
+                                            image
+                                        ),
                                     }}
                                     onSubmit={({ marginIndication }) => {
                                         props.updateImageValue(
                                             image.id,
-                                            'marginIndication',
-                                            marginIndication
+                                            'indication',
+                                            {
+                                                '@value': marginIndication,
+                                                '@language': 'bo-x-ewts',
+                                            }
                                         )
                                     }}
                                     enableReinitialize
@@ -336,19 +343,24 @@ export default function ImageCard(props) {
                                         {sectionInputs.length > 0 && (
                                             <Select
                                                 native
-                                                value={sectionId}
+                                                value={pathOr(
+                                                    'none',
+                                                    [
+                                                        'pagination',
+                                                        props.pagination[0].id,
+                                                        'section',
+                                                    ],
+                                                    image
+                                                )}
                                                 onChange={e => {
                                                     props.updateImageSection(
                                                         image.id,
+                                                        'section',
                                                         e.target.value
                                                     )
                                                 }}
                                                 className="mr-2"
                                                 style={{ width: 155 }}
-                                                inputProps={{
-                                                    name: 'type',
-                                                    id: 'type',
-                                                }}
                                             >
                                                 <option value={'none'}>
                                                     {t('Choose Section')}
@@ -363,7 +375,12 @@ export default function ImageCard(props) {
                                                                     section.id
                                                                 }
                                                             >
-                                                                {section.value}
+                                                                {
+                                                                    section
+                                                                        .name[
+                                                                        '@value'
+                                                                    ]
+                                                                }
                                                             </option>
                                                         )
                                                     }
@@ -372,10 +389,19 @@ export default function ImageCard(props) {
                                         )}
                                         <TextField
                                             helperText={t('Pagination')}
-                                            defaultValue={image.pagination}
+                                            defaultValue={pathOr(
+                                                '',
+                                                [
+                                                    'pagination',
+                                                    props.pagination[0].id,
+                                                    'value',
+                                                ],
+                                                image
+                                            )}
                                             onBlur={e => {
-                                                props.setPagination(
+                                                props.updateImageSection(
                                                     image.id,
+                                                    'value',
                                                     e.target.value
                                                 )
                                             }}

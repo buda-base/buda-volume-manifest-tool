@@ -1,4 +1,4 @@
-import {compose, fromPairs, map, reduce, toPairs} from 'ramda'
+import { compose, fromPairs, map, reduce, toPairs } from 'ramda'
 
 export default () => {
     const LANGUAGES = ['en', 'bo']
@@ -330,7 +330,23 @@ export default () => {
         },
         PostErrMsg: {
             en: 'There was an error updating the volume.',
-            bo: 'Delete',
+            bo: 'བོའའའའདད།',
+        },
+        editing: {
+            en: 'editing',
+            bo: 'བོའའའའདད།',
+        },
+        released: {
+            en: 'released',
+            bo: 'བོའའའའདད།',
+        },
+        withdrawn: {
+            en: 'withdrawn',
+            bo: 'བོའའའའདད།',
+        },
+        Status: {
+            en: 'Status',
+            bo: 'བོའའའའདད།',
         },
     }
 

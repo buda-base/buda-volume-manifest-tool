@@ -1,5 +1,5 @@
 import React from 'react'
-import {withStyles} from '@material-ui/core/styles'
+import { withStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import MuiDialogTitle from '@material-ui/core/DialogTitle'
@@ -7,17 +7,24 @@ import MuiDialogActions from '@material-ui/core/DialogActions'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import Typography from '@material-ui/core/Typography'
-import {Checkbox} from '@material-ui/core'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Select from '@material-ui/core/Select'
 import TextField from '@material-ui/core/TextField'
-import {append, lensPath, pathOr, propEq, reject, view} from 'ramda'
+import {
+    append,
+    lensPath,
+    pathOr,
+    propEq,
+    reject,
+    view,
+    path,
+    propOr,
+} from 'ramda'
 import InputLabel from '@material-ui/core/InputLabel'
 import FormControl from '@material-ui/core/FormControl'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
 import uuidv4 from 'uuid/v4'
-import {useTranslation} from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 
 const styles = theme => ({
     root: {
@@ -51,8 +58,8 @@ const DialogTitle = withStyles(styles)(props => {
 })
 
 function SectionInput(props) {
-    const value = pathOr('', ['data', 'value'], props)
-    const language = pathOr('', ['data', 'value'], props)
+    const value = pathOr('', ['data', 'name', '@value'], props)
+    const language = pathOr('', ['data', 'name', '@language'], props)
     const id = pathOr(null, ['data', 'id'], props)
     const [sectionValue, setSectionValue] = React.useState(value)
     const [languageValue, setLanguageValue] = React.useState(language)
@@ -146,28 +153,20 @@ const DialogActions = withStyles(theme => ({
 }))(MuiDialogActions)
 
 export default function SettingsDialog(props) {
-    const { handleSettingsUpdate, sectionInUseCount, manifest } = props
+    const { handleSettingsUpdate, sectionInUseCount, appData, manifest } = props
 
     const handleAddSection = (value, language) => {
-        const sectionsLens = lensPath([
-            'volumeData',
-            'inputOne',
-            'sectionInputs',
-        ])
+        const sectionsLens = lensPath(['sections'])
         const currentSections = view(sectionsLens, manifest)
         const updatedSections = append(
-            { value, language, id: uuidv4() },
+            { id: uuidv4(), name: { '@value': value, '@language': language } },
             currentSections
         )
         handleSettingsUpdate(sectionsLens, updatedSections)
     }
 
     const handleRemoveSection = id => {
-        const sectionsLens = lensPath([
-            'volumeData',
-            'inputOne',
-            'sectionInputs',
-        ])
+        const sectionsLens = lensPath(['sections'])
         const currentSections = view(sectionsLens, manifest)
         const updatedSections = reject(propEq('id', id), currentSections)
         handleSettingsUpdate(sectionsLens, updatedSections)
@@ -189,6 +188,31 @@ export default function SettingsDialog(props) {
                 {t('Edit')}
             </DialogTitle>
             <div className="p-3">
+                <div className="w-full">
+                    <div className="w-2/4">
+                        <FormControl style={{ width: '100%' }}>
+                            <InputLabel shrink>{t('Status')}</InputLabel>
+                            <Select
+                                value={manifest['status']}
+                                onChange={e => {
+                                    handleSettingsUpdate(
+                                        lensPath(['status']),
+                                        e.target.value
+                                    )
+                                }}
+                                native
+                            >
+                                <option value="editing">{t('editing')}</option>
+                                <option value="released">
+                                    {t('released')}
+                                </option>
+                                <option value="withdrawn">
+                                    {t('withdrawn')}
+                                </option>
+                            </Select>
+                        </FormControl>
+                    </div>
+                </div>
                 <div>
                     <div className="w-full">
                         <div className="w-2/4">
@@ -197,26 +221,29 @@ export default function SettingsDialog(props) {
                                     {t('Volume Language')}
                                 </InputLabel>
                                 <Select
-                                    value={manifest.volumeData.volumeLanguage}
+                                    value={
+                                        appData.bvmt['default-vol-string-lang']
+                                    }
                                     onChange={e => {
                                         handleSettingsUpdate(
                                             lensPath([
-                                                'volumeData',
-                                                'volumeLanguage',
+                                                'appData',
+                                                'bvmt',
+                                                'default-vol-string-lang',
                                             ]),
                                             e.target.value
                                         )
                                     }}
                                     native
                                 >
-                                    <option value="bo">བོ</option>
+                                    <option value="bo">བོད་</option>
                                     <option value="eng">English</option>
                                 </Select>
                             </FormControl>
                         </div>
                     </div>
                 </div>
-                <h2 className="mb-3 font-bold">{t('Input 1')}</h2>
+                {/*<h2 className="mb-3 font-bold">{t('Input 1')}</h2>*/}
                 <div className="w-full">
                     <div className="w-2/4">
                         <FormControl style={{ width: '100%' }}>
@@ -224,16 +251,13 @@ export default function SettingsDialog(props) {
                                 {t('Pagination Type')}
                             </InputLabel>
                             <Select
-                                value={
-                                    manifest.volumeData.inputOne.paginationType
-                                }
+                                value={path(
+                                    ['pagination', 0, 'type'],
+                                    manifest
+                                )}
                                 onChange={e => {
                                     handleSettingsUpdate(
-                                        lensPath([
-                                            'volumeData',
-                                            'inputOne',
-                                            'paginationType',
-                                        ]),
+                                        lensPath(['pagination', 0, 'type']),
                                         e.target.value
                                     )
                                 }}
@@ -250,33 +274,6 @@ export default function SettingsDialog(props) {
                         </FormControl>
                     </div>
                 </div>
-                <FormControlLabel
-                    style={{ display: 'block' }}
-                    control={
-                        <Checkbox
-                            checked={
-                                manifest.volumeData.inputOne.inputForWholeMargin
-                            }
-                            onChange={e => {
-                                handleSettingsUpdate(
-                                    lensPath([
-                                        'volumeData',
-                                        'inputOne',
-                                        'inputForWholeMargin',
-                                    ]),
-                                    !manifest.volumeData.inputOne
-                                        .inputForWholeMargin
-                                )
-                            }}
-                            value="input-whole-margin"
-                            color="primary"
-                            inputProps={{
-                                'aria-label': 'primary checkbox',
-                            }}
-                        />
-                    }
-                    label={t('add input for whole margin')}
-                />
                 <div className="w-full my-4">
                     <div className="w-2/4">
                         <FormControl style={{ width: '100%' }}>
@@ -284,15 +281,10 @@ export default function SettingsDialog(props) {
                                 {t('Viewing Direction')}
                             </InputLabel>
                             <Select
-                                value={
-                                    manifest.volumeData.viewingDirection || ''
-                                }
+                                value={manifest['viewing-direction']}
                                 onChange={e => {
                                     handleSettingsUpdate(
-                                        lensPath([
-                                            'volumeData',
-                                            'viewingDirection',
-                                        ]),
+                                        lensPath(['viewing-direction']),
                                         e.target.value
                                     )
                                 }}
@@ -318,7 +310,7 @@ export default function SettingsDialog(props) {
                         </FormControl>
                     </div>
                 </div>
-                {manifest.volumeData.inputOne.sectionInputs.map((data, i) => {
+                {propOr([], 'sections', manifest).map((data, i) => {
                     return (
                         <SectionInput
                             i={i}
@@ -340,15 +332,13 @@ export default function SettingsDialog(props) {
                     <TextField
                         label={t('Indication (odd)')}
                         type="text"
-                        defaultValue={
-                            manifest.volumeData.inputOne.indicationOdd
-                        }
+                        defaultValue={appData.bvmt['margin-indication-odd']}
                         onBlur={e => {
                             handleSettingsUpdate(
                                 lensPath([
-                                    'volumeData',
-                                    'inputOne',
-                                    'indicationOdd',
+                                    'appData',
+                                    'bvmt',
+                                    'margin-indication-odd',
                                 ]),
                                 e.target.value
                             )
@@ -360,32 +350,34 @@ export default function SettingsDialog(props) {
                     <TextField
                         label={t('Indication (even)')}
                         type="text"
-                        defaultValue={
-                            manifest.volumeData.inputOne.indicationEven
-                        }
+                        defaultValue={appData.bvmt['margin-indication-even']}
                         style={{ width: '50%' }}
                         onBlur={e => {
                             handleSettingsUpdate(
                                 lensPath([
-                                    'volumeData',
-                                    'inputOne',
-                                    'indicationEven',
+                                    'appData',
+                                    'bvmt',
+                                    'margin-indication-even',
                                 ]),
                                 e.target.value
                             )
                         }}
                     />
                 </div>
-                <h3>{t('Comments')}</h3>
+                <h3>{t('Notes')}</h3>
                 <div className="block">
                     <TextField
-                        defaultValue={manifest.volumeData.comments}
+                        defaultValue={pathOr(
+                            '',
+                            ['note', 0, '@value'],
+                            manifest
+                        )}
                         style={{ width: '50%' }}
                         multiline
                         rows="4"
                         onBlur={e => {
                             handleSettingsUpdate(
-                                lensPath(['volumeData', 'comments']),
+                                lensPath(['note', 0, '@value']),
                                 e.target.value
                             )
                         }}
