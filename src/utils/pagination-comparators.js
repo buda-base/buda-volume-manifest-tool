@@ -5,7 +5,7 @@ function getComparator(manifest) {
 		// error
 		return function(a,b) {console.error("no pagination indication in the manifest, cannot compare anything"); return 0;}
 	}
-	var default_pg_name = paginations[0].name;
+	var default_pg_name = paginations[0].id;
 	// TODO for Alex: this probably won't work as pagination_types is a variable of
 	// pagination-prediction.js which is not exported, not sure how to make it work
 	var default_pg_type_info = pagination_types[paginations[0].type];
