@@ -37,7 +37,7 @@ async function saveManifest(
         const formattedManifest = add_changelog(manifest, userId, changelogStr)
         console.log('formattedManifest', formattedManifest)
         
-        const data = await axios.put(`https://iiifpres.bdrc.io/bvm/v:${volume}`,{}, { headers: {
+        const data = await axios.put(`https://iiifpres.bdrc.io/bvm/ig:${volume}`,{}, { headers: {
             "Authorization": "Bearer " + app_token
         } })
 
