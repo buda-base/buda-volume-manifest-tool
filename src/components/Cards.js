@@ -29,6 +29,9 @@ import TypeSelect from './TypeSelect'
 import NoteIcon from '@material-ui/icons/Note'
 import {Formik} from 'formik'
 import DeleteIcon from '@material-ui/icons/Delete'
+import {pathOr} from 'ramda'
+import InputLabel from '@material-ui/core/InputLabel'
+import LanguageOptions from './LanguageOptions'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -62,37 +65,37 @@ const useStyles = makeStyles(theme => ({
     avatar: {
         backgroundColor: red[500],
     },
-}))
+}));
 
 export default function ImageCard(props) {
-    const classes = useStyles()
-    const [editDialogOpen, setEditDialogOpen] = React.useState(false)
-    const [iiif, setiiif] = React.useState(null)
-    const { imageView, setImageView } = props
-    const { data: image, sectionInputs } = props
+    const classes = useStyles();
+    const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+    const [iiif, setiiif] = React.useState(null);
+    const { imageView, setImageView } = props;
+    const { data: image, sectionInputs } = props;
 
     const [, dragRef] = useDrag({
         item: { type: 'CARD', imageId: image.id },
         collect: monitor => ({
             opacity: monitor.isDragging() ? 0.3 : 1,
         }),
-    })
+    });
 
     React.useEffect(() => {
         const getData = async () => {
             try {
                 const data = await axios.get(
                     `https://iiif.bdrc.io/${props.volumeId}::${image.filename}/info.json`
-                )
-                const iiif = data.data
-                setiiif(iiif)
+                );
+                const iiif = data.data;
+                setiiif(iiif);
                 return () => {}
             } catch (err) {
                 console.log('iiifErr', err)
             }
-        }
+        };
         getData()
-    }, [])
+    }, []);
 
     const Header = () => {
         return (
@@ -142,20 +145,20 @@ export default function ImageCard(props) {
                 </div>
             </div>
         )
-    }
+    };
 
     function SimpleMenu() {
-        const [anchorEl, setAnchorEl] = React.useState(null)
+        const [anchorEl, setAnchorEl] = React.useState(null);
 
-        const { t } = useTranslation()
+        const { t } = useTranslation();
 
         const handleClick = event => {
             setAnchorEl(event.currentTarget)
-        }
+        };
 
         const handleClose = () => {
             setAnchorEl(null)
-        }
+        };
 
         return (
             <div className="flex inline-block">
@@ -201,13 +204,13 @@ export default function ImageCard(props) {
                         </MenuItem>
                     )}
                     <MenuItem
-                        onClick={() =>
+                        onClick={() => {
                             props.updateUncheckedItems(
                                 image.id,
-                                image.marginIndication,
+                                image.indication['@value'],
                                 props.i
                             )
-                        }
+                        }}
                     >
                         <BeenhereIcon className="mr-2" />
                         {t('Update following unchecked items')}
@@ -229,10 +232,8 @@ export default function ImageCard(props) {
         )
     }
 
-    const sectionId = image.sectionId || 'none'
-
-    const { t } = useTranslation()
-    const hideImage = props.hideDeletedImages && image.deleted
+    const { t } = useTranslation();
+    const hideImage = props.hideDeletedImages && image.deleted;
     return hideImage ? null : (
         <div
             className="shadow-sm hover:shadow-md w-full border-2 rounded border-gray-200 bg-white"
@@ -241,6 +242,7 @@ export default function ImageCard(props) {
             <EditCard
                 open={editDialogOpen}
                 setEditDialogOpen={setEditDialogOpen}
+                uiLanguage={props.uiLanguage}
                 data={image}
                 removeImageTag={props.removeImageTag}
                 addNote={props.addNote}
@@ -275,16 +277,30 @@ export default function ImageCard(props) {
                     <div className="flex flex-col w-full">
                         <div className="w-full flex flex-row  w-1/3">
                             <div className="mb-2">
+                                {console.log(
+                                    'props.manifestLanguage',
+                                    props.manifestLanguage
+                                )}
                                 <Formik
                                     initialValues={{
-                                        marginIndication:
-                                            image.marginIndication,
+                                        marginIndication: pathOr(
+                                            '',
+                                            ['indication', '@value'],
+                                            image
+                                        ),
+                                        language: props.manifestLanguage,
                                     }}
-                                    onSubmit={({ marginIndication }) => {
+                                    onSubmit={({
+                                        marginIndication,
+                                        language,
+                                    }) => {
                                         props.updateImageValue(
                                             image.id,
-                                            'marginIndication',
-                                            marginIndication
+                                            'indication',
+                                            {
+                                                '@value': marginIndication,
+                                                '@language': language,
+                                            }
                                         )
                                     }}
                                     enableReinitialize
@@ -294,18 +310,39 @@ export default function ImageCard(props) {
                                         handleChange,
                                         handleSubmit,
                                     }) => (
-                                        <TextField
-                                            label={' '}
-                                            type="text"
-                                            value={values.marginIndication}
-                                            onChange={handleChange}
-                                            onBlur={handleSubmit}
-                                            inputProps={{
-                                                id: 'marginIndication',
-                                            }}
-                                            id="margin-indication"
-                                            helperText={t('Margin Indication')}
-                                        />
+                                        <>
+                                            <TextField
+                                                label={' '}
+                                                type="text"
+                                                value={values.marginIndication}
+                                                onChange={handleChange}
+                                                onBlur={handleSubmit}
+                                                inputProps={{
+                                                    id: 'marginIndication',
+                                                }}
+                                                id="margin-indication"
+                                                helperText={t(
+                                                    'Margin Indication'
+                                                )}
+                                            />
+                                            <FormControl>
+                                                <InputLabel shrink>
+                                                    ''
+                                                </InputLabel>
+                                                <Select
+                                                    native
+                                                    value={values.language}
+                                                    onChange={handleChange}
+                                                    onBlur={handleSubmit}
+                                                    id="margin-indication-lang"
+                                                    inputProps={{
+                                                        id: 'language',
+                                                    }}
+                                                >
+                                                    <LanguageOptions />
+                                                </Select>
+                                            </FormControl>
+                                        </>
                                     )}
                                 </Formik>
 
@@ -336,19 +373,24 @@ export default function ImageCard(props) {
                                         {sectionInputs.length > 0 && (
                                             <Select
                                                 native
-                                                value={sectionId}
+                                                value={pathOr(
+                                                    'none',
+                                                    [
+                                                        'pagination',
+                                                        props.pagination[0].id,
+                                                        'section',
+                                                    ],
+                                                    image
+                                                )}
                                                 onChange={e => {
                                                     props.updateImageSection(
                                                         image.id,
+                                                        'section',
                                                         e.target.value
                                                     )
                                                 }}
                                                 className="mr-2"
                                                 style={{ width: 155 }}
-                                                inputProps={{
-                                                    name: 'type',
-                                                    id: 'type',
-                                                }}
                                             >
                                                 <option value={'none'}>
                                                     {t('Choose Section')}
@@ -363,7 +405,12 @@ export default function ImageCard(props) {
                                                                     section.id
                                                                 }
                                                             >
-                                                                {section.value}
+                                                                {
+                                                                    section
+                                                                        .name[
+                                                                        '@value'
+                                                                    ]
+                                                                }
                                                             </option>
                                                         )
                                                     }
@@ -372,10 +419,19 @@ export default function ImageCard(props) {
                                         )}
                                         <TextField
                                             helperText={t('Pagination')}
-                                            defaultValue={image.pagination}
+                                            defaultValue={pathOr(
+                                                '',
+                                                [
+                                                    'pagination',
+                                                    props.pagination[0].id,
+                                                    'value',
+                                                ],
+                                                image
+                                            )}
                                             onBlur={e => {
-                                                props.setPagination(
+                                                props.updateImageSection(
                                                     image.id,
+                                                    'value',
                                                     e.target.value
                                                 )
                                             }}
@@ -387,9 +443,9 @@ export default function ImageCard(props) {
 
                         <TypeSelect
                             image={image}
-                            type={image.type}
+                            tags={image.tags}
                             setDuplicateType={props.setDuplicateType}
-                            updateDuplicateOf={props.updateDuplicateOf}
+                            updateOfField={props.updateOfField}
                             id={image.id}
                             duplicateType={image.duplicateType}
                             selectType={props.selectType}

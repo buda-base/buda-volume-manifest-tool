@@ -3,15 +3,15 @@ import {useDrop} from 'react-dnd'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 
 function CardDropZone({ i, handleDrop }) {
-    const [{ isOver }, drop] = useDrop({
+    const [{isOver}, drop] = useDrop({
         accept: 'CARD',
-        drop: ({ imageId }) => {
+        drop: ({imageId}) => {
             handleDrop(imageId, i)
         },
         collect: monitor => ({
             isOver: !!monitor.isOver(),
         }),
-    })
+    });
     return (
         <div
             ref={drop}

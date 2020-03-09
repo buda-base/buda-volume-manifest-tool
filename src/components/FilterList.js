@@ -6,14 +6,14 @@ import {useTranslation} from 'react-i18next'
 import Button from '@material-ui/core/Button'
 
 export default function FilterList(props) {
-    const { handleSettingsUpdate, manifest } = props
-    const { t } = useTranslation()
+    const { handleSettingsUpdate, manifest } = props;
+    const { t } = useTranslation();
     const hideDeletedImagesLens = lensPath([
         'volumeData',
         'bvmt_props',
         'hideDeletedImages',
-    ])
-    const hideDeletedImages = view(hideDeletedImagesLens, manifest)
+    ]);
+    const hideDeletedImages = view(hideDeletedImagesLens, manifest);
     return (
         <div className="container mx-auto flex flex-row justify-end">
             <Button
@@ -28,7 +28,7 @@ export default function FilterList(props) {
                 control={
                     <Checkbox
                         checked={hideDeletedImages}
-                        onChange={e => {
+                        onChange={_ => {
                             handleSettingsUpdate(
                                 hideDeletedImagesLens,
                                 !hideDeletedImages

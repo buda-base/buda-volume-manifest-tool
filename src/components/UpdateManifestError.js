@@ -5,7 +5,7 @@ import {path} from 'ramda'
 import {useTranslation} from 'react-i18next'
 
 const UpdateManifestError = props => {
-    const { t } = useTranslation()
+    const {t} = useTranslation();
     return (
         <Dialog
             onClose={() => props.setPostErr(null)}
@@ -18,6 +18,6 @@ const UpdateManifestError = props => {
             {path(['postErr'], props)}
         </Dialog>
     )
-}
+};
 
 export default UpdateManifestError

@@ -1,5 +1,5 @@
 /* eslint-disable */
-let apo_idx, final, first_part, first_part_i, folio_i, seqnum
+let apo_idx, final, first_part, first_part_i, folio_i, seqnum;
 
 var unit_prefix = [
     '',
@@ -12,7 +12,7 @@ var unit_prefix = [
     'བདུན་',
     'བརྒྱད་',
     'དགུ་',
-]
+];
 var unit_end = [
     '',
     'གཅིག',
@@ -24,7 +24,7 @@ var unit_end = [
     'བདུན།',
     'བརྒྱད།',
     'དགུ།',
-]
+];
 var exceptions = {
     0: 'ཐིག',
     10: 'བཅུ།',
@@ -32,7 +32,7 @@ var exceptions = {
     18: 'བཅོ་བརྒྱད།',
     20: 'ཉི་ཤུ',
     30: 'སུམ་བཅུ།',
-}
+};
 var dozens = [
     '',
     'བཅུ་',
@@ -44,19 +44,19 @@ var dozens = [
     'དོན་',
     'གྱ་',
     'གོ་',
-]
-var hundred_prefix = 'བརྒྱ་ '
-var hundred_end = 'བརྒྱ།'
-var ten_end = 'བཅུ།'
+];
+var hundred_prefix = 'བརྒྱ་ ';
+var hundred_end = 'བརྒྱ།';
+var ten_end = 'བཅུ།';
 
 function intToTibStr(i, method) {
     // returns the Tibetan representation of i in Tibetan letters
     if (i < 0 && i > 999) {
         return ''
     }
-    var hundredsi = Math.floor(i / 100)
-    var resti = i % 100
-    var hundredss = ''
+    var hundredsi = Math.floor(i / 100);
+    var resti = i % 100;
+    var hundredss = '';
     if (hundredsi > 0) {
         if (resti == 0) {
             return unit_prefix[hundredsi] + hundred_end
@@ -64,12 +64,12 @@ function intToTibStr(i, method) {
             hundredss = unit_prefix[hundredsi] + hundred_prefix
         }
     }
-    var rests
+    var rests;
     if (exceptions[resti]) {
         rests = exceptions[resti]
     } else {
-        var dozensi = Math.floor(resti / 10)
-        var uniti = resti % 10
+        var dozensi = Math.floor(resti / 10);
+        var uniti = resti % 10;
         if (uniti == 0) {
             rests = unit_prefix[dozensi] + ten_end
         } else {
@@ -86,7 +86,7 @@ var pagination_types = {
     folios: {
         // see https://github.com/buda-base/manifest-tk/blob/master/pagination-spec.md
         is_well_formed: function(s) {
-            return folioRtest.test(s);
+            return folioRtest.test(s)
         },
         // 1a -> 1
         // 1b -> 2
@@ -105,21 +105,21 @@ var pagination_types = {
         // etc.
         // this actually works in all cases, which is nice
         next_str: function(s) {
-            final = s.substring(s.length - 1, s.length)
-            if (final == 'a') return s.substring(0, s.length - 1) + 'b'
-            apo_idx = s.indexOf("'")
-            if (apo_idx == -1) first_part = s.substring(0, s.length - 1)
-            else first_part = s.substring(0, apo_idx)
+            final = s.substring(s.length - 1, s.length);
+            if (final == 'a') return s.substring(0, s.length - 1) + 'b';
+            apo_idx = s.indexOf("'");
+            if (apo_idx == -1) first_part = s.substring(0, s.length - 1);
+            else first_part = s.substring(0, apo_idx);
             return (parseInt(first_part, 10) + 1).toString() + 'a'
         },
         seqnum_to_str: function(i) {
-            final = i % 2 == 1 ? 'b' : 'a'
+            final = i % 2 == 1 ? 'b' : 'a';
             return Math.floor(i / 2).toString() + final
         },
         seqnum_to_full_str: function(i) {
             // no full page indication on verso
-            if (i % 2 == 1) return ''
-            folio_i = Math.floor(i / 2)
+            if (i % 2 == 1) return '';
+            folio_i = Math.floor(i / 2);
             return intToTibStr(folio_i)
         },
         compare: function(a, b) {
@@ -134,13 +134,13 @@ var pagination_types = {
             if (lenQuotA != lenQuotB) return lenQuotA - lenQuotB;
             if (matchedA[3] == 'a' && matchedB[3] == 'b') return -1;
             if (matchedA[3] == 'b' && matchedB[3] == 'a') return 1;
-            return matchedA[4].localeCompare(matchedB[4]);
-        }
+            return matchedA[4].localeCompare(matchedB[4])
+        },
     },
     simple: {
         is_well_formed: function(s) {
-            let i = parseInt(s, 10)
-            return !isNaN(i) && i > -1;
+            let i = parseInt(s, 10);
+            return !isNaN(i) && i > -1
         },
         str_to_seqnum: function(s) {
             return parseInt(s, 10)
@@ -148,20 +148,24 @@ var pagination_types = {
         next_str: function(s) {
             return (parseInt(s, 10) + 1).toString()
         },
-        seqnum_to_str: function(i) {
+        seqnum_to_str: function (i) {
             return i.toString()
         },
-        seqnum_to_full_str: function(i) {
+        seqnum_to_full_str: function (i) {
             // the page numbers are indicated in Latin numerals...
             // maybe there are cases where they are indicated in
             // Tibetan or Chinese numerals, we can see that later
             return i.toString()
         },
-        compare: function(a, b) {
-            return parseInt(a, 10) - parseInt(b, 10);
-        }
+        compare: function (a, b) {
+            return parseInt(a, 10) - parseInt(b, 10)
+        },
     },
     // one boring TODO: roman numerals (preferably lower case)
+};
+
+export function getPaginationTypes() {
+    return Object.keys(pagination_types)
 }
 
 function get_get_info(
@@ -171,8 +175,7 @@ function get_get_info(
     section_name
 ) {
     // I'm doing it for the pagination type folios where we have 1a, 1b, etc.
-    var pgf = pagination_types[pagination_type]
-
+    var pgf = pagination_types[pagination_type];
 
     if (!pgf.is_well_formed(index0_pagination)) {
         // return some error
@@ -180,13 +183,13 @@ function get_get_info(
     }
     // this is a bit tricky, but if we don't do that we end up with wrong
     // value in edge cases where there are apostrophes and all that good stuff
-    var index1_pagination = pgf.next_str(index0_pagination)
-    var index1_seqnum = pgf.str_to_seqnum(index1_pagination)
+    var index1_pagination = pgf.next_str(index0_pagination);
+    var index1_seqnum = pgf.str_to_seqnum(index1_pagination);
     // then dealing with templates, which we don't always have
-    var template = null
+    var template = null;
     if (section_template)
-        template = section_template.replace('{section_name}', section_name)
-    return function(nextimgseqnum) {
+        template = section_template.replace('{section_name}', section_name);
+    return function (nextimgseqnum) {
         // nextimgseqnum is the index after the image we have given as index0.
         // For instance is index0_pagination is '7a', if we want info about
         // the next page, we call this function with argument 1.
@@ -194,21 +197,21 @@ function get_get_info(
             // sorry, we can't compute that reliably
             return null
         }
-        var pagination, full_str
+        var pagination, full_str;
         if (nextimgseqnum == 1) {
             // 1 is a special case because of edge cases where index0 is 7'a for instance.
             // Note that index1_seqnum might be wrong is some edge cases but
             // it doesn't impact further computation so we let the user correct
             // it if needed. On second thoughts, it would be wrong on verso, but
             // the full_str on verso is empty so we should be safe in all cases.
-            pagination = index1_pagination
+            pagination = index1_pagination;
             full_str = pgf.seqnum_to_full_str(index1_seqnum)
         } else {
             // note that this seqnum has nothing to do with nextimgseqnum, it's the
             // seqnum if everything was regular so it's sort of virtual. For 1a it would be
             // 1, for 1b it would be 2, etc.
-            seqnum = nextimgseqnum + index1_seqnum - 1
-            pagination = pgf.seqnum_to_str(seqnum)
+            seqnum = nextimgseqnum + index1_seqnum - 1;
+            pagination = pgf.seqnum_to_str(seqnum);
             full_str = pgf.seqnum_to_full_str(seqnum)
         }
         if (template) {

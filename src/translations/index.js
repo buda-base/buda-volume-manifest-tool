@@ -1,7 +1,7 @@
 import {compose, fromPairs, map, reduce, toPairs} from 'ramda'
 
 export default () => {
-    const LANGUAGES = ['en', 'bo']
+    const LANGUAGES = ['en', 'bo'];
     const translations = {
         Volume: {
             bo: 'བོའའའའདད།',
@@ -39,9 +39,13 @@ export default () => {
             bo: 'བོའའའའདད།',
             en: 'Pagination Type',
         },
-        Folio: {
+        folios: {
             bo: 'བོའའའའདད།',
             en: 'Folio',
+        },
+        simple: {
+            bo: 'བོའའའའདད།',
+            en: 'Simple',
         },
         'Folio With Sections': {
             bo: 'བོའའའའདད།',
@@ -179,9 +183,13 @@ export default () => {
             bo: 'བོའའའའདད།',
             en: 'Type',
         },
-        'of File': {
+        'Duplicate of File': {
             bo: 'བོའའའའདད།',
-            en: 'of File',
+            en: 'Duplicate of File',
+        },
+        'Detail of File': {
+            bo: 'བོའའའའདད།',
+            en: 'Detail of File',
         },
         'Duplicate in Original': {
             bo: 'བོའའའའདད།',
@@ -330,18 +338,34 @@ export default () => {
         },
         PostErrMsg: {
             en: 'There was an error updating the volume.',
-            bo: 'Delete',
+            bo: 'བོའའའའདད།',
         },
-    }
+        editing: {
+            en: 'editing',
+            bo: 'བོའའའའདད།',
+        },
+        released: {
+            en: 'released',
+            bo: 'བོའའའའདད།',
+        },
+        withdrawn: {
+            en: 'withdrawn',
+            bo: 'བོའའའའདད།',
+        },
+        Status: {
+            en: 'Status',
+            bo: 'བོའའའའདད།',
+        },
+    };
 
-    const initialReduceVal = fromPairs(LANGUAGES.map(lang => [lang, []]))
+    const initialReduceVal = fromPairs(LANGUAGES.map(lang => [lang, []]));
     return compose(
         map(fromPairs),
         reduce((acc, val) => {
-            const [key, value] = val
+            const [key, value] = val;
             LANGUAGES.forEach(lang => {
                 return acc[lang].push([key, value[lang]])
-            })
+            });
             return acc
         }, initialReduceVal),
         toPairs
