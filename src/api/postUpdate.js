@@ -23,10 +23,12 @@ async function saveManifest(
 
         console.log("user",auth0.user.email)
 
+        // DEPRECATED ? not sure we really need this...
         // get an app token from IIIFPres Auth0 app
-        const json = await axios.post("https://bdrc-io.auth0.com/oauth/token", config.iiifpres, { headers: { 'content-type': 'application/json' } })
-        const app_token = json.data.access_token
+        // const json = await axios.post("https://bdrc-io.auth0.com/oauth/token", config.iiifpres, { headers: { 'content-type': 'application/json' } })
+        // const app_token = json.data.access_token
 
+        const app_token = localStorage.getItem("id_token")
 
         // and a changelog string must be provided (when the save button is pressed)
 

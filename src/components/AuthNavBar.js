@@ -19,7 +19,6 @@ const AuthNavBar = () => {
             {!isAuthenticated && (
                 <button onClick={() => loginWithRedirect({})}>Log in</button>
             )}
-
             {isAuthenticated && (
                 <button style={{lineHeight: '15px'}} onClick={() => logout()}>
                     <span style={{fontSize: '12px', verticalAlign: '6px'}}>
@@ -29,8 +28,8 @@ const AuthNavBar = () => {
                     Log out
                 </button>
             )}
-        </div>
-    )
+        </div>    
+    );
 };
 
 export default AuthNavBar

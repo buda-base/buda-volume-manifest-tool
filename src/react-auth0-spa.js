@@ -1,9 +1,12 @@
 
 import React, { useState, useEffect, useContext } from "react";
-import createAuth0Client from "@auth0/auth0-spa-js";
+//import createAuth0Client from "@auth0/auth0-spa-js";
+import auth0 from 'auth0-js';
 
 const DEFAULT_REDIRECT_CALLBACK = () =>
   window.history.replaceState({}, document.title, window.location.pathname);
+
+var auth
 
 export const Auth0Context = React.createContext();
 export const useAuth0 = () => useContext(Auth0Context);
@@ -19,14 +22,98 @@ export const Auth0Provider = ({
   const [popupOpen, setPopupOpen] = useState(false);
 
   useEffect(() => {
+    
+    const initAuth0 = async() => {
+      auth = new auth0.WebAuth(initOptions)      
+      console.log("auth",auth)
+
+      handleAuthentication();
+      
+      getUser()
+
+    }
+
+    initAuth0();
+    // eslint-disable-next-line
+  }, []);
+
+  const getUser = () => {
+    if(checkAuthenticated()) {
+      const token = localStorage.getItem('access_token')
+      if(token) { 
+        auth.client.userInfo(token, (err, profile) => {
+          if (profile) {
+            console.log("profile",profile)
+            const isAuthenticated = checkAuthenticated();
+            setUser(profile)
+            setIsAuthenticated(isAuthenticated);
+            setLoading(false);
+          }
+        })
+      }
+    }
+    else {
+      setLoading(false);
+    }
+  }
+
+  const login = (redirect) => {
+     // console.log("auth1",this.auth1,auth0)
+    console.log("redirect",redirect)
+    if(redirect) localStorage.setItem('auth0_redirect', JSON.stringify(redirect));
+    else localStorage.setItem('auth0_redirect', '/');
+    auth.authorize();
+  }
+
+  const checkAuthenticated = () => {
+    // Check whether the current time is past the
+    // Access Token's expiry time
+    let item = localStorage.getItem('expires_at')
+    if(!item) return false;
+    let expiresAt = JSON.parse(item);
+    return new Date().getTime() < expiresAt;
+  }
+
+  const setSession = async (authResult) => {
+    // Set the time that the Access Token will expire at
+    let expiresAt = JSON.stringify((authResult.expiresIn * 1000) + new Date().getTime());
+    localStorage.setItem('access_token', authResult.accessToken);
+    localStorage.setItem('id_token', authResult.idToken);
+    localStorage.setItem('expires_at', expiresAt);
+
+    console.log("session",authResult)
+
+    getUser()
+
+  }
+
+  const handleAuthentication = () => {
+    auth.parseHash(async (err, authResult) => {
+      if (authResult && authResult.accessToken && authResult.idToken) {
+        setSession(authResult);
+        window.history.replaceState(null, null, ' ');
+      } else if (err) {
+        console.log(err);
+      }
+    });
+  }
+
+    /*
     const initAuth0 = async () => {
+      
       const auth0FromHook = await createAuth0Client(initOptions);
+
       setAuth0(auth0FromHook);      
 
       if (window.location.search.includes("code=") &&
           window.location.search.includes("state=")) {
-        const { appState } = await auth0FromHook.handleRedirectCallback();
-        onRedirectCallback(appState);
+          try {
+            const { appState } = await auth0FromHook.handleRedirectCallback();
+            onRedirectCallback(appState);
+          }
+          catch(e) {
+            console.error("auth0 error",e)
+          }
       }
 
       const isAuthenticated = await auth0FromHook.isAuthenticated();
@@ -40,10 +127,6 @@ export const Auth0Provider = ({
 
       setLoading(false);
     };
-    initAuth0();
-    // eslint-disable-next-line
-  }, []);
-
   const loginWithPopup = async (params = {}) => {
     setPopupOpen(true);
     try {
@@ -66,6 +149,7 @@ export const Auth0Provider = ({
     setIsAuthenticated(true);
     setUser(user);
   };
+    */
   return (
     <Auth0Context.Provider
       value={{
@@ -73,16 +157,16 @@ export const Auth0Provider = ({
         user,
         loading,
         popupOpen,
-        loginWithPopup,
-        handleRedirectCallback,
+        // handleRedirectCallback,
         getIdTokenClaims: (...p) => auth0Client.getIdTokenClaims(...p),
-        loginWithRedirect: (...p) => auth0Client.loginWithRedirect(...p),
+        loginWithRedirect: (...p) => login(...p),
         getTokenSilently: (...p) => auth0Client.getTokenSilently(...p),
         getTokenWithPopup: (...p) => auth0Client.getTokenWithPopup(...p),
         logout: (...p) => { 
             localStorage.removeItem('access_token');
             localStorage.removeItem('id_token');
-            auth0Client.logout({returnTo:window.location.href});
+            localStorage.removeItem('expires_at');
+            setIsAuthenticated(false);
         }
       }}
     >
