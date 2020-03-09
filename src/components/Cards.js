@@ -71,11 +71,11 @@ export default function ImageCard(props) {
     const classes = useStyles();
     const [editDialogOpen, setEditDialogOpen] = React.useState(false);
     const [iiif, setiiif] = React.useState(null);
-    const {imageView, setImageView} = props;
-    const {data: image, sectionInputs} = props;
+    const { imageView, setImageView } = props;
+    const { data: image, sectionInputs } = props;
 
     const [, dragRef] = useDrag({
-        item: {type: 'CARD', imageId: image.id},
+        item: { type: 'CARD', imageId: image.id },
         collect: monitor => ({
             opacity: monitor.isDragging() ? 0.3 : 1,
         }),
@@ -89,8 +89,7 @@ export default function ImageCard(props) {
                 );
                 const iiif = data.data;
                 setiiif(iiif);
-                return () => {
-                }
+                return () => {}
             } catch (err) {
                 console.log('iiifErr', err)
             }
@@ -142,7 +141,7 @@ export default function ImageCard(props) {
                         className="mr-4 cursor-pointer"
                     />
 
-                    <SimpleMenu/>
+                    <SimpleMenu />
                 </div>
             </div>
         )
@@ -151,7 +150,7 @@ export default function ImageCard(props) {
     function SimpleMenu() {
         const [anchorEl, setAnchorEl] = React.useState(null);
 
-        const {t} = useTranslation();
+        const { t } = useTranslation();
 
         const handleClick = event => {
             setAnchorEl(event.currentTarget)
@@ -205,13 +204,13 @@ export default function ImageCard(props) {
                         </MenuItem>
                     )}
                     <MenuItem
-                        onClick={() =>
+                        onClick={() => {
                             props.updateUncheckedItems(
                                 image.id,
-                                image.marginIndication,
+                                image.indication['@value'],
                                 props.i
                             )
-                        }
+                        }}
                     >
                         <BeenhereIcon className="mr-2" />
                         {t('Update following unchecked items')}
@@ -225,7 +224,7 @@ export default function ImageCard(props) {
                     <MenuItem
                         onClick={() => props.markPreviousAsReviewed(props.i)}
                     >
-                        <CheckBoxIcon className="mr-2"/>
+                        <CheckBoxIcon className="mr-2" />
                         {t('Mark all images down to this one as checked')}
                     </MenuItem>
                 </Menu>
@@ -233,7 +232,7 @@ export default function ImageCard(props) {
         )
     }
 
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     const hideImage = props.hideDeletedImages && image.deleted;
     return hideImage ? null : (
         <div
@@ -292,9 +291,9 @@ export default function ImageCard(props) {
                                         language: props.manifestLanguage,
                                     }}
                                     onSubmit={({
-                                                   marginIndication,
-                                                   language,
-                                               }) => {
+                                        marginIndication,
+                                        language,
+                                    }) => {
                                         props.updateImageValue(
                                             image.id,
                                             'indication',
@@ -340,7 +339,7 @@ export default function ImageCard(props) {
                                                         id: 'language',
                                                     }}
                                                 >
-                                                    <LanguageOptions/>
+                                                    <LanguageOptions />
                                                 </Select>
                                             </FormControl>
                                         </>
@@ -444,9 +443,9 @@ export default function ImageCard(props) {
 
                         <TypeSelect
                             image={image}
-                            type={image.type}
+                            tags={image.tags}
                             setDuplicateType={props.setDuplicateType}
-                            updateDuplicateOf={props.updateDuplicateOf}
+                            updateOfField={props.updateOfField}
                             id={image.id}
                             duplicateType={image.duplicateType}
                             selectType={props.selectType}

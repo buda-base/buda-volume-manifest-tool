@@ -183,9 +183,13 @@ export default () => {
             bo: 'བོའའའའདད།',
             en: 'Type',
         },
-        'of File': {
+        'Duplicate of File': {
             bo: 'བོའའའའདད།',
-            en: 'of File',
+            en: 'Duplicate of File',
+        },
+        'Detail of File': {
+            bo: 'བོའའའའདད།',
+            en: 'Detail of File',
         },
         'Duplicate in Original': {
             bo: 'བོའའའའདད།',

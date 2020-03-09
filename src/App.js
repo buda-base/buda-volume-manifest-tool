@@ -14,6 +14,7 @@ import {useAuth0} from './react-auth0-spa'
 
 import {
     addIndex,
+    always,
     append,
     assoc,
     complement,
@@ -23,6 +24,7 @@ import {
     dissoc,
     has,
     inc,
+    includes,
     insert,
     lensPath,
     map,
@@ -34,6 +36,7 @@ import {
     remove,
     set,
     view,
+    when,
 } from 'ramda'
 import SettingsIcon from '@material-ui/icons/Settings'
 import Dialog from './components/Dialog'
@@ -169,10 +172,10 @@ function App() {
         }, imageList);
         updateImageList(updatedImageList)
     };
-    const updateDuplicateOf = (imageId, val) => {
+    const updateOfField = (imageId, val, key) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
-                return assoc('duplicateOf', val, image)
+                return assoc(key, val.name, image)
             } else {
                 return image
             }
@@ -287,7 +290,16 @@ function App() {
                     imgTag => imgTag === tag,
                     propOr([], 'tags', image)
                 );
-                return assoc('tags', updatedTags, image)
+                const duplicateTags = ['T0018', 'T0017'];
+                const detailTags = ['T0016'];
+                const isDuplicateTag = includes(tag, duplicateTags);
+                const isDetailTag = includes(tag, detailTags);
+
+                return compose(
+                    when(always(isDuplicateTag), dissoc('duplicate-of')),
+                    when(always(isDetailTag), dissoc('detail-of')),
+                    assoc('tags', updatedTags)
+                )(image)
             } else {
                 return image
             }
@@ -381,15 +393,19 @@ function App() {
     };
     const updateUncheckedItems = (id, marginIndication, idx) => {
         const getMargin = getPagination(
-            settings.inputOne.paginationType,
+            manifest.pagination[0].type,
             marginIndication
         );
         const updatedImageList = mapIndex((image, i) => {
             const diff = i - idx;
             if (diff > 0 && !image.reviewed) {
                 return assoc(
-                    'marginIndication',
-                    getMargin(diff).join(' '),
+                    'indication',
+                    {
+                        '@value': getMargin(diff).join(' '),
+                        '@language':
+                            manifest.appData['bvmt']['default-vol-string-lang'],
+                    },
                     image
                 )
             } else {
@@ -549,8 +565,8 @@ function App() {
                                                     duplicateImageOptions={duplicateImageOptions()}
                                                     setImageView={setImageView}
                                                     i={i}
-                                                    updateDuplicateOf={
-                                                        updateDuplicateOf
+                                                    updateOfField={
+                                                        updateOfField
                                                     }
                                                     setDuplicateType={
                                                         setDuplicateType
