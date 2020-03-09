@@ -29,6 +29,7 @@ export default class PreviewImage extends React.Component {
                     if (this.props.imageView.center.x) {
                         viewer.viewport.panTo(this.props.imageView.center, true);
                         viewer.viewport.zoomTo(this.props.imageView.zoom)
+                        viewer.viewport.setRotation(this.props.imageView.rotation)
                     }
                 })
             }

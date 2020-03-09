@@ -156,7 +156,6 @@ export default function EditCard(props) {
                                                     'belongsToVolume',
                                                     e.target.value
                                                 );
-                                                console.log(e)
                                             }}
                                             color="primary"
                                         />

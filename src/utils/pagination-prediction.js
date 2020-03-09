@@ -82,7 +82,7 @@ function intToTibStr(i, method) {
 const folioRtest = RegExp(/^\d+'*[ab]/);
 const folioR = RegExp(/^(\d+)('*)([ab])(.*)$/);
 
-var pagination_types = {
+export var pagination_types = {
     folios: {
         // see https://github.com/buda-base/manifest-tk/blob/master/pagination-spec.md
         is_well_formed: function(s) {
@@ -167,6 +167,8 @@ var pagination_types = {
 export function getPaginationTypes() {
     return Object.keys(pagination_types)
 }
+
+
 
 function get_get_info(
     pagination_type,
