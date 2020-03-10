@@ -65,37 +65,37 @@ const useStyles = makeStyles(theme => ({
     avatar: {
         backgroundColor: red[500],
     },
-}));
+}))
 
 export default function ImageCard(props) {
-    const classes = useStyles();
-    const [editDialogOpen, setEditDialogOpen] = React.useState(false);
-    const [iiif, setiiif] = React.useState(null);
-    const { imageView, setImageView } = props;
-    const { data: image, sectionInputs } = props;
+    const classes = useStyles()
+    const [editDialogOpen, setEditDialogOpen] = React.useState(false)
+    const [iiif, setiiif] = React.useState(null)
+    const { imageView, setImageView } = props
+    const { data: image, sectionInputs } = props
 
     const [, dragRef] = useDrag({
         item: { type: 'CARD', imageId: image.id },
         collect: monitor => ({
             opacity: monitor.isDragging() ? 0.3 : 1,
         }),
-    });
+    })
 
     React.useEffect(() => {
         const getData = async () => {
             try {
                 const data = await axios.get(
                     `https://iiif.bdrc.io/${props.volumeId}::${image.filename}/info.json`
-                );
-                const iiif = data.data;
-                setiiif(iiif);
+                )
+                const iiif = data.data
+                setiiif(iiif)
                 return () => {}
             } catch (err) {
                 console.log('iiifErr', err)
             }
-        };
+        }
         getData()
-    }, []);
+    }, [])
 
     const Header = () => {
         return (
@@ -118,7 +118,8 @@ export default function ImageCard(props) {
                                 style={{ color: 'red' }}
                             />
                         )}
-                        {image.filename || image.type}
+                        {image.filename || image.type}{' '}
+                        <span className="text-gray-500 text-sm ml-4">{`(${props.i + 1} of ${props.imageListLength})`}</span>
                     </h3>
                 </div>
                 <div className="self-end flex">
@@ -145,20 +146,20 @@ export default function ImageCard(props) {
                 </div>
             </div>
         )
-    };
+    }
 
     function SimpleMenu() {
-        const [anchorEl, setAnchorEl] = React.useState(null);
+        const [anchorEl, setAnchorEl] = React.useState(null)
 
-        const { t } = useTranslation();
+        const { t } = useTranslation()
 
         const handleClick = event => {
             setAnchorEl(event.currentTarget)
-        };
+        }
 
         const handleClose = () => {
             setAnchorEl(null)
-        };
+        }
 
         return (
             <div className="flex inline-block">
@@ -203,24 +204,32 @@ export default function ImageCard(props) {
                             {t('Delete')}
                         </MenuItem>
                     )}
-                    <MenuItem
-                        onClick={() => {
-                            props.updateUncheckedItems(
-                                image.id,
-                                image.indication['@value'],
-                                props.i
-                            )
-                        }}
-                    >
-                        <BeenhereIcon className="mr-2" />
-                        {t('Update following unchecked items')}
-                    </MenuItem>
-                    <MenuItem onClick={() => {}}>
-                        <ReorderIcon className="mr-2" />
-                        {t(
-                            'Reorder this image according to indicated pagination'
-                        )}
-                    </MenuItem>
+                    {image.indication && image.indication['@value'] && (
+                        <MenuItem
+                            onClick={() => {
+                                props.updateUncheckedItems(
+                                    image.id,
+                                    image.indication['@value'],
+                                    props.i
+                                )
+                            }}
+                        >
+                            <BeenhereIcon className="mr-2" />
+                            {t('Update following unchecked items')}
+                        </MenuItem>
+                    )}
+                    {image.pagination && (
+                        <MenuItem
+                            onClick={() => {
+                                props.handlePaginationPredication(props.data)
+                            }}
+                        >
+                            <ReorderIcon className="mr-2" />
+                            {t(
+                                'Reorder this image according to indicated pagination'
+                            )}
+                        </MenuItem>
+                    )}
                     <MenuItem
                         onClick={() => props.markPreviousAsReviewed(props.i)}
                     >
@@ -232,8 +241,8 @@ export default function ImageCard(props) {
         )
     }
 
-    const { t } = useTranslation();
-    const hideImage = props.hideDeletedImages && image.deleted;
+    const { t } = useTranslation()
+    const hideImage = props.hideDeletedImages && image.deleted
     return hideImage ? null : (
         <div
             className="shadow-sm hover:shadow-md w-full border-2 rounded border-gray-200 bg-white"
@@ -277,10 +286,6 @@ export default function ImageCard(props) {
                     <div className="flex flex-col w-full">
                         <div className="w-full flex flex-row  w-1/3">
                             <div className="mb-2">
-                                {console.log(
-                                    'props.manifestLanguage',
-                                    props.manifestLanguage
-                                )}
                                 <Formik
                                     initialValues={{
                                         marginIndication: pathOr(
@@ -355,18 +360,8 @@ export default function ImageCard(props) {
                                     color="primary"
                                 />
                             </div>
-
-                            <div className="mt-3 w-2/3">
-                                <Tags
-                                    id={image.id}
-                                    tags={image.tags}
-                                    addImageTag={props.addImageTag}
-                                    removeImageTag={props.removeImageTag}
-                                />
-                            </div>
                         </div>
-
-                        <div className="w-1/2 flex flex-col content-center">
+                        <div className="w-1/2 flex flex-col content-center mb-4">
                             <div className="w-full">
                                 <FormControl style={{ marginTop: '.5rem' }}>
                                     <div>
@@ -441,8 +436,17 @@ export default function ImageCard(props) {
                             </div>
                         </div>
 
+                        <Tags
+                            id={image.id}
+                            tags={image.tags}
+                            addImageTag={props.addImageTag}
+                            removeImageTag={props.removeImageTag}
+                            removeOfField={props.removeOfField}
+                        />
+
                         <TypeSelect
                             image={image}
+                            removeOfField={props.removeOfField}
                             tags={image.tags}
                             setDuplicateType={props.setDuplicateType}
                             updateOfField={props.updateOfField}
