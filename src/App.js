@@ -559,7 +559,7 @@ function App() {
                                                 {i === 0 && (
                                                     <CardDropZone
                                                         i={-1}
-                                                        rearrangeImage={
+                                                        handleDrop={
                                                             rearrangeImage
                                                         }
                                                     />
@@ -653,9 +653,7 @@ function App() {
                                                 />
                                                 <CardDropZone
                                                     i={i}
-                                                    rearrangeImage={
-                                                        rearrangeImage
-                                                    }
+                                                    handleDrop={rearrangeImage}
                                                 />
                                             </React.Fragment>
                                         ),
