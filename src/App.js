@@ -27,6 +27,7 @@ import {
     inc,
     includes,
     insert,
+    intersection,
     lensPath,
     map,
     pathOr,
@@ -273,17 +274,51 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-    const addImageTag = (imageId, tag) => {
+    const addImageTag = (imageId, tags) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
-                const updatedTags = append(tag, propOr([], 'tags', image))
-                return assoc('tags', updatedTags, image)
+                const duplicateTags = ['T0018', 'T0017']
+                const detailTags = ['T0016']
+                const currentTags = propOr([], 'tags', image)
+                const prevTagsHaveDuplicates =
+                    intersection(currentTags, duplicateTags).length > 0
+                const prevTagsHaveDetail =
+                    intersection(currentTags, detailTags).length > 0
+
+                const newTagsHaveDuplicates =
+                    intersection(tags, duplicateTags).length > 0
+
+                const newTagsHaveDetail =
+                    intersection(tags, detailTags).length > 0
+
+                const removeDuplicateOf =
+                    prevTagsHaveDuplicates && !newTagsHaveDuplicates
+                const removeDetailOf = prevTagsHaveDetail && !newTagsHaveDetail
+
+                return compose(
+                    when(always(removeDuplicateOf), dissoc('duplicate-of')),
+                    when(always(removeDetailOf), dissoc('detail-of')),
+                    assoc('tags', tags)
+                )(image)
             } else {
                 return image
             }
         }, imageList)
         updateImageList(updatedImageList)
     }
+
+    const removeOfField = (imageId, ofField) => {
+        const updatedImageList = map(image => {
+            if (image.id === imageId) {
+                const newImg = dissoc(ofField, image)
+                return newImg
+            } else {
+                return image
+            }
+        }, imageList)
+        updateImageList(updatedImageList)
+    }
+
     const removeImageTag = (imageId, tag) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
@@ -479,9 +514,9 @@ function App() {
                                             <SettingsIcon />
                                         </span>
                                     </span>
-                                    <span className="underline text-blue-600 cursor-pointer">
-                                        {t('Preview')}
-                                    </span>
+                                    {/*<span className="underline text-blue-600 cursor-pointer">*/}
+                                    {/*    {t('Preview')}*/}
+                                    {/*</span>*/}
                                 </div>
                                 <div className="w-1/2 flex flex-col">
                                     <div className="self-end">
@@ -532,6 +567,9 @@ function App() {
                                                 <Cards
                                                     handlePaginationPredication={
                                                         handlePaginationPredication
+                                                    }
+                                                    removeOfField={
+                                                        removeOfField
                                                     }
                                                     volumeId={
                                                         manifest['for-volume']

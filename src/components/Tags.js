@@ -1,86 +1,74 @@
 import React from 'react'
 import Select from '@material-ui/core/Select'
-import {includes, map, path, propOr, reject, toPairs} from 'ramda'
-import AddIcon from '@material-ui/icons/Add'
+import {includes, toPairs} from 'ramda'
 import {useTranslation} from 'react-i18next'
 import tags from '../tags'
-import Chip from '@material-ui/core/Chip'
 import FormHelperText from '@material-ui/core/FormHelperText'
+import {makeStyles} from '@material-ui/core/styles'
+import Input from '@material-ui/core/Input'
+import MenuItem from '@material-ui/core/MenuItem'
+import FormControl from '@material-ui/core/FormControl'
+import ListItemText from '@material-ui/core/ListItemText'
+import Checkbox from '@material-ui/core/Checkbox'
 
+const useStyles = makeStyles(theme => ({
+    formControl: {
+        minWidth: 120,
+        maxWidth: 300,
+    },
+}))
 const Tags = props => {
-    const {t} = useTranslation();
-    const [selectedTag, setSelectedTag] = React.useState('initial');
-    const [tagOptions, setTagOptions] = React.useState([]);
-    const {id, addImageTag} = props;
+    const { t } = useTranslation()
+    const classes = useStyles()
+
+    const [tagOptions, setTagOptions] = React.useState([])
+    const { id, addImageTag } = props
     React.useEffect(() => {
-        const options = reject(
-            ([tag]) => includes(tag, propOr([], 'tags', props)),
-            toPairs(tags)
-        );
-        if (options[0]) {
-            setSelectedTag(options[0][0])
-        }
-        setTagOptions(options)
-    }, [props.tags]);
+        setTagOptions(toPairs(tags))
+    }, [props.tags])
+
+    const MenuProps = {
+        PaperProps: {
+            style: {
+                height: 500,
+                width: 250,
+            },
+        },
+    }
+    const tagsSafe = props.tags || []
+    const handleChange = e => {
+        const newTags = e.target.value
+        addImageTag(id, newTags)
+    }
+
     return (
-        <div className="w-full flex mb-6 flex-col overflow-auto">
-            <h3 className="block">{t('Tags:')}</h3>
-            <div>
-                <div className="flex flex-row w-1/3 inline-block">
-                    <div style={{ width: 150 }}>
-                        <Select
-                            native
-                            value={selectedTag}
-                            onChange={e => {
-                                setSelectedTag(e.target.value)
-                            }}
-                            style={{ width: '100%' }}
-                        >
-                            {tagOptions.map((tag, i) => {
-                                return (
-                                    <option key={i} value={tag[0]}>
-                                        {t(path(['label', 'en'], tag[1]))}
-                                    </option>
-                                )
-                            })}
-                        </Select>
-                        <FormHelperText>{t('Tags')}</FormHelperText>
-                    </div>
-                    <div>
-                        {tagOptions.length > 0 && (
-                            <AddIcon
-                                className="self-center cursor-pointer"
-                                onClick={() => {
-                                    setSelectedTag('');
-                                    addImageTag(id, selectedTag)
-                                }}
-                            />
-                        )}
-                    </div>
-                </div>
-                <div className="overflow-auto w-2/3 inline-block">
-                    <div className="flex" style={{ minHeight: 'min-content' }}>
-                        {map(tagId => {
-                            const tagData = tags[tagId];
-                            return (
-                                <div className="m-2 inline-block" key={tagId}>
-                                    <Chip
-                                        key={tagId}
-                                        label={t(
-                                            path(['label', 'en'], tagData)
-                                        )}
-                                        onDelete={() => {
-                                            props.removeImageTag(id, tagId)
-                                        }}
-                                    />
-                                </div>
-                            )
-                        }, propOr([], 'tags', props))}
-                    </div>
-                </div>
-            </div>
+        <div>
+            <FormControl className={classes.formControl}>
+                <Select
+                    multiple
+                    helperText={t('Detail of File')}
+                    value={props.tags || []}
+                    onChange={handleChange}
+                    input={<Input />}
+                    renderValue={selected => {
+                        return selected
+                            .map(tag => tags[tag].label.en)
+                            .join(', ')
+                    }}
+                    MenuProps={MenuProps}
+                    className={classes.select}
+                >
+                    {tagOptions.map(([id, data]) => (
+                        <MenuItem key={id} value={id}>
+                            <Checkbox checked={includes(id, tagsSafe)} />
+                            <ListItemText primary={data.label.en} />
+                        </MenuItem>
+                    ))}
+                </Select>
+                <FormHelperText>{t('Tags')}</FormHelperText>
+            </FormControl>
         </div>
     )
-};
+}
 
 export default Tags

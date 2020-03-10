@@ -118,7 +118,8 @@ export default function ImageCard(props) {
                                 style={{ color: 'red' }}
                             />
                         )}
-                        {image.filename || image.type}
+                        {image.filename || image.type}{' '}
+                        <span className="text-gray-500 text-sm ml-4">{`(${props.i + 1} of ${props.imageListLength})`}</span>
                     </h3>
                 </div>
                 <div className="self-end flex">
@@ -359,18 +360,8 @@ export default function ImageCard(props) {
                                     color="primary"
                                 />
                             </div>
-
-                            <div className="mt-3 w-2/3">
-                                <Tags
-                                    id={image.id}
-                                    tags={image.tags}
-                                    addImageTag={props.addImageTag}
-                                    removeImageTag={props.removeImageTag}
-                                />
-                            </div>
                         </div>
-
-                        <div className="w-1/2 flex flex-col content-center">
+                        <div className="w-1/2 flex flex-col content-center mb-4">
                             <div className="w-full">
                                 <FormControl style={{ marginTop: '.5rem' }}>
                                     <div>
@@ -445,8 +436,17 @@ export default function ImageCard(props) {
                             </div>
                         </div>
 
+                        <Tags
+                            id={image.id}
+                            tags={image.tags}
+                            addImageTag={props.addImageTag}
+                            removeImageTag={props.removeImageTag}
+                            removeOfField={props.removeOfField}
+                        />
+
                         <TypeSelect
                             image={image}
+                            removeOfField={props.removeOfField}
                             tags={image.tags}
                             setDuplicateType={props.setDuplicateType}
                             updateOfField={props.updateOfField}
