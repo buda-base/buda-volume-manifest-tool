@@ -119,7 +119,8 @@ export default function ImageCard(props) {
                             />
                         )}
                         {image.filename || image.type}{' '}
-                        <span className="text-gray-500 text-sm ml-4">{`(${props.i + 1} of ${props.imageListLength})`}</span>
+                        <span className="text-gray-500 text-sm ml-4">{`(${props.i +
+                            1} of ${props.imageListLength})`}</span>
                     </h3>
                 </div>
                 <div className="self-end flex">
@@ -283,7 +284,7 @@ export default function ImageCard(props) {
                         </div>
                     )}
 
-                    <div className="flex flex-col w-full">
+                    <div className="flex flex-col w-1/2">
                         <div className="w-full flex flex-row  w-1/3">
                             <div className="mb-2">
                                 <Formik
