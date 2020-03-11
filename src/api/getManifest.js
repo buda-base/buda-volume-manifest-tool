@@ -1,7 +1,7 @@
 import uuidv4 from 'uuid/v4'
 import axios from 'axios'
 
-var apiroot = 'https://iiifpres.bdrc.io';
+var apiroot = 'https://iiifpres-dev.bdrc.io';
 
 async function getImageList(volumeQname) {
     const data = await axios.get(`${apiroot}/il/v:${volumeQname}`);
