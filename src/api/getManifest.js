@@ -4,8 +4,8 @@ import axios from 'axios'
 var apiroot = 'https://iiifpres-dev.bdrc.io';
 
 async function getImageList(volumeQname) {
-    const data = await axios.get(`${apiroot}/il/v:${volumeQname}`);
-    return data.data.map(({filename}) => ({
+    const data = await axios.get(`${apiroot}/il/v:${volumeQname}`)
+    return data.data.map(({ filename }) => ({
         id: uuidv4(),
         filename,
     }))
@@ -17,17 +17,17 @@ async function getManifest(volumeQname) {
 }
 
 export async function getOrInitManifest(volumeQname, options) {
-    var manifest;
-    var images;
+    var manifest
+    var images
     try {
-        manifest = await getManifest(volumeQname);
+        manifest = await getManifest(volumeQname)
     } catch (err) {
-        console.log('err!', err);
-        console.log('err.response.status', err.response.status);
+        console.log('err!', err)
+        console.log('err.response.status', err.response.status)
         if (err.response.status != 404) {
             throw err
         }
-        images = await getImageList(volumeQname);
+        images = await getImageList(volumeQname)
         manifest = initManifestFromImageList(images, volumeQname, options)
     }
     return { manifest, images }

@@ -15,7 +15,7 @@ const AuthNavBar = () => {
     }
 
     return (
-        <div>
+        <div className="ml-4">
             {!isAuthenticated && (
                 <button onClick={() => loginWithRedirect({})}>Log in</button>
             )}

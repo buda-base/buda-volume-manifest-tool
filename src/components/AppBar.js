@@ -7,8 +7,8 @@ import {useTranslation} from 'react-i18next'
 import AuthNavBar from './AuthNavBar'
 
 function AppBarTwo(props) {
-    const { manifest, handleSettingsUpdate } = props;
-    const { i18n, t } = useTranslation();
+    const { manifest, handleSettingsUpdate } = props
+    const { i18n, t } = useTranslation()
 
     return (
         <header className="fixed top-0 left-0 w-full" style={{ zIndex: 9999 }}>
@@ -21,10 +21,9 @@ function AppBarTwo(props) {
                         <a href="/">
                             <span className="text-2xl">{t('siteName')}</span>
                         </a>
-                        <AuthNavBar />
-                        <div className="w-1/6">
-                            <div className="w-full">
-                                <FormControl style={{ width: '100%' }}>
+                        <div style={{width: 300}}>
+                            <div className="w-full flex flex-row justify-between content-between">
+                                <FormControl style={{ width: 200 }}>
                                     <Select
                                         value={
                                             // TODO: the defalt ui lang shouldn't be in the manifest
@@ -34,7 +33,7 @@ function AppBarTwo(props) {
                                             ]
                                         }
                                         onChange={e => {
-                                            i18n.changeLanguage(e.target.value);
+                                            i18n.changeLanguage(e.target.value)
                                             handleSettingsUpdate(
                                                 lensPath([
                                                     'appData',
@@ -55,6 +54,7 @@ function AppBarTwo(props) {
                                         <option value="bo">བོད</option>
                                     </Select>
                                 </FormControl>
+                                <AuthNavBar />
                             </div>
                         </div>
                     </div>

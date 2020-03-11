@@ -8,7 +8,7 @@ import {useTranslation} from 'react-i18next'
 
 export default class PreviewImage extends React.Component {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             center: null,
             zoom: null,
@@ -22,13 +22,16 @@ export default class PreviewImage extends React.Component {
                 defaultZoomLevel: this.props.zoom,
                 showRotationControl: true,
                 tileSources: [this.props.iiif],
-            });
+            })
 
             if (this.props.imageView) {
                 viewer.addHandler('open', () => {
                     if (this.props.imageView.center.x) {
-                        viewer.viewport.panTo(this.props.imageView.center, true);
+                        viewer.viewport.panTo(this.props.imageView.center, true)
                         viewer.viewport.zoomTo(this.props.imageView.zoom)
+                        viewer.viewport.setRotation(
+                            this.props.imageView.rotation
+                        )
                     }
                 })
             }
@@ -42,11 +45,11 @@ export default class PreviewImage extends React.Component {
             this.props.imageView.center.x !== prevProps.imageView.center.x ||
             this.props.imageView.center.y !== prevProps.imageView.center.y ||
             this.props.imageView.zoom !== prevProps.imageView.zoom ||
-            this.props.imageView.rotation !== prevProps.imageView.rotation;
+            this.props.imageView.rotation !== prevProps.imageView.rotation
 
         if (this.props.imageView.center.x && hasViewDiff) {
-            this.state.viewer.viewport.panTo(this.props.imageView.center, true);
-            this.state.viewer.viewport.zoomTo(this.props.imageView.zoom);
+            this.state.viewer.viewport.panTo(this.props.imageView.center, true)
+            this.state.viewer.viewport.zoomTo(this.props.imageView.zoom)
             this.state.viewer.viewport.setRotation(
                 this.props.imageView.rotation
             )
@@ -55,16 +58,16 @@ export default class PreviewImage extends React.Component {
 
     render() {
         const ImageMenu = () => {
-            const [anchorEl, setAnchorEl] = React.useState(null);
-            const { t } = useTranslation();
+            const [anchorEl, setAnchorEl] = React.useState(null)
+            const { t } = useTranslation()
 
             const handleClick = event => {
                 setAnchorEl(event.currentTarget)
-            };
+            }
 
             const handleClose = () => {
                 setAnchorEl(null)
-            };
+            }
             return (
                 <div
                     style={{
@@ -99,13 +102,13 @@ export default class PreviewImage extends React.Component {
                             onClick={() => {
                                 const zoom = this.state.viewer.viewport.getZoom(
                                     true
-                                );
+                                )
                                 const center = this.state.viewer.viewport.getCenter(
                                     true
-                                );
+                                )
                                 const rotation = this.state.viewer.viewport.getRotation(
                                     true
-                                );
+                                )
                                 this.props.setImageView({
                                     zoom,
                                     center,
@@ -118,18 +121,22 @@ export default class PreviewImage extends React.Component {
                     </Menu>
                 </div>
             )
-        };
+        }
 
         const ImageMenuOverlay = withStyles(() => ({
             root: {
                 color: 'white',
             },
-        }))(ImageMenu);
+        }))(ImageMenu)
 
         return (
-            <div className="border-r border-gray-300 mr-2">
+            <div className="border-r border-gray-300 mr-2 w-1/2">
                 <div
-                    style={{ width: 300, height: 192, position: 'relative' }}
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        position: 'relative',
+                    }}
                     className="items-center flex justify-center mr-2"
                     id={`openseadragon${this.props.i}`}
                 >

@@ -1,181 +1,181 @@
 {
     "T0001": {
-      "label": {
-        "en": "cover page"
-      },
-      "helpMessage": {
-        "en": ""
-      }
+        "label": {
+            "en": "cover page"
+        },
+        "helpMessage": {
+            "en": ""
+        }
     },
     "T0002": {
-      "label": {
-        "en": "cover page (inside)"
-      },
-      "helpMessage": {
-        "en": ""
-      }
+        "label": {
+            "en": "cover page (inside)"
+        },
+        "helpMessage": {
+            "en": ""
+        }
     },
     "T0003": {
-      "label": {
-        "en": "back cover"
-      },
-      "helpMessage": {
-        "en": ""
-      }
+        "label": {
+            "en": "back cover"
+        },
+        "helpMessage": {
+            "en": ""
+        }
     },
-    "T0003": {
-      "label": {
-        "en": "back cover (inside)"
-      },
-      "helpMessage": {
-        "en": ""
-      }
+    "T0022": {
+        "label": {
+            "en": "back cover (inside)"
+        },
+        "helpMessage": {
+            "en": ""
+        }
     },
     "T0004": {
-      "label": {
-        "en": "catalog card (not part of the original, added for cataloging)"
-      },
-      "helpMessage": {
-        "en": ""
-      }
+        "label": {
+            "en": "catalog card (not part of the original, added for cataloging)"
+        },
+        "helpMessage": {
+            "en": ""
+        }
     },
     "T0005": {
-      "label": {
-        "en": "bdrc scan request page"
-      },
-      "helpMessage": {
-        "en": ""
-      }
+        "label": {
+            "en": "bdrc scan request page"
+        },
+        "helpMessage": {
+            "en": ""
+        }
     },
     "T0006": {
-      "label": {
-        "en": "picture of book side"
-      },
-      "helpMessage": {
-        "en": ""
-      }
+        "label": {
+            "en": "picture of book side"
+        },
+        "helpMessage": {
+            "en": ""
+        }
     },
     "T0007": {
-      "label": {
-        "en": "picture of a side of a volume"
-      },
-      "helpMessage": {
-        "en": ""
-      }
+        "label": {
+            "en": "picture of a side of a volume"
+        },
+        "helpMessage": {
+            "en": ""
+        }
     },
     "T0008": {
-      "label": {
-        "en": "picture of close volume"
-      },
-      "helpMessage": {
-        "en": ""
-      }
+        "label": {
+            "en": "picture of close volume"
+        },
+        "helpMessage": {
+            "en": ""
+        }
     },
     "T0009": {
-      "label": {
-        "en": "picture of wrapped volume"
-      },
-      "helpMessage": {
-        "en": ""
-      }
+        "label": {
+            "en": "picture of wrapped volume"
+        },
+        "helpMessage": {
+            "en": ""
+        }
     },
     "T0010": {
-      "label": {
-        "en": "picture of wrapping cloth"
-      },
-      "helpMessage": {
-        "en": ""
-      }
+        "label": {
+            "en": "picture of wrapping cloth"
+        },
+        "helpMessage": {
+            "en": ""
+        }
     },
     "T0011": {
-      "label": {
-        "en": "volume title page"
-      },
-      "helpMessage": {
-        "en": ""
-      }
+        "label": {
+            "en": "volume title page"
+        },
+        "helpMessage": {
+            "en": ""
+        }
     },
     "T0012": {
-      "label": {
-        "en": "text title page"
-      },
-      "helpMessage": {
-        "en": ""
-      }
+        "label": {
+            "en": "text title page"
+        },
+        "helpMessage": {
+            "en": ""
+        }
     },
     "T0013": {
-      "label": {
-        "en": "blank page"
-      },
-      "helpMessage": {
-        "en": ""
-      }
+        "label": {
+            "en": "blank page"
+        },
+        "helpMessage": {
+            "en": ""
+        }
     },
     "T0014": {
-      "label": {
-        "en": "has illustrations"
-      },
-      "helpMessage": {
-        "en": ""
-      }
+        "label": {
+            "en": "has illustrations"
+        },
+        "helpMessage": {
+            "en": ""
+        }
     },
     "T0015": {
-      "label": {
-        "en": "color/lens checker"
-      },
-      "helpMessage": {
-        "en": "for pictures containing only color or lens checkers (and no page)"
-      }
+        "label": {
+            "en": "color/lens checker"
+        },
+        "helpMessage": {
+            "en": "for pictures containing only color or lens checkers (and no page)"
+        }
     },
     "T0016": {
-      "label": {
-        "en": "detail"
-      },
-      "helpMessage": {
-        "en": "used to tag picture that are detail of a feature of a page (seal, etc.)"
-      },
-      "ofField": "detail-of"
+        "label": {
+            "en": "detail"
+        },
+        "helpMessage": {
+            "en": "used to tag picture that are detail of a feature of a page (seal, etc.)"
+        },
+        "ofField": "detail-of"
     },
     "T0017": {
-      "label": {
-        "en": "duplicate in scans"
-      },
-      "helpMessage": {
-        "en": "use this tag when the same original page has been digitized multiple times"
-      },
-      "ofField": "duplicate-of"
+        "label": {
+            "en": "duplicate in scans"
+        },
+        "helpMessage": {
+            "en": "use this tag when the same original page has been digitized multiple times"
+        },
+        "ofField": "duplicate-of"
     },
     "T0018": {
-      "label": {
-        "en": "duplicate in artefact"
-      },
-      "helpMessage": {
-        "en": "use this tag when the same page appears several times in the artefact (don't use it for different pages with the same pagination)"
-      },
-      "ofField": "duplicate-of"
+        "label": {
+            "en": "duplicate in artefact"
+        },
+        "helpMessage": {
+            "en": "use this tag when the same page appears several times in the artefact (don't use it for different pages with the same pagination)"
+        },
+        "ofField": "duplicate-of"
     },
     "T0019": {
-      "label": {
-        "en": "missing from scans"
-      },
-      "helpMessage": {
-        "en": "use this tag for pages that are in the artefact (in its present state of conservation) but which digitization has been overlooked"
-      }
+        "label": {
+            "en": "missing from scans"
+        },
+        "helpMessage": {
+            "en": "use this tag for pages that are in the artefact (in its present state of conservation) but which digitization has been overlooked"
+        }
     },
     "T0020": {
-      "label": {
-        "en": "missing from artefact"
-      },
-      "helpMessage": {
-        "en": "use this tag for pages that are missing in the artefact in its present state of conservation"
-      }
+        "label": {
+            "en": "missing from artefact"
+        },
+        "helpMessage": {
+            "en": "use this tag for pages that are missing in the artefact in its present state of conservation"
+        }
     },
     "T0021": {
-      "label": {
-        "en": "thumbnail for volume"
-      },
-      "helpMessage": {
-        "en": ""
-      }
+        "label": {
+            "en": "thumbnail for volume"
+        },
+        "helpMessage": {
+            "en": ""
+        }
     }
 }
