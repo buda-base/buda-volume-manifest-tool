@@ -85,7 +85,7 @@ export default function ImageCard(props) {
         const getData = async () => {
             try {
                 const data = await axios.get(
-                    `https://iiif.bdrc.io/${props.volumeId}::${image.filename}/info.json`
+                    `https://iiif-dev.bdrc.io/${props.volumeId}::${image.filename}/info.json`
                 )
                 const iiif = data.data
                 setiiif(iiif)
