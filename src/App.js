@@ -73,18 +73,12 @@ function App() {
         },
     })
     const [settingsDialogOpen, setSettingsDialog] = React.useState(false)
-    const [imageView, setImageView] = React.useState({
-        zoom: 0,
-        center: { x: null, y: null },
-    })
     const imageList = view(imageListLens, manifest) || []
     const [isFetching, setIsFetching] = React.useState(false)
     const [fetchErr, setFetchErr] = React.useState(null)
     const [renderToIdx, setRenderToIdx] = React.useState(9)
     const [isLoadingMore, setIsLoadingMore] = React.useState(false)
     const [postErr, setPostErr] = React.useState(null)
-
-    const settings = prop('volumeData', manifest)
 
     React.useEffect(() => {
         const search = window.location.search
@@ -115,16 +109,7 @@ function App() {
 
     const saveUpdatesToManifest = async auth => {
         try {
-            const settingsWithImagePreview = assoc(
-                'imagePreview',
-                imageView,
-                settings
-            )
-            const updatedManifest = compose(
-                assoc('volumeData', settingsWithImagePreview)
-            )(manifest)
-
-            await postUpdate(updatedManifest, auth)
+            await postUpdate(manifest, auth)
         } catch (error) {
             if (error.response) {
                 setPostErr(error.response.data)
@@ -493,8 +478,6 @@ function App() {
                                 sectionInUseCount={sectionInUseCount}
                                 open={settingsDialogOpen}
                                 handleClose={() => setSettingsDialog(false)}
-                                setImageView={setImageView}
-                                imageView={imageView}
                                 manifest={manifest}
                                 handleSettingsUpdate={handleSettingsUpdate}
                             />
@@ -608,7 +591,21 @@ function App() {
                                                     }
                                                     selectType={selectType}
                                                     addNote={addNote}
-                                                    imageView={imageView}
+                                                    imageView={pathOr(
+                                                        {
+                                                            zoom: 0,
+                                                            center: {
+                                                                x: null,
+                                                                y: null,
+                                                            },
+                                                        },
+                                                        [
+                                                            'appData',
+                                                            'bvmt',
+                                                            'preview-image-view',
+                                                        ],
+                                                        manifest
+                                                    )}
                                                     data={item}
                                                     deleteImageChip={
                                                         deleteImageChip
@@ -622,7 +619,13 @@ function App() {
                                                     }
                                                     key={item.id}
                                                     duplicateImageOptions={duplicateImageOptions()}
-                                                    setImageView={setImageView}
+                                                    setImageView={handleSettingsUpdate(
+                                                        lensPath([
+                                                            'appData',
+                                                            'bvmt',
+                                                            'preview-image-view',
+                                                        ])
+                                                    )}
                                                     i={i}
                                                     updateOfField={
                                                         updateOfField
