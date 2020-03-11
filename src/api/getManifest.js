@@ -71,6 +71,11 @@ function initManifestFromImageList(images, volumeQname, options) {
                 'margin-indication-odd': '{volname}-{sectionname}-{pagenum:bo}', // an option
                 'margin-volname': '', // an option too
                 'margin-indication-even': '',
+                'preview-image-view': {
+                    zoom: 0,
+                    center: { x: null, y: null },
+                    rotation: 0
+                },
             },
         },
     }
