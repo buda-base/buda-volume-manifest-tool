@@ -1,7 +1,9 @@
 
 import React, { useState, useEffect, useContext } from "react";
+import axios from 'axios'
 //import createAuth0Client from "@auth0/auth0-spa-js";
 import auth0 from 'auth0-js';
+import history from './utils/history'
 
 const DEFAULT_REDIRECT_CALLBACK = () =>
   window.history.replaceState({}, document.title, window.location.pathname);
@@ -37,17 +39,28 @@ export const Auth0Provider = ({
     // eslint-disable-next-line
   }, []);
 
-  const getUser = () => {
+  const getUser = async () => {
     if(checkAuthenticated()) {
       const token = localStorage.getItem('access_token')
       if(token) { 
-        auth.client.userInfo(token, (err, profile) => {
+        auth.client.userInfo(token, async (err, profile) => {
           if (profile) {
-            console.log("profile",profile)
-            const isAuthenticated = checkAuthenticated();
+
+            const app_token = localStorage.getItem("id_token")            
+            const bdu = await axios.get('//editserv.bdrc.io/resource-nc/user/me', { headers: {
+              "Authorization": "Bearer " + app_token
+            } })
+            profile.bdrcData = bdu.data
+            profile.bdrcID = Object.keys(bdu.data).map(k => k.replace(/^.*?[/]([^/]+)$/,'bdu:$1')).join()
             setUser(profile)
+            
+            const isAuthenticated = checkAuthenticated();
             setIsAuthenticated(isAuthenticated);
+
             setLoading(false);
+
+            console.log("profile",profile)
+
           }
         })
       }
@@ -91,7 +104,14 @@ export const Auth0Provider = ({
     auth.parseHash(async (err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         setSession(authResult);
-        window.history.replaceState(null, null, ' ');
+        let redirect = JSON.parse(localStorage.getItem('auth0_redirect'))
+        if(redirect) { 
+          history.push(redirect)
+          // TODO find something better to force rerendering 
+          window.location.reload()
+        }
+        else window.history.replaceState(null, null, ' ');
+        
       } else if (err) {
         console.log(err);
       }

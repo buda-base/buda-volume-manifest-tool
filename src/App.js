@@ -468,8 +468,8 @@ function App() {
                     postErr={postErr}
                     setPostErr={setPostErr}
                 />
-                {manifest.isDefault ? (
-                    <VolumeSearch isFetching={isFetching} fetchErr={fetchErr} />
+                {manifest.isDefault || !auth.user ? (
+                    <VolumeSearch isFetching={isFetching} fetchErr={fetchErr} {... manifest && manifest['for-volume']?{forVolume:manifest['for-volume']}:{}} />
                 ) : (
                     <div className="App" style={{ paddingTop: 60 }}>
                         <div>
