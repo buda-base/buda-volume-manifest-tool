@@ -30,6 +30,7 @@ import {
     intersection,
     lensPath,
     map,
+    over,
     pathOr,
     prop,
     propEq,
@@ -107,7 +108,13 @@ function App() {
 
     const saveUpdatesToManifest = async auth => {
         try {
-            await postUpdate(manifest, auth)
+            const removeCollapsed = map(dissoc('collapsed'));
+            const formattedManifest = over(
+                imageListLens,
+                removeCollapsed,
+                manifest
+            );
+            await postUpdate(formattedManifest, auth)
         } catch (error) {
             if (error.response) {
                 setPostErr(error.response.data)
@@ -196,7 +203,8 @@ function App() {
             if (image.id === imageId) {
                 const reviewed = prop('reviewed', image);
                 return compose(
-                    image => (!reviewed ? assoc('hide', true, image) : image),
+                    image =>
+                        !reviewed ? assoc('collapsed', true, image) : image,
                     assoc('reviewed', !reviewed)
                 )(image)
             } else {
@@ -216,11 +224,11 @@ function App() {
             updateImageList(insert(i + 1, defaultMissingImage, imageList))
         }
     };
-    const toggleHideImage = imageId => {
+    const toggleCollapseImage = imageId => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
-                const hidden = !!prop('hide', image);
-                return assoc('hide', !hidden, image)
+                const hidden = !!prop('collapsed', image);
+                return assoc('collapsed', !hidden, image)
             } else {
                 return image
             }
@@ -369,6 +377,19 @@ function App() {
         }, imageList);
         updateImageList(updatedImageList)
     };
+    const hideCardInManifest = (imageId, hide) => {
+        const updatedImageList = map(image => {
+            if (image.id === imageId) {
+                return compose(
+                    assoc('collapsed', hide),
+                    assoc('hide', hide)
+                )(image)
+            } else {
+                return image
+            }
+        }, imageList);
+        updateImageList(updatedImageList)
+    };
     const markPreviousAsReviewed = imageIdx => {
         const updatedImageList = mapIndex((image, idx) => {
             if (idx <= imageIdx) {
@@ -435,7 +456,7 @@ function App() {
     };
     const foldCheckedImages = () => {
         const updatedImageList = map(
-            image => (image.reviewed ? assoc('hide', true, image) : image),
+            image => (image.reviewed ? assoc('collapsed', true, image) : image),
             imageList
         );
         updateImageList(updatedImageList)
@@ -452,8 +473,6 @@ function App() {
     const auth = useAuth0();
 
     const imageListLength = imageList.length;
-
-    console.log('manifest', manifest);
 
     return (
         <ThemeProvider theme={theme}>
@@ -555,6 +574,9 @@ function App() {
                                                     handlePaginationPredication={
                                                         handlePaginationPredication
                                                     }
+                                                    hideCardInManifest={
+                                                        hideCardInManifest
+                                                    }
                                                     removeOfField={
                                                         removeOfField
                                                     }
@@ -618,8 +640,8 @@ function App() {
                                                     insertMissing={
                                                         insertMissing
                                                     }
-                                                    toggleHideImage={
-                                                        toggleHideImage
+                                                    toggleCollapseImage={
+                                                        toggleCollapseImage
                                                     }
                                                     key={item.id}
                                                     duplicateImageOptions={duplicateImageOptions()}
