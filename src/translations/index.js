@@ -356,6 +356,14 @@ export default () => {
             en: 'Status',
             bo: 'བོའའའའདད།',
         },
+        'Hide in Manifest': {
+            en: 'Hide in Manifest',
+            bo: 'བོའའའའདད།',
+        },
+        'Unhide in Manifest': {
+            en: 'Hide in Manifest',
+            bo: 'བོའའའའདད།',
+        },
     };
 
     const initialReduceVal = fromPairs(LANGUAGES.map(lang => [lang, []]));

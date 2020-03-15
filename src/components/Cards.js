@@ -65,37 +65,37 @@ const useStyles = makeStyles(theme => ({
     avatar: {
         backgroundColor: red[500],
     },
-}))
+}));
 
 export default function ImageCard(props) {
-    const classes = useStyles()
-    const [editDialogOpen, setEditDialogOpen] = React.useState(false)
-    const [iiif, setiiif] = React.useState(null)
-    const { imageView, setImageView } = props
-    const { data: image, sectionInputs } = props
+    const classes = useStyles();
+    const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+    const [iiif, setiiif] = React.useState(null);
+    const { imageView, setImageView } = props;
+    const { data: image, sectionInputs } = props;
 
     const [, dragRef] = useDrag({
         item: { type: 'CARD', imageId: image.id },
         collect: monitor => ({
             opacity: monitor.isDragging() ? 0.3 : 1,
         }),
-    })
+    });
 
     React.useEffect(() => {
         const getData = async () => {
             try {
                 const data = await axios.get(
                     `https://iiif-dev.bdrc.io/${props.volumeId}::${image.filename}/info.json`
-                )
-                const iiif = data.data
-                setiiif(iiif)
+                );
+                const iiif = data.data;
+                setiiif(iiif);
                 return () => {}
             } catch (err) {
                 console.log('iiifErr', err)
             }
-        }
+        };
         getData()
-    }, [])
+    }, []);
 
     const Header = () => {
         return (
@@ -109,10 +109,10 @@ export default function ImageCard(props) {
                         style={{ cursor: 'move' }}
                     />
                     <h3
-                        className={`font-bold ${image.deleted &&
+                        className={`font-bold ${image.hide &&
                             'text-red-600'} flex align-center`}
                     >
-                        {image.deleted && (
+                        {image.hide && (
                             <DeleteIcon
                                 className="mr-2"
                                 style={{ color: 'red' }}
@@ -129,9 +129,9 @@ export default function ImageCard(props) {
                     )}
                     <span
                         className="cursor-pointer"
-                        onClick={() => props.toggleHideImage(image.id)}
+                        onClick={() => props.toggleCollapseImage(image.id)}
                     >
-                        {image.hide ? (
+                        {image.collapsed ? (
                             <VisibilityOnIcon className="mr-4" />
                         ) : (
                             <VisibilityOffIcon className="mr-4" />
@@ -147,20 +147,20 @@ export default function ImageCard(props) {
                 </div>
             </div>
         )
-    }
+    };
 
     function SimpleMenu() {
-        const [anchorEl, setAnchorEl] = React.useState(null)
+        const [anchorEl, setAnchorEl] = React.useState(null);
 
-        const { t } = useTranslation()
+        const { t } = useTranslation();
 
         const handleClick = event => {
             setAnchorEl(event.currentTarget)
-        }
+        };
 
         const handleClose = () => {
             setAnchorEl(null)
-        }
+        };
 
         return (
             <div className="flex inline-block">
@@ -191,18 +191,24 @@ export default function ImageCard(props) {
                         {t('Insert One Below')}
                     </MenuItem>
 
-                    {!image.deleted && (
+                    {!image.hide && (
                         <MenuItem
-                            onClick={() =>
-                                props.updateImageValue(
-                                    image.id,
-                                    'deleted',
-                                    true
-                                )
-                            }
+                            onClick={() => {
+                                props.hideCardInManifest(image.id, true)
+                            }}
                         >
                             <DeleteIcon className="mr-2" />
-                            {t('Delete')}
+                            {t('Hide in Manifest')}
+                        </MenuItem>
+                    )}
+                    {image.hide && (
+                        <MenuItem
+                            onClick={() => {
+                                props.hideCardInManifest(image.id, false)
+                            }}
+                        >
+                            <DeleteIcon className="mr-2" />
+                            {t('Unhide in Manifest')}
                         </MenuItem>
                     )}
                     {image.indication && image.indication['@value'] && (
@@ -242,8 +248,8 @@ export default function ImageCard(props) {
         )
     }
 
-    const { t } = useTranslation()
-    const hideImage = props.hideDeletedImages && image.deleted
+    const { t } = useTranslation();
+    const hideImage = props.hideDeletedImages && image.hide;
     return hideImage ? null : (
         <div
             className="shadow-sm hover:shadow-md w-full border-2 rounded border-gray-200 bg-white"
@@ -260,7 +266,7 @@ export default function ImageCard(props) {
                 updateImageValue={props.updateImageValue}
             />
             <CardHeader className={classes.cardHeader} component={Header} />
-            {!image.hide && (
+            {!image.collapsed && (
                 <CardContent className="flex" style={{ padding: 0 }}>
                     {iiif ? (
                         <PreviewImage
