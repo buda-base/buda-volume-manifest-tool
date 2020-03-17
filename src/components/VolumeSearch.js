@@ -21,7 +21,7 @@ const VolumeSearch = props => {
         >
             <div className="mt-10">
                 <TextField
-                    {...!user?{disabled:true}:{}}
+                    //{...!user?{disabled:true}:{}}
                     placeholder={t('volumeLabel')}
                     margin="normal"
                     InputLabelProps={{
@@ -36,7 +36,7 @@ const VolumeSearch = props => {
                     }}
                 />
                 <Button
-                    {...!user?{disabled:true}:{}}
+                    //{...!user?{disabled:true}:{}}
                     variant="contained"
                     color="primary"
                     style={{ marginLeft: '1em' }}

@@ -69,9 +69,9 @@ function initManifestFromImageList(images, volumeQname, options) {
                 'metadata-for-bvmt-ver': '0.1.0', // TODO: ajust if necessary
                 'default-ui-string-lang': options.uiLanguage,
                 'default-vol-string-lang': 'en', // reasonable default for now, should be an option
-                'margin-indication-odd': '{volname}-{sectionname}-{pagenum:bo}', // an option
+                'margin-indication-even': '{pagenum:bo}', // an option
                 'margin-volname': '', // an option too
-                'margin-indication-even': '',
+                'margin-indication-odd': '',
                 'preview-image-view': {
                     zoom: 0,
                     center: { x: null, y: null },

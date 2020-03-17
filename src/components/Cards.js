@@ -211,12 +211,11 @@ export default function ImageCard(props) {
                             {t('Unhide in Manifest')}
                         </MenuItem>
                     )}
-                    {image.indication && image.indication['@value'] && (
+                    {image.pagination && (
                         <MenuItem
                             onClick={() => {
                                 props.updateUncheckedItems(
-                                    image.id,
-                                    image.indication['@value'],
+                                    image,
                                     props.i
                                 )
                             }}

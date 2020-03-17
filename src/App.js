@@ -431,14 +431,13 @@ function App() {
         updateImageList(updatedImageList)
     };
 
-    const updateUncheckedItems = (id, paginationIndication, idx) => {
-        const image0 = imageList[idx];
+    const updateUncheckedItems = (image0, idx) => {
         const getMargin = getPagination(
             manifest,
             image0
         );
         // TODO: in the future it may depend on more elaborated checks:
-        let pagination_id = manifest.pagination[0];
+        let pagination_id = manifest.pagination[0].id;
         const updatedImageList = mapIndex((image, i) => {
             const diff = i - idx;
             // TODO: here we shouldn't change anything after the first reviewed image,
@@ -453,7 +452,9 @@ function App() {
                 if (!newimg.pagination) {
                     newimg.pagination = {}
                 }
-                newimg.pagination[pagination_id] = res[0];
+                // TODO: res[0] contains the new pagination but I can't seem to make it work...
+                newimg.pagination = res[0];
+                //newimg.pagination[pagination_id] = res[0];
                 return newimg;
             } else {
                 return image

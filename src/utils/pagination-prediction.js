@@ -191,7 +191,7 @@ function get_get_info(
     }
     // this is a bit tricky, but if we don't do that we end up with wrong
     // value in edge cases where there are apostrophes and all that good stuff
-    var index1_pagination_value = pgf.next_str(index0_pagination.value);
+    var index1_pagination_value = pgf.next_str(image0_pagination.value);
     var index1_seqnum = pgf.str_to_seqnum(index1_pagination_value);
     // then dealing with templates, which we don't always have
     var template_odd = manifest.appData.bvmt['margin-indication-odd'];
@@ -234,7 +234,7 @@ function get_get_info(
                 indication = {"@value": indication_val, "@language": lang};
             }
         }
-        pagination = {value: pagination_val}
+        var pagination = {value: pagination_val}
         if (image0_section) {
             pagination.section = image0_section;
         }
