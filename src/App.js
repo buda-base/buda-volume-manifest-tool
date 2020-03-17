@@ -431,23 +431,30 @@ function App() {
         updateImageList(updatedImageList)
     };
 
-    const updateUncheckedItems = (id, marginIndication, idx) => {
+    const updateUncheckedItems = (id, paginationIndication, idx) => {
+        const image0 = imageList[idx];
         const getMargin = getPagination(
-            manifest.pagination[0].type,
-            marginIndication
+            manifest,
+            image0
         );
+        // TODO: in the future it may depend on more elaborated checks:
+        let pagination_id = manifest.pagination[0];
         const updatedImageList = mapIndex((image, i) => {
             const diff = i - idx;
+            // TODO: here we shouldn't change anything after the first reviewed image,
+            // even if some images are not reviewed
             if (diff > 0 && !image.reviewed) {
-                return assoc(
+                let res = getMargin(diff);
+                let newimg = assoc(
                     'indication',
-                    {
-                        '@value': getMargin(diff).join(' '),
-                        '@language':
-                            manifest.appData['bvmt']['default-vol-string-lang'],
-                    },
+                    res[1],
                     image
                 )
+                if (!newimg.pagination) {
+                    newimg.pagination = {}
+                }
+                newimg.pagination[pagination_id] = res[0];
+                return newimg;
             } else {
                 return image
             }

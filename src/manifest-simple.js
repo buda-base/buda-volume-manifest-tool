@@ -105,8 +105,8 @@ const data = {
             'default-vol-string-lang': 'bo',
             'show-checked-images': true,
             'show-hidden-images': true,
-            'margin-indication-odd': '{volname}-{sectionname}-{pagenum:bo}',
-            'margin-indication-even': '',
+            'margin-indication-odd': '',
+            'margin-indication-even': '{pagenum:bo}',
         },
     },
 };

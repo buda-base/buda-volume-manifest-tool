@@ -117,8 +117,8 @@ export var pagination_types = {
             return Math.floor(i / 2).toString() + final
         },
         seqnum_to_full_str: function(i) {
-            // no full page indication on verso
-            if (i % 2 == 1) return '';
+            // no full page indication on verso... handle that at manifest template level
+            // if (i % 2 == 1) return '';
             folio_i = Math.floor(i / 2);
             return intToTibStr(folio_i)
         },
@@ -171,26 +171,32 @@ export function getPaginationTypes() {
 
 
 function get_get_info(
-    pagination_type,
-    index0_pagination,
-    section_template,
-    section_name
+    manifest,
+    image
 ) {
-    // I'm doing it for the pagination type folios where we have 1a, 1b, etc.
-    var pgf = pagination_types[pagination_type];
+    // TODO: in the future this could depend on the image as we would have multiple
+    // paginations per image
+    var manifest_pagination = manifest.pagination[0];
+    if (!image.pagination || !image.pagination[manifest_pagination.id]) {
+        // error
+        return null;
+    }
+    var image0_pagination = image.pagination[manifest_pagination.id];
+    var image0_section = image0_pagination.section;
+    var pgf = pagination_types[manifest_pagination.type];
 
-    if (!pgf.is_well_formed(index0_pagination)) {
-        // return some error
-        return
+    if (!pgf.is_well_formed(image0_pagination.value)) {
+        // error
+        return null;
     }
     // this is a bit tricky, but if we don't do that we end up with wrong
     // value in edge cases where there are apostrophes and all that good stuff
-    var index1_pagination = pgf.next_str(index0_pagination);
-    var index1_seqnum = pgf.str_to_seqnum(index1_pagination);
+    var index1_pagination_value = pgf.next_str(index0_pagination.value);
+    var index1_seqnum = pgf.str_to_seqnum(index1_pagination_value);
     // then dealing with templates, which we don't always have
-    var template = null;
-    if (section_template)
-        template = section_template.replace('{section_name}', section_name);
+    var template_odd = manifest.appData.bvmt['margin-indication-odd'];
+    var template_even = manifest.appData.bvmt['margin-indication-even'];
+    var lang = manifest.appData.bvmt['default-vol-string-lang'];
     return function (nextimgseqnum) {
         // nextimgseqnum is the index after the image we have given as index0.
         // For instance is index0_pagination is '7a', if we want info about
@@ -199,27 +205,40 @@ function get_get_info(
             // sorry, we can't compute that reliably
             return null
         }
-        var pagination, full_str;
+        var seqnum, pagination_val, indication = null;
         if (nextimgseqnum == 1) {
             // 1 is a special case because of edge cases where index0 is 7'a for instance.
             // Note that index1_seqnum might be wrong is some edge cases but
             // it doesn't impact further computation so we let the user correct
             // it if needed. On second thoughts, it would be wrong on verso, but
             // the full_str on verso is empty so we should be safe in all cases.
-            pagination = index1_pagination;
-            full_str = pgf.seqnum_to_full_str(index1_seqnum)
+            pagination_val = index1_pagination_value;
+            seqnum = index1_seqnum;
         } else {
             // note that this seqnum has nothing to do with nextimgseqnum, it's the
             // seqnum if everything was regular so it's sort of virtual. For 1a it would be
             // 1, for 1b it would be 2, etc.
             seqnum = nextimgseqnum + index1_seqnum - 1;
-            pagination = pgf.seqnum_to_str(seqnum);
-            full_str = pgf.seqnum_to_full_str(seqnum)
+            pagination_val = pgf.seqnum_to_str(seqnum);
         }
-        if (template) {
-            full_str = template.replace('{pagenum_full}', full_str)
+        var template = (seqnum % 2 == 0) ? template_even : template_odd;
+        if (template !== undefined && template !== null) { // we want to leave blank strings here
+            var indication_val = null;
+            if (template.includes("{pagenum:bo}")) {
+                var full_str = pgf.seqnum_to_full_str(seqnum);
+                indication_val = template.replace('{pagenum:bo}', full_str);
+            } else if (template.includes("{pagenum}")) {
+                indication_val = template.replace('{pagenum:bo}', seqnum);
+            }
+            if (indication_val !== null) {
+                indication = {"@value": indication_val, "@language": lang};
+            }
         }
-        return [pagination, full_str]
+        pagination = {value: pagination_val}
+        if (image0_section) {
+            pagination.section = image0_section;
+        }
+        return [pagination, indication]
     }
 }
 
