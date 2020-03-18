@@ -452,9 +452,7 @@ function App() {
                 if (!newimg.pagination) {
                     newimg.pagination = {}
                 }
-                // TODO: res[0] contains the new pagination but I can't seem to make it work...
-                newimg.pagination = res[0];
-                //newimg.pagination[pagination_id] = res[0];
+                newimg.pagination[pagination_id] = res[0];
                 return newimg;
             } else {
                 return image
