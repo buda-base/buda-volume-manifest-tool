@@ -65,37 +65,37 @@ const useStyles = makeStyles(theme => ({
     avatar: {
         backgroundColor: red[500],
     },
-}));
+}))
 
 export default function ImageCard(props) {
-    const classes = useStyles();
-    const [editDialogOpen, setEditDialogOpen] = React.useState(false);
-    const [iiif, setiiif] = React.useState(null);
-    const { imageView, setImageView } = props;
-    const { data: image, sectionInputs } = props;
+    const classes = useStyles()
+    const [editDialogOpen, setEditDialogOpen] = React.useState(false)
+    const [iiif, setiiif] = React.useState(null)
+    const { imageView, setImageView } = props
+    const { data: image, sectionInputs } = props
 
     const [, dragRef] = useDrag({
         item: { type: 'CARD', imageId: image.id },
         collect: monitor => ({
             opacity: monitor.isDragging() ? 0.3 : 1,
         }),
-    });
+    })
 
     React.useEffect(() => {
         const getData = async () => {
             try {
                 const data = await axios.get(
                     `https://iiif-dev.bdrc.io/${props.volumeId}::${image.filename}/info.json`
-                );
-                const iiif = data.data;
-                setiiif(iiif);
+                )
+                const iiif = data.data
+                setiiif(iiif)
                 return () => {}
             } catch (err) {
                 console.log('iiifErr', err)
             }
-        };
+        }
         getData()
-    }, []);
+    }, [])
 
     const Header = () => {
         return (
@@ -147,20 +147,20 @@ export default function ImageCard(props) {
                 </div>
             </div>
         )
-    };
+    }
 
     function SimpleMenu() {
-        const [anchorEl, setAnchorEl] = React.useState(null);
+        const [anchorEl, setAnchorEl] = React.useState(null)
 
-        const { t } = useTranslation();
+        const { t } = useTranslation()
 
         const handleClick = event => {
             setAnchorEl(event.currentTarget)
-        };
+        }
 
         const handleClose = () => {
             setAnchorEl(null)
-        };
+        }
 
         return (
             <div className="flex inline-block">
@@ -214,10 +214,7 @@ export default function ImageCard(props) {
                     {image.pagination && (
                         <MenuItem
                             onClick={() => {
-                                props.updateUncheckedItems(
-                                    image,
-                                    props.i
-                                )
+                                props.updateUncheckedItems(image, props.i)
                             }}
                         >
                             <BeenhereIcon className="mr-2" />
@@ -247,8 +244,8 @@ export default function ImageCard(props) {
         )
     }
 
-    const { t } = useTranslation();
-    const hideImage = props.hideDeletedImages && image.hide;
+    const { t } = useTranslation()
+    const hideImage = props.hideDeletedImages && image.hide
     return hideImage ? null : (
         <div
             className="shadow-sm hover:shadow-md w-full border-2 rounded border-gray-200 bg-white"
@@ -418,25 +415,45 @@ export default function ImageCard(props) {
                                                 )}
                                             </Select>
                                         )}
-                                        <TextField
-                                            helperText={t('Pagination')}
-                                            defaultValue={pathOr(
-                                                '',
-                                                [
-                                                    'pagination',
-                                                    props.pagination[0].id,
-                                                    'value',
-                                                ],
-                                                image
-                                            )}
-                                            onBlur={e => {
+
+                                        <Formik
+                                            initialValues={{
+                                                pagination: pathOr(
+                                                    '',
+                                                    [
+                                                        'pagination',
+                                                        props.pagination[0].id,
+                                                        'value',
+                                                    ],
+                                                    image
+                                                ),
+                                            }}
+                                            onSubmit={({ pagination }) => {
                                                 props.updateImageSection(
                                                     image.id,
                                                     'value',
-                                                    e.target.value
+                                                    pagination
                                                 )
                                             }}
-                                        />
+                                            enableReinitialize
+                                        >
+                                            {({
+                                                values,
+                                                handleChange,
+                                                handleSubmit,
+                                            }) => (
+                                                <TextField
+                                                    helperText={t('Pagination')}
+                                                    value={values.pagination}
+                                                    onChange={handleChange}
+                                                    onBlur={handleSubmit}
+                                                    inputProps={{
+                                                        id: 'pagination',
+                                                    }}
+                                                    id="pagination"
+                                                />
+                                            )}
+                                        </Formik>
                                     </div>
                                 </FormControl>
                             </div>
