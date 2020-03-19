@@ -469,8 +469,10 @@ function App() {
     };
 
     const handlePaginationPredication = image => {
-        const cmp = curry(getComparator)(image.pagination);
-        const idx = findIndex(img => cmp(img.pagination) < 0, imageList);
+        const cmp = curry(getComparator)(manifest);
+        // TODO: the comparator is currently for the whole manifest, it might be
+        // relevant to have it just for the specific image
+        const idx = findIndex(img => cmp(image.pagination, img.pagination) < 0, imageList);
         if (idx !== -1) {
             rearrangeImage(image.id, dec(idx))
         }

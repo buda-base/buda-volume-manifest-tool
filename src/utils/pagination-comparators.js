@@ -15,9 +15,11 @@ export function getComparator(manifest) {
     // TODO for Alex: this probably won't work as pagination_types is a variable of
     // pagination-prediction.js which is not exported, not sure how to make it work
     var default_pg_type_info = pagination_types[paginations[0].type]
-    var sections_id_map = {}
-    for (var i = 0; i < manifest.sections.length; i++) {
-        sections_id_map[manifest.sections[i].id] = i
+    var sections_id_map = null
+    if (manifest.section) {
+        for (var i = 0; i < manifest.sections.length; i++) {
+            sections_id_map[manifest.sections[i].id] = i
+        }
     }
     // a and b are pagination objects of imageinfo
     return function(a, b) {
@@ -29,6 +31,7 @@ export function getComparator(manifest) {
             var a_dpg = a[default_pg_name]
             var b_dpg = b[default_pg_name]
             if (
+                sections_id_map && 
                 a_dpg.section &&
                 b_dpg.section &&
                 a_dpg.section != b_dpg.section
