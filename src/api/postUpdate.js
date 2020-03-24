@@ -1,16 +1,14 @@
 import axios from 'axios'
-import {append, assoc} from 'ramda'
-import config from '../auth_config.json'
 
 // having a changelog is mandatory
-function add_changelog(manifest, userId, changelogStr) {
+function add_changelog(manifest, userQname, changelogStr) {
     const now = new Date();
     const changelog = {
         time: now.toISOString(),
         message: changelogStr,
-        user: null,
+        user: userQname,
     }
-    return assoc('changes', append(changelog, manifest.changes), manifest)
+    manifest.changes.push(changelog)
 }
 
 async function saveManifest(
@@ -21,7 +19,7 @@ async function saveManifest(
     // first check: users must be logged in 
     if(auth0 && auth0.isAuthenticated) {
 
-        console.log("user",auth0.user.email)
+        console.log("user",auth0.user)
 
         // DEPRECATED ? not sure we really need this...
         // get an app token from IIIFPres Auth0 app
@@ -34,10 +32,9 @@ async function saveManifest(
 
         // post updated manifest to api!
         const volume = manifest['for-volume']
-        const formattedManifest = add_changelog(manifest, auth0.user.bdrcID, changelogStr)
-        console.log('formattedManifest', formattedManifest)
+        add_changelog(manifest, auth0.user.bdrcID, changelogStr)
         try {
-            const data = await axios.put(`https://iiifpres-dev.bdrc.io/bvm/ig:${volume}`,formattedManifest, { headers: {
+            const data = await axios.put(`https://iiifpres-dev.bdrc.io/bvm/ig:${volume}`,manifest, { headers: {
             "Authorization": "Bearer " + app_token } });
             manifest.rev = data.rev
         } catch (err) {
