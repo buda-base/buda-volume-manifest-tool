@@ -5,7 +5,7 @@ import config from '../auth_config.json'
 // having a changelog is mandatory
 function add_changelog(manifest, userId, changelogStr) {
     const changelog = {
-        timestamp: Date.now(),
+        time: Date.now().toISOString(),
         str: changelogStr,
         user: null,
     }
@@ -14,9 +14,8 @@ function add_changelog(manifest, userId, changelogStr) {
 
 async function saveManifest(
     manifest,
-    auth0, // TODO find a way to get Auth0 object outside of a React component
-    userId = 'noUser',
-    changelogStr = 'defaultChangeStr'
+    auth0,
+    changelogStr = 'no log message'
 ){
     // first check: users must be logged in 
     if(auth0 && auth0.isAuthenticated) {
@@ -34,7 +33,7 @@ async function saveManifest(
 
         // post updated manifest to api!
         const volume = manifest['for-volume']
-        const formattedManifest = add_changelog(manifest, userId, changelogStr)
+        const formattedManifest = add_changelog(manifest, auth0.user.bdrcID, changelogStr)
         console.log('formattedManifest', formattedManifest)
         try {
             const data = await axios.put(`https://iiifpres-dev.bdrc.io/bvm/ig:${volume}`,formattedManifest, { headers: {
