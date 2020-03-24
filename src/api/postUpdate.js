@@ -16,7 +16,7 @@ function add_changelog(manifest, userId, changelogStr) {
 async function saveManifest(
     manifest,
     auth0,
-    changelogStr = 'no log message'
+    changelogStr = {"@value": 'no log message', "@language": "en"}
 ){
     // first check: users must be logged in 
     if(auth0 && auth0.isAuthenticated) {
