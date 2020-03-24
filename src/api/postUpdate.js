@@ -7,7 +7,7 @@ function add_changelog(manifest, userId, changelogStr) {
     const now = new Date();
     const changelog = {
         time: now.toISOString(),
-        str: changelogStr,
+        message: changelogStr,
         user: null,
     }
     return assoc('changes', append(changelog, manifest.changes), manifest)
