@@ -37,7 +37,7 @@ export async function getOrInitManifest(volumeQname, options) {
 function initManifestFromImageList(images, volumeQname, options) {
     return {
         'for-volume': volumeQname,
-        label: [], // an option
+        'volume-label': [], // an option
         'spec-version': '0.1.0',
         rev: null,
         'viewing-direction': 'top-to-bottom',
@@ -50,7 +50,7 @@ function initManifestFromImageList(images, volumeQname, options) {
             {
                 id: 'pgfolios',
                 type: 'folios'
-            },
+            }
         ],
         'default-view': 'view1',
         view: {
