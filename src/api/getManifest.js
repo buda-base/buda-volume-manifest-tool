@@ -49,13 +49,7 @@ function initManifestFromImageList(images, volumeQname, options) {
         pagination: [
             {
                 id: 'pgfolios',
-                type: 'folios',
-                note: [
-                    {
-                        '@value': 'from the original blockprint',
-                        '@language': 'en',
-                    },
-                ],
+                type: 'folios'
             },
         ],
         'default-view': 'view1',
@@ -68,7 +62,7 @@ function initManifestFromImageList(images, volumeQname, options) {
             bvmt: {
                 'metadata-for-bvmt-ver': '0.1.0', // TODO: ajust if necessary
                 'default-ui-string-lang': options.uiLanguage,
-                'default-vol-string-lang': 'en', // reasonable default for now, should be an option
+                'default-vol-string-lang': 'bo', // reasonable default for now, should be an option
                 'margin-indication-even': '{pagenum:bo}', // an option
                 'margin-volname': '', // an option too
                 'margin-indication-odd': '',
