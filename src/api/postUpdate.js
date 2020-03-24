@@ -9,7 +9,7 @@ function add_changelog(manifest, userId, changelogStr) {
         str: changelogStr,
         user: null,
     }
-    return assoc('changelog', append(changelog, manifest.changes), manifest)
+    return assoc('changes', append(changelog, manifest.changes), manifest)
 }
 
 async function saveManifest(
@@ -36,14 +36,14 @@ async function saveManifest(
         const volume = manifest['for-volume']
         const formattedManifest = add_changelog(manifest, userId, changelogStr)
         console.log('formattedManifest', formattedManifest)
-        
-        const data = await axios.put(`https://iiifpres-dev.bdrc.io/bvm/ig:${volume}`,formattedManifest, { headers: {
-            "Authorization": "Bearer " + app_token
-        } })
-
-        manifest.rev = data.rev
-        // if the put fails (http status != 200), then a popup should be presented
-        // to the user with the payload of the response
+        try {
+            const data = await axios.put(`https://iiifpres-dev.bdrc.io/bvm/ig:${volume}`,formattedManifest, { headers: {
+            "Authorization": "Bearer " + app_token } });
+            manifest.rev = data.rev
+        } catch (err) {
+            // TODO: print error:
+            console.error(err);
+        }
     }
     else { 
         console.error("users must be logged in")

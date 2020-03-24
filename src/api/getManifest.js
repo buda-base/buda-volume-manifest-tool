@@ -43,7 +43,7 @@ function initManifestFromImageList(images, volumeQname, options) {
         'viewing-direction': 'top-to-bottom',
         status: 'editing',
         note: [],
-        changelog: [],
+        changes: [],
         attribution: [], // the attribution of the data in the manifest, if the user wants to be credited
         // a reasonable default
         pagination: [
