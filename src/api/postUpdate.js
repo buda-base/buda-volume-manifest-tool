@@ -4,8 +4,9 @@ import config from '../auth_config.json'
 
 // having a changelog is mandatory
 function add_changelog(manifest, userId, changelogStr) {
+    const now = new Date();
     const changelog = {
-        time: Date.now().toISOString(),
+        time: now.toISOString(),
         str: changelogStr,
         user: null,
     }
