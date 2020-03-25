@@ -1,14 +1,14 @@
 import React from 'react'
-import {makeStyles} from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import CardHeader from '@material-ui/core/CardHeader'
 import CardContent from '@material-ui/core/CardContent'
-import {red} from '@material-ui/core/colors'
+import { red } from '@material-ui/core/colors'
 import TextField from '@material-ui/core/TextField'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import DragHandleIcon from '@material-ui/icons/DragHandle'
 import Select from '@material-ui/core/Select'
 import FormControl from '@material-ui/core/FormControl'
-import {Checkbox} from '@material-ui/core'
+import { Checkbox } from '@material-ui/core'
 import Edit from '@material-ui/icons/Edit'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -22,16 +22,18 @@ import axios from 'axios'
 import BeenhereIcon from '@material-ui/icons/Beenhere'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import ReorderIcon from '@material-ui/icons/Reorder'
-import {useDrag} from 'react-dnd'
-import {useTranslation} from 'react-i18next'
+import { useDrag } from 'react-dnd'
+import { useTranslation } from 'react-i18next'
 import Tags from './Tags'
 import TypeSelect from './TypeSelect'
 import NoteIcon from '@material-ui/icons/Note'
-import {Formik} from 'formik'
+import { Formik } from 'formik'
 import DeleteIcon from '@material-ui/icons/Delete'
-import {pathOr} from 'ramda'
+import { pathOr, pickAll } from 'ramda'
 import InputLabel from '@material-ui/core/InputLabel'
 import LanguageOptions from './LanguageOptions'
+import { connect } from 'react-redux'
+import equal from 'deep-equal'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -67,7 +69,97 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function ImageCard(props) {
+function SimpleMenu(props) {
+    const [anchorEl, setAnchorEl] = React.useState(null)
+    const { insertMissing, i, image } = props
+
+    const { t } = useTranslation()
+
+    const handleClick = event => {
+        setAnchorEl(event.currentTarget)
+    }
+
+    const handleClose = () => {
+        setAnchorEl(null)
+    }
+
+    return (
+        <div className="flex inline-block">
+            <MoreVertIcon
+                aria-controls="simple-menu"
+                aria-haspopup="true"
+                onClick={handleClick}
+                style={{ cursor: 'pointer' }}
+            />
+
+            <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+            >
+                <MenuItem onClick={() => insertMissing(i, 'before')}>
+                    <ArrowUpwardIcon className="mr-2" />
+                    {t('Insert One Above')}
+                </MenuItem>
+                <MenuItem onClick={() => insertMissing(i, 'after')}>
+                    <ArrowDownwardIcon className="mr-2" />
+                    {t('Insert One Below')}
+                </MenuItem>
+
+                {!image.hide && (
+                    <MenuItem
+                        onClick={() => {
+                            props.hideCardInManifest(image.id, true)
+                        }}
+                    >
+                        <DeleteIcon className="mr-2" />
+                        {t('Hide in Manifest')}
+                    </MenuItem>
+                )}
+                {image.hide && (
+                    <MenuItem
+                        onClick={() => {
+                            props.hideCardInManifest(image.id, false)
+                        }}
+                    >
+                        <DeleteIcon className="mr-2" />
+                        {t('Unhide in Manifest')}
+                    </MenuItem>
+                )}
+                {image.pagination && (
+                    <MenuItem
+                        onClick={() => {
+                            props.updateUncheckedItems(image, i)
+                        }}
+                    >
+                        <BeenhereIcon className="mr-2" />
+                        {t('Update following unchecked items')}
+                    </MenuItem>
+                )}
+                {image.pagination && (
+                    <MenuItem
+                        onClick={() => {
+                            props.handlePaginationPredication(props.data)
+                        }}
+                    >
+                        <ReorderIcon className="mr-2" />
+                        {t(
+                            'Reorder this image according to indicated pagination'
+                        )}
+                    </MenuItem>
+                )}
+                <MenuItem onClick={() => props.markPreviousAsReviewed(i)}>
+                    <CheckBoxIcon className="mr-2" />
+                    {t('Mark all images down to this one as checked')}
+                </MenuItem>
+            </Menu>
+        </div>
+    )
+}
+
+function ImageCard(props) {
     const classes = useStyles()
     const [editDialogOpen, setEditDialogOpen] = React.useState(false)
     const [iiif, setiiif] = React.useState(null)
@@ -143,109 +235,20 @@ export default function ImageCard(props) {
                         className="mr-4 cursor-pointer"
                     />
 
-                    <SimpleMenu />
+                    <SimpleMenu
+                        insertMissing={props.insertMissing}
+                        i={props.i}
+                        image={image}
+                    />
                 </div>
-            </div>
-        )
-    }
-
-    function SimpleMenu() {
-        const [anchorEl, setAnchorEl] = React.useState(null)
-
-        const { t } = useTranslation()
-
-        const handleClick = event => {
-            setAnchorEl(event.currentTarget)
-        }
-
-        const handleClose = () => {
-            setAnchorEl(null)
-        }
-
-        return (
-            <div className="flex inline-block">
-                <MoreVertIcon
-                    aria-controls="simple-menu"
-                    aria-haspopup="true"
-                    onClick={handleClick}
-                    style={{ cursor: 'pointer' }}
-                />
-
-                <Menu
-                    id="simple-menu"
-                    anchorEl={anchorEl}
-                    keepMounted
-                    open={Boolean(anchorEl)}
-                    onClose={handleClose}
-                >
-                    <MenuItem
-                        onClick={() => props.insertMissing(props.i, 'before')}
-                    >
-                        <ArrowUpwardIcon className="mr-2" />
-                        {t('Insert One Above')}
-                    </MenuItem>
-                    <MenuItem
-                        onClick={() => props.insertMissing(props.i, 'after')}
-                    >
-                        <ArrowDownwardIcon className="mr-2" />
-                        {t('Insert One Below')}
-                    </MenuItem>
-
-                    {!image.hide && (
-                        <MenuItem
-                            onClick={() => {
-                                props.hideCardInManifest(image.id, true)
-                            }}
-                        >
-                            <DeleteIcon className="mr-2" />
-                            {t('Hide in Manifest')}
-                        </MenuItem>
-                    )}
-                    {image.hide && (
-                        <MenuItem
-                            onClick={() => {
-                                props.hideCardInManifest(image.id, false)
-                            }}
-                        >
-                            <DeleteIcon className="mr-2" />
-                            {t('Unhide in Manifest')}
-                        </MenuItem>
-                    )}
-                    {image.pagination && (
-                        <MenuItem
-                            onClick={() => {
-                                props.updateUncheckedItems(image, props.i)
-                            }}
-                        >
-                            <BeenhereIcon className="mr-2" />
-                            {t('Update following unchecked items')}
-                        </MenuItem>
-                    )}
-                    {image.pagination && (
-                        <MenuItem
-                            onClick={() => {
-                                props.handlePaginationPredication(props.data)
-                            }}
-                        >
-                            <ReorderIcon className="mr-2" />
-                            {t(
-                                'Reorder this image according to indicated pagination'
-                            )}
-                        </MenuItem>
-                    )}
-                    <MenuItem
-                        onClick={() => props.markPreviousAsReviewed(props.i)}
-                    >
-                        <CheckBoxIcon className="mr-2" />
-                        {t('Mark all images down to this one as checked')}
-                    </MenuItem>
-                </Menu>
             </div>
         )
     }
 
     const { t } = useTranslation()
     const hideImage = props.hideDeletedImages && image.hide
+
+    console.log('re render!')
     return hideImage ? null : (
         <div
             className="shadow-sm hover:shadow-md w-full border-2 rounded border-gray-200 bg-white"
@@ -487,3 +490,39 @@ export default function ImageCard(props) {
         </div>
     )
 }
+
+const mapStateToProps = function(state, ownProps) {
+    return {
+        data: state.manifest.view.view1.imagelist[ownProps.i],
+    }
+}
+
+function areEqual(prevProps, nextProps) {
+    /*
+    return true if passing nextProps to render would return
+    the same result as passing prevProps to render,
+    otherwise return false
+    */
+
+    const pickFields = pickAll([
+        'hideDeletedImages',
+        'i',
+        'data',
+        'imageView',
+        'sectionInputs',
+        'imageListLength',
+        'uiLanguage',
+        'manifestLanguage',
+        'volumeId',
+    ])
+
+    const prev = pickFields(prevProps)
+    const next = pickFields(nextProps)
+    console.log('prevProps', prev)
+    console.log('nextProps', next)
+    const areEqual = equal(prev, next)
+    console.log('areEqual', areEqual)
+    return areEqual
+}
+
+export default connect(mapStateToProps)(React.memo(ImageCard, areEqual))

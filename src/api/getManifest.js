@@ -5,6 +5,7 @@ var apiroot = 'https://iiifpres-dev.bdrc.io';
 
 async function getImageList(volumeQname) {
     const data = await axios.get(`${apiroot}/il/v:${volumeQname}`);
+    console.log('data', data)
     return data.data.map(({ filename }) => ({
         id: uuidv4(),
         filename,
