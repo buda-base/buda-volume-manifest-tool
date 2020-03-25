@@ -1,4 +1,4 @@
-import { mergeRight } from 'ramda'
+import {lensPath, set} from 'ramda'
 
 export default (
     state = {
@@ -16,7 +16,13 @@ export default (
 ) => {
     switch (action.type) {
         case 'SET_MANIFEST':
-            return action.payload.manifest
+            return action.payload.manifest;
+        case 'SET_UI_LANGUAGE':
+            return set(
+                lensPath(['appData', 'bvmt', 'default-ui-string-lang']),
+                action.payload,
+                state
+            );
         default:
             return state
     }

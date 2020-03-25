@@ -4,3 +4,10 @@ export function setManifest(manifest) {
         payload: { manifest },
     }
 }
+
+export function setUILanguage(language) {
+    return {
+        type: 'SET_UI_LANGUAGE',
+        payload: language,
+    }
+}

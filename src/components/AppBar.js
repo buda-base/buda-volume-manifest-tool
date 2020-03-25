@@ -2,14 +2,16 @@ import React from 'react'
 import AppBar from '@material-ui/core/AppBar/AppBar'
 import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
-import {lensPath} from 'ramda'
 import {useTranslation} from 'react-i18next'
 import AuthNavBar from './AuthNavBar'
+import {connect} from 'react-redux'
+import {setUILanguage} from '../actions/manifest'
 
 function AppBarTwo(props) {
-    const { manifest, handleSettingsUpdate } = props
-    const { i18n, t } = useTranslation()
+    const { handleSettingsUpdate } = props;
+    const { i18n, t } = useTranslation();
 
+    console.log('appBarprops', props);
     return (
         <header className="fixed top-0 left-0 w-full" style={{ zIndex: 9999 }}>
             <div>
@@ -21,26 +23,15 @@ function AppBarTwo(props) {
                         <a href="/">
                             <span className="text-2xl">{t('siteName')}</span>
                         </a>
-                        <div style={{width: 300}}>
+                        <div style={{ width: 300 }}>
                             <div className="w-full flex flex-row justify-between content-between">
                                 <FormControl style={{ width: 200 }}>
                                     <Select
-                                        value={
-                                            // TODO: the defalt ui lang shouldn't be in the manifest
-                                            // at all, it should be a global variable for the user
-                                            manifest.appData.bvmt[
-                                                'default-ui-string-lang'
-                                            ]
-                                        }
+                                        value={props['default-ui-string-lang']}
                                         onChange={e => {
-                                            i18n.changeLanguage(e.target.value)
-                                            handleSettingsUpdate(
-                                                lensPath([
-                                                    'appData',
-                                                    'bvmt',
-                                                    'default-ui-string-lang',
-                                                ]),
-                                                e.target.value
+                                            i18n.changeLanguage(e.target.value);
+                                            props.dispatch(
+                                                setUILanguage(e.target.value)
                                             )
                                         }}
                                         style={{
@@ -64,4 +55,11 @@ function AppBarTwo(props) {
     )
 }
 
-export default AppBarTwo
+const mapStateToProps = function(state) {
+    return {
+        'default-ui-string-lang':
+            state.manifest.appData.bvmt['default-ui-string-lang'],
+    }
+};
+
+export default connect(mapStateToProps)(AppBarTwo)

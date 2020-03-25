@@ -1,14 +1,14 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import CardHeader from '@material-ui/core/CardHeader'
 import CardContent from '@material-ui/core/CardContent'
-import { red } from '@material-ui/core/colors'
+import {red} from '@material-ui/core/colors'
 import TextField from '@material-ui/core/TextField'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import DragHandleIcon from '@material-ui/icons/DragHandle'
 import Select from '@material-ui/core/Select'
 import FormControl from '@material-ui/core/FormControl'
-import { Checkbox } from '@material-ui/core'
+import {Checkbox} from '@material-ui/core'
 import Edit from '@material-ui/icons/Edit'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -22,18 +22,17 @@ import axios from 'axios'
 import BeenhereIcon from '@material-ui/icons/Beenhere'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import ReorderIcon from '@material-ui/icons/Reorder'
-import { useDrag } from 'react-dnd'
-import { useTranslation } from 'react-i18next'
+import {useDrag} from 'react-dnd'
+import {useTranslation} from 'react-i18next'
 import Tags from './Tags'
 import TypeSelect from './TypeSelect'
 import NoteIcon from '@material-ui/icons/Note'
-import { Formik } from 'formik'
+import {Formik} from 'formik'
 import DeleteIcon from '@material-ui/icons/Delete'
-import { pathOr, pickAll } from 'ramda'
+import {pathOr} from 'ramda'
 import InputLabel from '@material-ui/core/InputLabel'
 import LanguageOptions from './LanguageOptions'
-import { connect } from 'react-redux'
-import equal from 'deep-equal'
+import {connect} from 'react-redux'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -67,21 +66,21 @@ const useStyles = makeStyles(theme => ({
     avatar: {
         backgroundColor: red[500],
     },
-}))
+}));
 
 function SimpleMenu(props) {
-    const [anchorEl, setAnchorEl] = React.useState(null)
-    const { insertMissing, i, image } = props
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const { insertMissing, i, image } = props;
 
-    const { t } = useTranslation()
+    const { t } = useTranslation();
 
     const handleClick = event => {
         setAnchorEl(event.currentTarget)
-    }
+    };
 
     const handleClose = () => {
         setAnchorEl(null)
-    }
+    };
 
     return (
         <div className="flex inline-block">
@@ -160,34 +159,34 @@ function SimpleMenu(props) {
 }
 
 function ImageCard(props) {
-    const classes = useStyles()
-    const [editDialogOpen, setEditDialogOpen] = React.useState(false)
-    const [iiif, setiiif] = React.useState(null)
-    const { imageView, setImageView } = props
-    const { data: image, sectionInputs } = props
+    const classes = useStyles();
+    const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+    const [iiif, setiiif] = React.useState(null);
+    const { imageView, setImageView } = props;
+    const { data: image, sectionInputs } = props;
 
     const [, dragRef] = useDrag({
         item: { type: 'CARD', imageId: image.id },
         collect: monitor => ({
             opacity: monitor.isDragging() ? 0.3 : 1,
         }),
-    })
+    });
 
     React.useEffect(() => {
         const getData = async () => {
             try {
                 const data = await axios.get(
                     `https://iiif-dev.bdrc.io/${props.volumeId}::${image.filename}/info.json`
-                )
-                const iiif = data.data
-                setiiif(iiif)
+                );
+                const iiif = data.data;
+                setiiif(iiif);
                 return () => {}
             } catch (err) {
                 console.log('iiifErr', err)
             }
-        }
+        };
         getData()
-    }, [])
+    }, []);
 
     const Header = () => {
         return (
@@ -243,12 +242,12 @@ function ImageCard(props) {
                 </div>
             </div>
         )
-    }
+    };
 
-    const { t } = useTranslation()
-    const hideImage = props.hideDeletedImages && image.hide
+    const { t } = useTranslation();
+    const hideImage = props.hideDeletedImages && image.hide;
 
-    console.log('re render!')
+    console.log('re render!');
     return hideImage ? null : (
         <div
             className="shadow-sm hover:shadow-md w-full border-2 rounded border-gray-200 bg-white"
@@ -495,34 +494,34 @@ const mapStateToProps = function(state, ownProps) {
     return {
         data: state.manifest.view.view1.imagelist[ownProps.i],
     }
-}
+};
 
-function areEqual(prevProps, nextProps) {
-    /*
-    return true if passing nextProps to render would return
-    the same result as passing prevProps to render,
-    otherwise return false
-    */
+// function areEqual(prevProps, nextProps) {
+//     /*
+//     return true if passing nextProps to render would return
+//     the same result as passing prevProps to render,
+//     otherwise return false
+//     */
+//
+//     const pickFields = pickAll([
+//         'hideDeletedImages',
+//         'i',
+//         'data',
+//         'imageView',
+//         'sectionInputs',
+//         'imageListLength',
+//         'uiLanguage',
+//         'manifestLanguage',
+//         'volumeId',
+//     ])
+//
+//     const prev = pickFields(prevProps)
+//     const next = pickFields(nextProps)
+//     console.log('prevProps', prev)
+//     console.log('nextProps', next)
+//     const areEqual = equal(prev, next)
+//     console.log('areEqual', areEqual)
+//     return areEqual
+// }
 
-    const pickFields = pickAll([
-        'hideDeletedImages',
-        'i',
-        'data',
-        'imageView',
-        'sectionInputs',
-        'imageListLength',
-        'uiLanguage',
-        'manifestLanguage',
-        'volumeId',
-    ])
-
-    const prev = pickFields(prevProps)
-    const next = pickFields(nextProps)
-    console.log('prevProps', prev)
-    console.log('nextProps', next)
-    const areEqual = equal(prev, next)
-    console.log('areEqual', areEqual)
-    return areEqual
-}
-
-export default connect(mapStateToProps)(React.memo(ImageCard, areEqual))
+export default connect(mapStateToProps)(ImageCard)
