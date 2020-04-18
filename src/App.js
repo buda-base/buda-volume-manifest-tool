@@ -53,6 +53,7 @@ import VolumeSearch from './components/VolumeSearch'
 import UpdateManifestError from './components/UpdateManifestError'
 import store from './store'
 import {setManifest} from './actions/manifest'
+import {FieldArray, Form, Formik} from "formik";
 
 const mapIndex = addIndex(map);
 const theme = createMuiTheme({
@@ -367,6 +368,7 @@ function App(props) {
         updateImageList(updatedImageList)
     };
     const updateImageValue = (imageId, key, value) => {
+        console.log('UPDATED!!!');
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 return assoc(key, value, image)
@@ -545,160 +547,238 @@ function App(props) {
                                     updateImageValue={updateImageValue}
                                 />
                                 <div className="container mx-auto">
-                                    <InfiniteScroll
-                                        pageStart={0}
-                                        key={0}
-                                        loadMore={handleLoadMore}
-                                        hasMore={
-                                            imageList.length > renderToIdx &&
-                                            !isLoadingMore
+                                    <Formik
+                                        initialValues={{ images: imageList }}
+                                        onSubmit={values =>
+                                            setTimeout(() => {
+                                                alert(
+                                                    JSON.stringify(
+                                                        values,
+                                                        null,
+                                                        2
+                                                    )
+                                                )
+                                            }, 500)
                                         }
-                                        loader={
-                                            <div className="container mx-auto flex items-center justify-center">
-                                                <CircularProgress />
-                                            </div>
-                                        }
-                                        useWindow={true}
-                                    >
-                                        {mapIndex(
-                                            (item, i) => (
-                                                <React.Fragment key={i}>
-                                                    {i === 0 && (
-                                                        <CardDropZone
-                                                            i={-1}
-                                                            handleDrop={
-                                                                rearrangeImage
-                                                            }
-                                                        />
+                                        render={({ values }) => (
+                                            <Form>
+                                                {console.log('values', values)}
+                                                <FieldArray
+                                                    name="friends"
+                                                    render={arrayHelpers => (
+                                                        <div>
+                                                            <InfiniteScroll
+                                                                pageStart={0}
+                                                                key={0}
+                                                                loadMore={
+                                                                    handleLoadMore
+                                                                }
+                                                                hasMore={
+                                                                    imageList.length >
+                                                                        renderToIdx &&
+                                                                    !isLoadingMore
+                                                                }
+                                                                loader={
+                                                                    <div className="container mx-auto flex items-center justify-center">
+                                                                        <CircularProgress />
+                                                                    </div>
+                                                                }
+                                                                useWindow={true}
+                                                            >
+                                                                {mapIndex(
+                                                                    (
+                                                                        item,
+                                                                        i
+                                                                    ) => (
+                                                                        <React.Fragment
+                                                                            key={
+                                                                                i
+                                                                            }
+                                                                        >
+                                                                            {i ===
+                                                                                0 && (
+                                                                                <CardDropZone
+                                                                                    i={
+                                                                                        -1
+                                                                                    }
+                                                                                    handleDrop={
+                                                                                        rearrangeImage
+                                                                                    }
+                                                                                />
+                                                                            )}
+                                                                            <Cards
+                                                                                handlePaginationPredication={
+                                                                                    handlePaginationPredication
+                                                                                }
+                                                                                hideCardInManifest={
+                                                                                    hideCardInManifest
+                                                                                }
+                                                                                removeOfField={
+                                                                                    removeOfField
+                                                                                }
+                                                                                volumeId={
+                                                                                    manifest[
+                                                                                        'for-volume'
+                                                                                    ]
+                                                                                }
+                                                                                manifestLanguage={
+                                                                                    manifest
+                                                                                        .appData[
+                                                                                        'bvmt'
+                                                                                    ][
+                                                                                        'default-vol-string-lang'
+                                                                                    ]
+                                                                                }
+                                                                                uiLanguage={
+                                                                                    manifest
+                                                                                        .appData[
+                                                                                        'bvmt'
+                                                                                    ][
+                                                                                        'default-ui-string-lang'
+                                                                                    ]
+                                                                                }
+                                                                                pagination={
+                                                                                    manifest.pagination
+                                                                                }
+                                                                                imageListLength={
+                                                                                    imageListLength
+                                                                                }
+                                                                                setPagination={
+                                                                                    setPagination
+                                                                                }
+                                                                                updateImageSection={
+                                                                                    updateImageSection
+                                                                                }
+                                                                                sectionInputs={
+                                                                                    manifest.sections ||
+                                                                                    []
+                                                                                }
+                                                                                updateImageValue={
+                                                                                    updateImageValue
+                                                                                }
+                                                                                selectType={
+                                                                                    selectType
+                                                                                }
+                                                                                addNote={
+                                                                                    addNote
+                                                                                }
+                                                                                imageView={pathOr(
+                                                                                    {
+                                                                                        zoom: 0,
+                                                                                        center: {
+                                                                                            x: null,
+                                                                                            y: null,
+                                                                                        },
+                                                                                    },
+                                                                                    [
+                                                                                        'appData',
+                                                                                        'bvmt',
+                                                                                        'preview-image-view',
+                                                                                    ],
+                                                                                    manifest
+                                                                                )}
+                                                                                data={
+                                                                                    item
+                                                                                }
+                                                                                deleteImageChip={
+                                                                                    deleteImageChip
+                                                                                }
+                                                                                toggleReview={
+                                                                                    toggleReview
+                                                                                }
+                                                                                insertMissing={
+                                                                                    insertMissing
+                                                                                }
+                                                                                toggleCollapseImage={
+                                                                                    toggleCollapseImage
+                                                                                }
+                                                                                key={
+                                                                                    item.id
+                                                                                }
+                                                                                duplicateImageOptions={duplicateImageOptions()}
+                                                                                setImageView={handleSettingsUpdate(
+                                                                                    lensPath(
+                                                                                        [
+                                                                                            'appData',
+                                                                                            'bvmt',
+                                                                                            'preview-image-view',
+                                                                                        ]
+                                                                                    )
+                                                                                )}
+                                                                                i={
+                                                                                    i
+                                                                                }
+                                                                                updateOfField={
+                                                                                    updateOfField
+                                                                                }
+                                                                                setDuplicateType={
+                                                                                    setDuplicateType
+                                                                                }
+                                                                                addImageTag={
+                                                                                    addImageTag
+                                                                                }
+                                                                                removeImageTag={
+                                                                                    removeImageTag
+                                                                                }
+                                                                                removeNote={
+                                                                                    removeNote
+                                                                                }
+                                                                                markPreviousAsReviewed={
+                                                                                    markPreviousAsReviewed
+                                                                                }
+                                                                                updateUncheckedItems={
+                                                                                    updateUncheckedItems
+                                                                                }
+                                                                                hideDeletedImages={pathOr(
+                                                                                    false,
+                                                                                    [
+                                                                                        'volumeData',
+                                                                                        'bvmt_props',
+                                                                                        'hideDeletedImages',
+                                                                                    ],
+                                                                                    manifest
+                                                                                )}
+                                                                            />
+                                                                            <CardDropZone
+                                                                                i={
+                                                                                    i
+                                                                                }
+                                                                                handleDrop={
+                                                                                    rearrangeImage
+                                                                                }
+                                                                            />
+                                                                        </React.Fragment>
+                                                                    ),
+                                                                    values.images.slice(
+                                                                        0,
+                                                                        renderToIdx
+                                                                    )
+                                                                )}
+                                                            </InfiniteScroll>
+                                                            {/*{values.items.map((item, index) => (*/}
+                                                            {/*    <div key={index}>*/}
+                                                            {/*        {console.log("item", item)}*/}
+                                                            {/*        <Field name={`items[${index}].filename`} />*/}
+                                                            {/*        <button*/}
+                                                            {/*            type="button"*/}
+                                                            {/*            onClick={() => arrayHelpers.remove(index)}*/}
+                                                            {/*        >*/}
+                                                            {/*            -*/}
+                                                            {/*        </button>*/}
+                                                            {/*    </div>*/}
+                                                            {/*))}*/}
+                                                            {/*<button*/}
+                                                            {/*    type="button"*/}
+                                                            {/*    onClick={() => arrayHelpers.push({ name: "", age: "" })}*/}
+                                                            {/*>*/}
+                                                            {/*    +*/}
+                                                            {/*</button>*/}
+                                                        </div>
                                                     )}
-                                                    <Cards
-                                                        handlePaginationPredication={
-                                                            handlePaginationPredication
-                                                        }
-                                                        hideCardInManifest={
-                                                            hideCardInManifest
-                                                        }
-                                                        removeOfField={
-                                                            removeOfField
-                                                        }
-                                                        volumeId={
-                                                            manifest[
-                                                                'for-volume'
-                                                            ]
-                                                        }
-                                                        manifestLanguage={
-                                                            manifest.appData[
-                                                                'bvmt'
-                                                            ][
-                                                                'default-vol-string-lang'
-                                                            ]
-                                                        }
-                                                        uiLanguage={
-                                                            manifest.appData[
-                                                                'bvmt'
-                                                            ][
-                                                                'default-ui-string-lang'
-                                                            ]
-                                                        }
-                                                        pagination={
-                                                            manifest.pagination
-                                                        }
-                                                        imageListLength={
-                                                            imageListLength
-                                                        }
-                                                        setPagination={
-                                                            setPagination
-                                                        }
-                                                        updateImageSection={
-                                                            updateImageSection
-                                                        }
-                                                        sectionInputs={
-                                                            manifest.sections ||
-                                                            []
-                                                        }
-                                                        updateImageValue={
-                                                            updateImageValue
-                                                        }
-                                                        selectType={selectType}
-                                                        addNote={addNote}
-                                                        imageView={pathOr(
-                                                            {
-                                                                zoom: 0,
-                                                                center: {
-                                                                    x: null,
-                                                                    y: null,
-                                                                },
-                                                            },
-                                                            [
-                                                                'appData',
-                                                                'bvmt',
-                                                                'preview-image-view',
-                                                            ],
-                                                            manifest
-                                                        )}
-                                                        data={item}
-                                                        deleteImageChip={
-                                                            deleteImageChip
-                                                        }
-                                                        toggleReview={
-                                                            toggleReview
-                                                        }
-                                                        insertMissing={
-                                                            insertMissing
-                                                        }
-                                                        toggleCollapseImage={
-                                                            toggleCollapseImage
-                                                        }
-                                                        key={item.id}
-                                                        duplicateImageOptions={duplicateImageOptions()}
-                                                        setImageView={handleSettingsUpdate(
-                                                            lensPath([
-                                                                'appData',
-                                                                'bvmt',
-                                                                'preview-image-view',
-                                                            ])
-                                                        )}
-                                                        i={i}
-                                                        updateOfField={
-                                                            updateOfField
-                                                        }
-                                                        setDuplicateType={
-                                                            setDuplicateType
-                                                        }
-                                                        addImageTag={
-                                                            addImageTag
-                                                        }
-                                                        removeImageTag={
-                                                            removeImageTag
-                                                        }
-                                                        removeNote={removeNote}
-                                                        markPreviousAsReviewed={
-                                                            markPreviousAsReviewed
-                                                        }
-                                                        updateUncheckedItems={
-                                                            updateUncheckedItems
-                                                        }
-                                                        hideDeletedImages={pathOr(
-                                                            false,
-                                                            [
-                                                                'volumeData',
-                                                                'bvmt_props',
-                                                                'hideDeletedImages',
-                                                            ],
-                                                            manifest
-                                                        )}
-                                                    />
-                                                    <CardDropZone
-                                                        i={i}
-                                                        handleDrop={
-                                                            rearrangeImage
-                                                        }
-                                                    />
-                                                </React.Fragment>
-                                            ),
-                                            imageList.slice(0, renderToIdx)
+                                                />
+                                            </Form>
                                         )}
-                                    </InfiniteScroll>
+                                    />
                                 </div>
                             </div>
                         </div>

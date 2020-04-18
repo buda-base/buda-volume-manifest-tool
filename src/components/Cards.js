@@ -27,12 +27,14 @@ import {useTranslation} from 'react-i18next'
 import Tags from './Tags'
 import TypeSelect from './TypeSelect'
 import NoteIcon from '@material-ui/icons/Note'
-import {Formik} from 'formik'
 import DeleteIcon from '@material-ui/icons/Delete'
 import {pathOr} from 'ramda'
 import InputLabel from '@material-ui/core/InputLabel'
 import LanguageOptions from './LanguageOptions'
 import {connect} from 'react-redux'
+import {debounce} from 'throttle-debounce'
+import {Formik} from "formik";
+
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -325,8 +327,31 @@ function ImageCard(props) {
                                                 label={' '}
                                                 type="text"
                                                 value={values.marginIndication}
-                                                onChange={handleChange}
-                                                onBlur={handleSubmit}
+                                                onChange={e => {
+                                                    const x = debounce(
+                                                        5000,
+                                                        () => {
+                                                            console.log(
+                                                                'debounced!!!'
+                                                            );
+                                                            props.updateImageValue(
+                                                                image.id,
+                                                                'indication',
+                                                                {
+                                                                    '@value':
+                                                                        e.target
+                                                                            .value,
+                                                                    '@language':
+                                                                        values.language,
+                                                                }
+                                                            )
+                                                            // Debounced function
+                                                        }
+                                                    );
+                                                    x();
+                                                    handleChange(e)
+                                                }}
+                                                // onBlur={handleSubmit}
                                                 inputProps={{
                                                     id: 'marginIndication',
                                                 }}
