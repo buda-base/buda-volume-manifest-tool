@@ -43,7 +43,6 @@ export async function getOrInitManifest(volumeQname, options) {
 }
 
 function initManifestFromImageList(images, volumeQname, options) {
-    console.log('images', images);
     return {
         'for-volume': volumeQname,
         'volume-label': [], // an option
