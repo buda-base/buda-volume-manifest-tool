@@ -1,6 +1,6 @@
 import i18n from 'i18next'
-import {initReactI18next} from 'react-i18next'
-import getTranslations from '../src/translations/index'
+import { initReactI18next } from 'react-i18next'
+import getTranslations from './translations'
 
 const translations = getTranslations()
 

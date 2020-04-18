@@ -1,4 +1,4 @@
-import {pagination_types} from './pagination-prediction'
+import { pagination_types } from './pagination-prediction'
 
 export function getComparator(manifest) {
     var paginations = manifest.pagination
@@ -13,7 +13,7 @@ export function getComparator(manifest) {
     }
     var default_pg_name = paginations[0].id
     // TODO for Alex: this probably won't work as pagination_types is a variable of
-    // pagination-prediction.js which is not exported, not sure how to make it work
+    // pagination-prediction.ts which is not exported, not sure how to make it work
     var default_pg_type_info = pagination_types[paginations[0].type]
     var sections_id_map = null
     if (manifest.section) {

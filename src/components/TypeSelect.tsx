@@ -1,10 +1,10 @@
 import React from 'react'
 import FormControl from '@material-ui/core/FormControl'
 import Autocomplete from '@material-ui/lab/Autocomplete'
-import {__, find, includes, propEq, propOr, reject} from 'ramda'
+import { __, find, includes, propEq, propOr, reject } from 'ramda'
 import TextField from '@material-ui/core/TextField'
-import {useTranslation} from 'react-i18next'
-import {makeStyles} from '@material-ui/core/styles'
+import { useTranslation } from 'react-i18next'
+import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles(theme => ({
     formControl: {

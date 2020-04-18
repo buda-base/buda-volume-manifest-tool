@@ -6,6 +6,10 @@
     "@material-ui/core": "^4.8.2",
     "@material-ui/icons": "^4.5.1",
     "@material-ui/lab": "^4.0.0-alpha.42",
+    "@types/jest": "^25.2.1",
+    "@types/node": "^13.13.0",
+    "@types/react": "^16.9.34",
+    "@types/react-dom": "^16.9.6",
     "add": "^2.0.6",
     "auth0-js": "^9.12.2",
     "axios": "^0.19.0",
@@ -14,7 +18,7 @@
     "install": "^0.13.0",
     "leaflet": "^1.6.0",
     "leaflet-iiif": "^3.0.0",
-    "npm": "^6.13.4",
+    "npm": "^6.14.4",
     "openseadragon": "^2.4.1",
     "ramda": "^0.26.1",
     "react": "^16.12.0",
@@ -38,7 +42,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "prestart": "tailwind build ./src/index.tailwind.css -c ./tailwind.config.js -o ./src/index.css",
-    "tailwind:css": "tailwind build src/css/tailwind.src.css -c  tailwind.js -o src/css/tailwind.css"
+    "tailwind:css": "tailwind build src/css/tailwind.src.css -c  tailwind.js -o src/css/tailwind.css",
+    "check:types": "tsc"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -56,6 +61,7 @@
     ]
   },
   "devDependencies": {
-    "prettier": "1.18.2"
+    "prettier": "1.18.2",
+    "typescript": "^3.8.3"
   }
 }

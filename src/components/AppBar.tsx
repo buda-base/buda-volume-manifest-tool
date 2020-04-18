@@ -2,8 +2,8 @@ import React from 'react'
 import AppBar from '@material-ui/core/AppBar/AppBar'
 import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
-import {lensPath} from 'ramda'
-import {useTranslation} from 'react-i18next'
+import { lensPath } from 'ramda'
+import { useTranslation } from 'react-i18next'
 import AuthNavBar from './AuthNavBar'
 
 function AppBarTwo(props) {
@@ -33,7 +33,7 @@ function AppBarTwo(props) {
                                             ]
                                         }
                                         onChange={e => {
-                                            i18n.changeLanguage(e.target.value)
+                                            i18n.changeLanguage(e.target.value as string)
                                             handleSettingsUpdate(
                                                 lensPath([
                                                     'appData',

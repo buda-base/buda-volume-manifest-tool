@@ -1,6 +1,6 @@
 import uuidv4 from 'uuid/v4'
 import axios from 'axios'
-import {assoc, lensPath, map, over} from 'ramda'
+import { assoc, lensPath, map, over } from 'ramda'
 
 var apiroot = 'https://iiifpres-dev.bdrc.io';
 

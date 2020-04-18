@@ -1,11 +1,11 @@
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import React from 'react'
-import {useTranslation} from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import MuiAlert from '@material-ui/lab/Alert'
-import {isNil} from 'ramda'
-import {useAuth0} from '../react-auth0-spa'
+import { isNil } from 'ramda'
+import { useAuth0 } from '../react-auth0-spa'
 
 
 const VolumeSearch = props => {

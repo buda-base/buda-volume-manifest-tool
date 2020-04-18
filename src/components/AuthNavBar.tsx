@@ -1,6 +1,6 @@
 import React from 'react'
 import history from '../utils/history'
-import {useAuth0} from '../react-auth0-spa'
+import { useAuth0 } from '../react-auth0-spa'
 
 const AuthNavBar = () => {
     const {

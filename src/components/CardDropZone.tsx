@@ -1,5 +1,5 @@
 import React from 'react'
-import {useDrop} from 'react-dnd'
+import { useDrop } from 'react-dnd'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 
 function CardDropZone({ i, handleDrop }) {

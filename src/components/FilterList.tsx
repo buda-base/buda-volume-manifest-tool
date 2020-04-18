@@ -1,8 +1,8 @@
 import FormControlLabel from '@material-ui/core/FormControlLabel'
-import {Checkbox} from '@material-ui/core'
+import { Checkbox } from '@material-ui/core'
 import React from 'react'
-import {lensPath, view} from 'ramda'
-import {useTranslation} from 'react-i18next'
+import { lensPath, view } from 'ramda'
+import { useTranslation } from 'react-i18next'
 import Button from '@material-ui/core/Button'
 
 export default function FilterList(props) {
