@@ -1,12 +1,12 @@
 import uuidv4 from 'uuid/v4'
 import axios from 'axios'
+import {assoc, lensPath, map, over} from 'ramda'
 
 var apiroot = 'https://iiifpres-dev.bdrc.io';
 
 async function getImageList(volumeQname) {
     const data = await axios.get(`${apiroot}/il/v:${volumeQname}`);
     return data.data.map(({ filename }) => ({
-        id: uuidv4(),
         filename,
     }))
 }
@@ -31,7 +31,15 @@ export async function getOrInitManifest(volumeQname, options) {
         const images = await getImageList(volumeQname);
         manifest = initManifestFromImageList(images, volumeQname, options)
     }
-    return { manifest }
+    const addIdsToImages = manifest => {
+        const imageListLens = lensPath(['view', 'view1', 'imagelist']);
+        return over(
+            imageListLens,
+            map(img => assoc('id', uuidv4(), img)),
+            manifest
+        )
+    };
+    return { manifest: addIdsToImages(manifest) }
 }
 
 function initManifestFromImageList(images, volumeQname, options) {
@@ -49,8 +57,8 @@ function initManifestFromImageList(images, volumeQname, options) {
         pagination: [
             {
                 id: 'pgfolios',
-                type: 'folios'
-            }
+                type: 'folios',
+            },
         ],
         'default-view': 'view1',
         view: {
