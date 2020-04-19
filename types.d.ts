@@ -1,5 +1,21 @@
 export namespace Buda {
     type Text = { '@value': string; '@language': string }
+
+    interface Image {
+        id: string
+        filename: string
+        pagination?: {
+            pgfolios: Text
+        }
+        note?: Text[]
+        indication?: Text
+        tags?: string[]
+        display?: false
+        tags?: string[]
+        'duplicate-of'?: string
+        sectionId?: string
+    }
+
     export interface Manifest {
         isDefault?: boolean
         'for-volume': string
@@ -29,19 +45,7 @@ export namespace Buda {
         'default-view': 'view1'
         view: {
             view1: {
-                imagelist: {
-                    id: string
-                    filename: string
-                    pagination?: {
-                        pgfolios: Text
-                    }
-                    note?: Text[]
-                    indication?: Text
-                    tags?: string[]
-                    display?: false
-                    tags?: string[]
-                    'duplicate-of'?: string
-                }[]
+                imagelist: Image[]
             }
         }
         appData: {

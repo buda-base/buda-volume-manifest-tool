@@ -266,9 +266,7 @@ export default function ImageCard(props) {
                 <CardContent className="flex" style={{ padding: 0 }}>
                     {iiif ? (
                         <PreviewImage
-                            showUpdateView
                             setImageView={setImageView}
-                            image={image}
                             i={props.i}
                             imageView={imageView}
                             iiif={iiif}
@@ -324,6 +322,7 @@ export default function ImageCard(props) {
                                                 type="text"
                                                 value={values.marginIndication}
                                                 onChange={handleChange}
+                                                // @ts-ignore
                                                 onBlur={handleSubmit}
                                                 inputProps={{
                                                     id: 'marginIndication',
@@ -341,6 +340,7 @@ export default function ImageCard(props) {
                                                     native
                                                     value={values.language}
                                                     onChange={handleChange}
+                                                    // @ts-ignore
                                                     onBlur={handleSubmit}
                                                     id="margin-indication-lang"
                                                     inputProps={{
@@ -446,6 +446,7 @@ export default function ImageCard(props) {
                                                     helperText={t('Pagination')}
                                                     value={values.pagination}
                                                     onChange={handleChange}
+                                                    // @ts-ignore
                                                     onBlur={handleSubmit}
                                                     inputProps={{
                                                         id: 'pagination',

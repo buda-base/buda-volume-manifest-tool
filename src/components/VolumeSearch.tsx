@@ -7,17 +7,16 @@ import MuiAlert from '@material-ui/lab/Alert'
 import { isNil } from 'ramda'
 import { useAuth0 } from '../react-auth0-spa'
 
-
 const VolumeSearch = props => {
-    const {t} = useTranslation();
-    const [volume, setVolume] = React.useState('');
-    const {  user, loading } = useAuth0()
+    const { t } = useTranslation()
+    const [volume, setVolume] = React.useState('')
+    const { user, loading } = useAuth0()
     return props.isFetching || loading ? (
-        <CircularProgress/>
+        <CircularProgress />
     ) : (
         <div
             className="container mx-auto flex items-center justify-center flex-wrap"
-            style={{paddingTop: 60}}
+            style={{ paddingTop: 60 }}
         >
             <div className="mt-10">
                 <TextField
@@ -27,7 +26,7 @@ const VolumeSearch = props => {
                     InputLabelProps={{
                         shrink: true,
                     }}
-                    value={props.forVolume?props.forVolume:volume}
+                    value={props.forVolume ? props.forVolume : volume}
                     onChange={e => setVolume(e.target.value)}
                     className="w-2/3"
                     style={{
@@ -41,20 +40,30 @@ const VolumeSearch = props => {
                     color="primary"
                     style={{ marginLeft: '1em' }}
                     onClick={() => {
-                        window.location = `/?volume=${volume}`
+                        window.location.href = `/?volume=${volume}`
                     }}
                 >
                     {t('submit')}
                 </Button>
                 {!isNil(props.fetchErr) && (
-                    <MuiAlert style={{marginTop: '2em'}} severity="error">
+                    <MuiAlert style={{ marginTop: '2em' }} severity="error">
                         {t('submitErrorMsg')}
                     </MuiAlert>
                 )}
             </div>
-            { !user && !loading && <div style={{width:"100%",textAlign:"center",marginTop:"10px"}}>Please login first</div> }
+            {!user && !loading && (
+                <div
+                    style={{
+                        width: '100%',
+                        textAlign: 'center',
+                        marginTop: '10px',
+                    }}
+                >
+                    Please login first
+                </div>
+            )}
         </div>
     )
-};
+}
 
 export default VolumeSearch

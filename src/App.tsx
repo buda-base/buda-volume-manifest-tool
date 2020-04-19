@@ -64,11 +64,11 @@ const theme = createMuiTheme({
 const imageListLens = lensPath(['view', 'view1', 'imagelist'])
 function App() {
     const [manifest, updateManifest] = React.useState<Buda.Manifest>({
-        "default-view": 'view1',
-        "for-volume": '',
-        "spec-version": '',
-        "viewing-direction": '',
-        "volume-label": [],
+        'default-view': 'view1',
+        'for-volume': '',
+        'spec-version': '',
+        'viewing-direction': '',
+        'volume-label': [],
         attribution: [],
         changes: [],
         note: [],
@@ -82,10 +82,10 @@ function App() {
             bvmt: {
                 'default-ui-string-lang': 'en',
             },
-        }
+        },
     })
     const [settingsDialogOpen, setSettingsDialog] = React.useState(false)
-    const imageList = view(imageListLens, manifest) || []
+    const imageList = (view(imageListLens, manifest) as Buda.Image[]) || []
     const [isFetching, setIsFetching] = React.useState(false)
     const [fetchErr, setFetchErr] = React.useState(null)
     const [renderToIdx, setRenderToIdx] = React.useState(9)
@@ -117,7 +117,7 @@ function App() {
         }
     }, [])
 
-    const saveUpdatesToManifest = async auth => {
+    const saveUpdatesToManifest = async (auth: any) => {
         try {
             const removeCollapsed = map(dissoc('collapsed'))
             const formattedManifest = over(
@@ -136,7 +136,7 @@ function App() {
             }
         }
     }
-    const updateImageList = updatedImageList => {
+    const updateImageList = (updatedImageList: Buda.Image[]) => {
         updateManifest(set(imageListLens, updatedImageList, manifest))
     }
     const handleLoadMore = () => {
@@ -147,9 +147,9 @@ function App() {
             setIsLoadingMore(false)
         }, 3000)
     }
-    const sectionInUseCount = sectionId => {
+    const sectionInUseCount = (sectionId: string) => {
         return reduce(
-            (acc, val) => {
+            (acc: number, val: Buda.Image) => {
                 return val.sectionId === sectionId ? ++acc : acc
             },
             0,
@@ -175,7 +175,7 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-    const updateOfField = (imageId, val, key) => {
+    const updateOfField = (imageId: string, val, key) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 return assoc(key, val.name, image)

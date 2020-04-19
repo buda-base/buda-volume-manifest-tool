@@ -260,6 +260,7 @@ export default function EditCard(props) {
                                         </FormControl>
                                         <AddIcon
                                             className="self-center cursor-pointer"
+                                            // @ts-ignore
                                             onClick={handleSubmit}
                                         />
                                     </div>
