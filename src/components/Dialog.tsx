@@ -19,6 +19,8 @@ import uuidv4 from 'uuid/v4'
 import { useTranslation } from 'react-i18next'
 import { getPaginationTypes } from '../utils/pagination-prediction'
 import { Formik } from 'formik'
+import { Buda } from '../../types'
+import Manifest = Buda.Manifest
 
 const styles = (theme: Theme) =>
     createStyles({
@@ -62,7 +64,7 @@ const DialogTitle = withStyles(styles)(
     }
 )
 
-function SectionInput(props) {
+function SectionInput(props: { defaultLanguage: any }) {
     const value = pathOr('', ['data', 'name', '@value'], props)
     const language = pathOr(
         props.defaultLanguage,
@@ -162,12 +164,19 @@ const DialogActions = withStyles(theme => ({
     },
 }))(MuiDialogActions)
 
-export default function SettingsDialog(props) {
+export default function SettingsDialog(props: {
+    open: boolean
+    handleClose: any
+    handleSettingsUpdate: any
+    sectionInUseCount: any
+    appData: any
+    manifest: any
+}) {
     const { handleSettingsUpdate, sectionInUseCount, appData, manifest } = props
 
-    const handleAddSection = (value, language) => {
+    const handleAddSection = (value: string, language: string) => {
         const sectionsLens = lensPath(['sections'])
-        const currentSections = view(sectionsLens, manifest)
+        const currentSections = view(sectionsLens, manifest) as Manifest['sections'][]
         const updatedSections = append(
             { id: uuidv4(), name: { '@value': value, '@language': language } },
             currentSections
@@ -177,7 +186,7 @@ export default function SettingsDialog(props) {
 
     const handleRemoveSection = id => {
         const sectionsLens = lensPath(['sections'])
-        const currentSections = view(sectionsLens, manifest)
+        const currentSections = view(sectionsLens, manifest) as Manifest['sections'][]
         const updatedSections = reject(propEq('id', id), currentSections)
         handleSettingsUpdate(sectionsLens, updatedSections)
     }

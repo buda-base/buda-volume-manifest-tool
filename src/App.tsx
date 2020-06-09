@@ -51,6 +51,7 @@ import { getOrInitManifest } from './api/getManifest'
 import VolumeSearch from './components/VolumeSearch'
 import UpdateManifestError from './components/UpdateManifestError'
 import { Buda } from '../types'
+import Image = Buda.Image
 
 const mapIndex = addIndex(map)
 const theme = createMuiTheme({
@@ -136,7 +137,7 @@ function App() {
             }
         }
     }
-    const updateImageList = (updatedImageList: Buda.Image[]) => {
+    const updateImageList = (updatedImageList: unknown[]) => {
         updateManifest(set(imageListLens, updatedImageList, manifest))
     }
     const handleLoadMore = () => {
@@ -160,7 +161,7 @@ function App() {
         const updatedManifest = set(lens, value, manifest)
         updateManifest(updatedManifest)
     })
-    const updateImageSection = (imageId, key, value) => {
+    const updateImageSection = (imageId: string, key: string, value: any) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 const sectionLens = lensPath([
@@ -175,7 +176,7 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-    const updateOfField = (imageId: string, val, key) => {
+    const updateOfField = (imageId: string, val: { name: any }, key: any) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 return assoc(key, val.name, image)
@@ -185,7 +186,7 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-    const setDuplicateType = (imageId, val) => {
+    const setDuplicateType = (imageId: string, val: any) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 return assoc('duplicateType', val, image)
@@ -195,7 +196,7 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-    const deleteImageChip = (imageId, chipId) => {
+    const deleteImageChip = (imageId: string, chipId: string) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 const updatedChips = reject(
@@ -209,7 +210,7 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-    const toggleReview = imageId => {
+    const toggleReview = (imageId: string) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 const reviewed = prop('reviewed', image)
@@ -224,18 +225,18 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-    const insertMissing = (i, direction) => {
+    const insertMissing = (i: number, direction: 'before' | 'after') => {
         const defaultMissingImage = {
             id: uuidv4(),
             type: 'missing',
-        }
+        } as Image
         if (direction === 'before') {
             updateImageList(insert(i, defaultMissingImage, imageList))
         } else if (direction === 'after') {
             updateImageList(insert(i + 1, defaultMissingImage, imageList))
         }
     }
-    const toggleCollapseImage = imageId => {
+    const toggleCollapseImage = (imageId: string) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 const hidden = !!prop('collapsed', image)
@@ -246,9 +247,9 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-    const selectType = (imageId, e, i) => {
+    const selectType = (imageId: string, e: any, i: number) => {
         const val = e.target.value
-        const attachDuplicateOfPreImage = image => {
+        const attachDuplicateOfPreImage = (image: Image) => {
             const previousImage = imageList[dec(i)]
             const fileName = prop('filename', previousImage)
             return fileName
@@ -265,6 +266,7 @@ function App() {
                 if (val === 'duplicate') {
                     return compose(
                         attachDuplicateOfPreImage,
+                        // @ts-ignore
                         assoc('type', val)
                     )(image)
                 }
@@ -275,12 +277,16 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-    const addImageTag = (imageId, tags) => {
+    const addImageTag = (imageId: string, tags: readonly string[]) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 const duplicateTags = ['T0018', 'T0017']
                 const detailTags = ['T0016']
-                const currentTags = propOr([], 'tags', image)
+                const currentTags = propOr(
+                    [],
+                    'tags',
+                    image
+                ) as readonly string[]
                 const prevTagsHaveDuplicates =
                     intersection(currentTags, duplicateTags).length > 0
                 const prevTagsHaveDetail =
@@ -308,7 +314,7 @@ function App() {
         updateImageList(updatedImageList)
     }
 
-    const removeOfField = (imageId, ofField) => {
+    const removeOfField = (imageId: string, ofField: string) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 return dissoc(ofField, image)
@@ -319,7 +325,7 @@ function App() {
         updateImageList(updatedImageList)
     }
 
-    const removeImageTag = (imageId, tag) => {
+    const removeImageTag = (imageId: string, tag: string) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 const updatedTags = reject(
@@ -342,7 +348,10 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-    const setPagination = (imageId, pagination) => {
+    const setPagination = (
+        imageId: string,
+        pagination: Image['pagination']
+    ) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 return assoc('pagination', pagination, image)
@@ -352,7 +361,7 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-    const addNote = (imageId, note) => {
+    const addNote = (imageId: string, note: Image['note']) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 const updatedNotes = append(note, propOr([], 'note', image))
@@ -363,7 +372,7 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-    const removeNote = (imageId, noteIdx) => {
+    const removeNote = (imageId: string, noteIdx: number) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 const updatedNotes = remove(
@@ -378,7 +387,7 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-    const updateImageValue = (imageId, key, value) => {
+    const updateImageValue = (imageId: string, key: string, value: any) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 return assoc(key, value, image)
@@ -388,11 +397,12 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-    const hideCardInManifest = (imageId, hide) => {
+    const hideCardInManifest = (imageId: string, hide: Image['hide']) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 return compose(
                     assoc('collapsed', hide),
+                    // @ts-ignore
                     assoc('hide', hide)
                 )(image)
             } else {
@@ -401,8 +411,8 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-    const markPreviousAsReviewed = imageIdx => {
-        const updatedImageList = mapIndex((image, idx) => {
+    const markPreviousAsReviewed = (imageIdx: number) => {
+        const updatedImageList = mapIndex((image, idx: number) => {
             if (idx <= imageIdx) {
                 return assoc('reviewed', true, image)
             } else {
@@ -414,10 +424,12 @@ function App() {
     const duplicateImageOptions = () =>
         compose(
             map(({ id, filename }) => ({ id, name: filename })),
+            // @ts-ignore
             reject(complement(has)('filename'))
+            // @ts-ignore
         )(imageList)
 
-    const rearrangeImage = (imageId, idx) => {
+    const rearrangeImage = (imageId: string, idx: number) => {
         const { image, images } = reduce(
             (acc, val) => {
                 if (val.id === imageId) {
@@ -442,11 +454,11 @@ function App() {
         updateImageList(updatedImageList)
     }
 
-    const updateUncheckedItems = (image0, idx) => {
+    const updateUncheckedItems = (image0: any, idx: number) => {
         const getMargin = getPagination(manifest, image0)
         // TODO: in the future it may depend on more elaborated checks:
         let pagination_id = manifest.pagination[0].id
-        const updatedImageList = mapIndex((image, i) => {
+        const updatedImageList = mapIndex((image: Image, i: number) => {
             const diff = i - idx
             // TODO: here we shouldn't change anything after the first reviewed image,
             // even if some images are not reviewed
@@ -456,6 +468,7 @@ function App() {
                 if (!newimg.pagination) {
                     newimg.pagination = {}
                 }
+                // @ts-ignore
                 newimg.pagination[pagination_id] = res[0]
                 return newimg
             } else {
@@ -472,7 +485,7 @@ function App() {
         updateImageList(updatedImageList)
     }
 
-    const handlePaginationPredication = image => {
+    const handlePaginationPredication = (image: Image) => {
         const cmp = curry(getComparator)(manifest)
         // TODO: the comparator is currently for the whole manifest, it might be
         // relevant to have it just for the specific image
@@ -575,7 +588,7 @@ function App() {
                                     useWindow={true}
                                 >
                                     {mapIndex(
-                                        (item, i) => (
+                                        (item: Image, i: number) => (
                                             <React.Fragment key={i}>
                                                 {i === 0 && (
                                                     <CardDropZone
@@ -618,9 +631,6 @@ function App() {
                                                     imageListLength={
                                                         imageListLength
                                                     }
-                                                    setPagination={
-                                                        setPagination
-                                                    }
                                                     updateImageSection={
                                                         updateImageSection
                                                     }
@@ -648,9 +658,6 @@ function App() {
                                                         manifest
                                                     )}
                                                     data={item}
-                                                    deleteImageChip={
-                                                        deleteImageChip
-                                                    }
                                                     toggleReview={toggleReview}
                                                     insertMissing={
                                                         insertMissing
@@ -685,6 +692,7 @@ function App() {
                                                     updateUncheckedItems={
                                                         updateUncheckedItems
                                                     }
+                                                    hideDeletedImages={() => {}}
                                                 />
                                                 <CardDropZone
                                                     i={i}

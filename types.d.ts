@@ -5,15 +5,18 @@ export namespace Buda {
         id: string
         filename: string
         pagination?: {
-            pgfolios: Text
+            pgfolios?: Text
         }
         note?: Text[]
         indication?: Text
         tags?: string[]
         display?: false
-        tags?: string[]
         'duplicate-of'?: string
         sectionId?: string
+        reviewed?: boolean
+        type?: string
+        collapsed?: boolean
+        hide?: boolean
     }
 
     export interface Manifest {
@@ -34,10 +37,10 @@ export namespace Buda {
         pagination: {
             id: string
             type: string
-            note: Text[]
+            note?: Text[]
         }[]
 
-        sections: {
+        sections?: {
             id: 'intro'
             name: Text[]
         }[]
@@ -57,6 +60,12 @@ export namespace Buda {
                 'margin-indication-odd'?: string
                 'margin-indication-even'?: string
                 'default-ui-string-lang': string
+                'margin-volname'?: string,
+                'preview-image-view'?: {
+                    zoom: number,
+                    center: { x?: null | number, y?: null | number },
+                    rotation: number,
+                }
             }
         }
     }

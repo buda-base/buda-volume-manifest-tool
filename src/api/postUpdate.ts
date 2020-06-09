@@ -1,7 +1,9 @@
 import axios from 'axios'
+import { Buda } from '../../types'
+import Manifest = Buda.Manifest
 
 // having a changelog is mandatory
-function add_changelog(manifest, userQname, changelogStr) {
+function add_changelog(manifest: Manifest, userQname: string, changelogStr: Buda.Text) {
     const now = new Date()
     const changelog = {
         time: now.toISOString(),
@@ -12,8 +14,8 @@ function add_changelog(manifest, userQname, changelogStr) {
 }
 
 async function saveManifest(
-    manifest,
-    auth0,
+    manifest: Manifest,
+    auth0: any,
     changelogStr = { '@value': 'no log message', '@language': 'en' }
 ) {
     // first check: users must be logged in

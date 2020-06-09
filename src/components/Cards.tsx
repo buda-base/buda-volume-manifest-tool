@@ -67,12 +67,41 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function ImageCard(props) {
+export default function ImageCard(props: {
+    hideDeletedImages: any
+    i: number
+    imageListLength: any
+    imageView: any
+    setImageView: any,
+    sectionInputs: any,
+    data: any
+    markPreviousAsReviewed(i: any): any,
+    volumeId: string,
+    toggleCollapseImage: any
+    insertMissing(x: any, y: string): any
+    hideCardInManifest(id: any, b: boolean): void
+    updateUncheckedItems(image: any, i: number): void,
+    handlePaginationPredication: any,
+    uiLanguage: any,
+    removeImageTag: any,
+    addNote: any,
+    removeNote: any,
+    updateImageValue: any,
+    manifestLanguage: any,
+    toggleReview: any,
+    pagination: any,
+    updateImageSection: any,
+    addImageTag: any,
+    removeOfField: any,
+    setDuplicateType: any,
+    updateOfField: any,
+    selectType: any,
+    duplicateImageOptions: any,
+}) {
     const classes = useStyles()
     const [editDialogOpen, setEditDialogOpen] = React.useState(false)
     const [iiif, setiiif] = React.useState(null)
-    const { imageView, setImageView } = props
-    const { data: image, sectionInputs } = props
+    const { data: image, sectionInputs, imageView, setImageView } = props
 
     const [, dragRef] = useDrag({
         item: { type: 'CARD', imageId: image.id },
@@ -154,7 +183,7 @@ export default function ImageCard(props) {
 
         const { t } = useTranslation()
 
-        const handleClick = event => {
+        const handleClick = (event: { currentTarget: any }) => {
             setAnchorEl(event.currentTarget)
         }
 
@@ -395,7 +424,7 @@ export default function ImageCard(props) {
                                                 </option>
                                                 )
                                                 {sectionInputs.map(
-                                                    (section, i) => {
+                                                    (section: { id: string | number | string[]; name: { [x: string]: React.ReactNode } }, i: React.Key) => {
                                                         return (
                                                             <option
                                                                 key={i}

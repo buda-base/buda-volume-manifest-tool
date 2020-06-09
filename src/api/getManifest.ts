@@ -1,48 +1,59 @@
 import uuidv4 from 'uuid/v4'
 import axios from 'axios'
 import { assoc, lensPath, map, over } from 'ramda'
+import { Buda } from '../../types'
+import Image = Buda.Image
+import Manifest = Buda.Manifest
 
-var apiroot = 'https://iiifpres-dev.bdrc.io';
+var apiroot = 'https://iiifpres-dev.bdrc.io'
 
-async function getImageList(volumeQname) {
-    const data = await axios.get(`${apiroot}/il/v:${volumeQname}`);
-    return data.data.map(({ filename }) => ({
+interface Options {
+    uiLanguage: string
+}
+
+async function getImageList(volumeQname: string) {
+    const data = await axios.get(`${apiroot}/il/v:${volumeQname}`)
+    return data.data.map(({ filename }: { filename: string }) => ({
         filename,
     }))
 }
 
-async function getManifest(volumeQname) {
+async function getManifest(volumeQname: string) {
     // this returns an existing manifest, might return a 404
-    const { data } = await axios.get(`${apiroot}/bvm/ig:${volumeQname}`);
+    const { data } = await axios.get(`${apiroot}/bvm/ig:${volumeQname}`)
     return data
 }
 
-export async function getOrInitManifest(volumeQname, options) {
-    var manifest;
+export async function getOrInitManifest(volumeQname: string, options: Options) {
+    var manifest
 
     try {
         manifest = await getManifest(volumeQname)
     } catch (err) {
-        console.log('err!', err);
-        console.log('err.response.status', err.response.status);
+        console.log('err!', err)
+        console.log('err.response.status', err.response.status)
         if (err.response.status !== 404) {
             throw err
         }
-        const images = await getImageList(volumeQname);
+        const images = await getImageList(volumeQname)
         manifest = initManifestFromImageList(images, volumeQname, options)
     }
-    const addIdsToImages = manifest => {
-        const imageListLens = lensPath(['view', 'view1', 'imagelist']);
+    const addIdsToImages = (manifest: Manifest) => {
+        const imageListLens = lensPath(['view', 'view1', 'imagelist'])
         return over(
             imageListLens,
             map(img => assoc('id', uuidv4(), img)),
             manifest
         )
-    };
+    }
     return { manifest: addIdsToImages(manifest) }
 }
 
-function initManifestFromImageList(images, volumeQname, options) {
+function initManifestFromImageList(
+    images: Image[],
+    volumeQname: string,
+    options: Options
+): Manifest {
     return {
         'for-volume': volumeQname,
         'volume-label': [], // an option
