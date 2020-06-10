@@ -1,4 +1,5 @@
 import React from 'react'
+// @ts-ignore
 import OpenSeaDragon from 'openseadragon'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -37,7 +38,7 @@ interface IProps {
 }
 
 export default class PreviewImage extends React.Component<IProps, IState> {
-    constructor(props) {
+    constructor(props: Readonly<IProps>) {
         super(props)
         this.state = {
             center: null,
@@ -70,7 +71,14 @@ export default class PreviewImage extends React.Component<IProps, IState> {
         }
     }
 
-    componentDidUpdate(prevProps) {
+    // @ts-ignore
+    componentDidUpdate(prevProps: {
+        imageView: {
+            center: { x: number; y: number }
+            zoom: number
+            rotation: number
+        }
+    }) {
         const hasViewDiff =
             this.props.imageView.center.x !== prevProps.imageView.center.x ||
             this.props.imageView.center.y !== prevProps.imageView.center.y ||
@@ -91,7 +99,7 @@ export default class PreviewImage extends React.Component<IProps, IState> {
             const [anchorEl, setAnchorEl] = React.useState(null)
             const { t } = useTranslation()
 
-            const handleClick = event => {
+            const handleClick = (event: { currentTarget: any }) => {
                 setAnchorEl(event.currentTarget)
             }
 

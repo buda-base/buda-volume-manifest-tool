@@ -7,7 +7,11 @@ import MuiAlert from '@material-ui/lab/Alert'
 import { isNil } from 'ramda'
 import { useAuth0 } from '../react-auth0-spa'
 
-const VolumeSearch = props => {
+const VolumeSearch = (props: {
+    isFetching: any
+    forVolume?: any
+    fetchErr: any
+}) => {
     const { t } = useTranslation()
     const [volume, setVolume] = React.useState('')
     const { user, loading } = useAuth0()

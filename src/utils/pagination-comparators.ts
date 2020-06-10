@@ -1,6 +1,11 @@
+// @ts-nocheck
 import { pagination_types } from './pagination-prediction'
 
-export function getComparator(manifest) {
+export function getComparator(manifest: {
+    pagination: any
+    section: any
+    sections: string | any[]
+}) {
     var paginations = manifest.pagination
     if (!paginations || paginations.length < 1) {
         // error
@@ -31,7 +36,7 @@ export function getComparator(manifest) {
             var a_dpg = a[default_pg_name]
             var b_dpg = b[default_pg_name]
             if (
-                sections_id_map && 
+                sections_id_map &&
                 a_dpg.section &&
                 b_dpg.section &&
                 a_dpg.section != b_dpg.section

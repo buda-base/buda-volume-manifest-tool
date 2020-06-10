@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
-import auth0 from 'auth0-js'
+import auth0, { AuthOptions } from 'auth0-js'
 import history from './utils/history'
 
 const DEFAULT_REDIRECT_CALLBACK = () =>
     window.history.replaceState({}, document.title, window.location.pathname)
 
-var auth
+var auth: auth0.WebAuth
 
 export const Auth0Context = React.createContext({})
 
@@ -35,7 +35,7 @@ export const Auth0Provider = ({
 
     useEffect(() => {
         const initAuth0 = async () => {
-            auth = new auth0.WebAuth(initOptions)
+            auth = new auth0.WebAuth(initOptions as AuthOptions)
             console.log('auth', auth)
 
             handleAuthentication()
@@ -51,7 +51,16 @@ export const Auth0Provider = ({
         if (checkAuthenticated()) {
             const token = localStorage.getItem('access_token')
             if (token) {
-                auth.client.userInfo(token, async (err, profile) => {
+                // @ts-ignore
+                auth.client.userInfo(token, async (
+                    err: any,
+                    // @ts-ignore
+                    profile: {
+                        (prevState: undefined): undefined
+                        bdrcData?: any
+                        bdrcID?: any
+                    }
+                ) => {
                     if (profile) {
                         const app_token = localStorage.getItem('id_token')
                         const bdu = await axios.get(
@@ -82,7 +91,7 @@ export const Auth0Provider = ({
         }
     }
 
-    const login = redirect => {
+    const login = (redirect: any) => {
         // console.log("auth1",this.auth1,auth0)
         console.log('redirect', redirect)
         if (redirect)
@@ -100,7 +109,7 @@ export const Auth0Provider = ({
         return new Date().getTime() < expiresAt
     }
 
-    const setSession = async authResult => {
+    const setSession = async (authResult: auth0.Auth0DecodedHash) => {
         // Set the time that the Access Token will expire at
         let expiresAt = JSON.stringify(
             authResult.expiresIn * 1000 + new Date().getTime()
@@ -199,10 +208,10 @@ export const Auth0Provider = ({
                 loginWithRedirect: (...p) => login(...p),
                 // @ts-ignore
                 getTokenSilently: (...p) => auth0Client.getTokenSilently(...p),
-                getTokenWithPopup: (...p) =>
+                getTokenWithPopup: (...p: any) =>
                     // @ts-ignore
                     auth0Client.getTokenWithPopup(...p),
-                logout: (...p) => {
+                logout: (...p: any) => {
                     localStorage.removeItem('access_token')
                     localStorage.removeItem('id_token')
                     localStorage.removeItem('expires_at')

@@ -4,7 +4,10 @@ import React from 'react'
 import { path } from 'ramda'
 import { useTranslation } from 'react-i18next'
 
-const UpdateManifestError = props => {
+const UpdateManifestError = (props: {
+    setPostErr: (arg0: any) => void
+    postErr: any
+}) => {
     const { t } = useTranslation()
     return (
         <Dialog

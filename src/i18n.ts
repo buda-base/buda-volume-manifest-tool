@@ -6,9 +6,11 @@ const translations = getTranslations()
 
 const resources = {
     en: {
+        // @ts-ignore
         translation: translations.en,
     },
     bo: {
+        // @ts-ignore
         translation: translations.bo,
     },
 }

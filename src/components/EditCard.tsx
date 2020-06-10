@@ -68,7 +68,15 @@ const DialogActions = withStyles(theme => ({
     },
 }))(MuiDialogActions)
 
-export default function EditCard(props) {
+export default function EditCard(props: {
+    setEditDialogOpen: any
+    data: any
+    open: boolean
+    uiLanguage: any
+    updateImageValue: any
+    addNote: any
+    removeNote: any
+}) {
     const handleClose = () => {
         props.setEditDialogOpen(false)
     }
@@ -76,6 +84,7 @@ export default function EditCard(props) {
     const { data } = props
     const { t } = useTranslation()
 
+    // @ts-ignore
     return (
         <div>
             <Dialog
@@ -269,6 +278,8 @@ export default function EditCard(props) {
                         </Formik>
 
                         <List>
+                            {/*
+                             // @ts-ignore */}
                             {propOr([], 'note', data).map((note, i) => (
                                 <ListItem key={i} button>
                                     <ListItemIcon>

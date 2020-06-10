@@ -51,7 +51,6 @@ import { getOrInitManifest } from './api/getManifest'
 import VolumeSearch from './components/VolumeSearch'
 import UpdateManifestError from './components/UpdateManifestError'
 import { Buda } from '../types'
-import Image = Buda.Image
 
 const mapIndex = addIndex(map)
 const theme = createMuiTheme({
@@ -229,7 +228,7 @@ function App() {
         const defaultMissingImage = {
             id: uuidv4(),
             type: 'missing',
-        } as Image
+        } as Buda.Image
         if (direction === 'before') {
             updateImageList(insert(i, defaultMissingImage, imageList))
         } else if (direction === 'after') {
@@ -249,7 +248,7 @@ function App() {
     }
     const selectType = (imageId: string, e: any, i: number) => {
         const val = e.target.value
-        const attachDuplicateOfPreImage = (image: Image) => {
+        const attachDuplicateOfPreImage = (image: Buda.Image) => {
             const previousImage = imageList[dec(i)]
             const fileName = prop('filename', previousImage)
             return fileName
@@ -350,7 +349,7 @@ function App() {
     }
     const setPagination = (
         imageId: string,
-        pagination: Image['pagination']
+        pagination: Buda.Image['pagination']
     ) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
@@ -361,7 +360,7 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-    const addNote = (imageId: string, note: Image['note']) => {
+    const addNote = (imageId: string, note: Buda.Image['note']) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 const updatedNotes = append(note, propOr([], 'note', image))
@@ -397,7 +396,7 @@ function App() {
         }, imageList)
         updateImageList(updatedImageList)
     }
-    const hideCardInManifest = (imageId: string, hide: Image['hide']) => {
+    const hideCardInManifest = (imageId: string, hide: Buda.Image['hide']) => {
         const updatedImageList = map(image => {
             if (image.id === imageId) {
                 return compose(
@@ -458,7 +457,7 @@ function App() {
         const getMargin = getPagination(manifest, image0)
         // TODO: in the future it may depend on more elaborated checks:
         let pagination_id = manifest.pagination[0].id
-        const updatedImageList = mapIndex((image: Image, i: number) => {
+        const updatedImageList = mapIndex((image: Buda.Image, i: number) => {
             const diff = i - idx
             // TODO: here we shouldn't change anything after the first reviewed image,
             // even if some images are not reviewed
@@ -485,7 +484,8 @@ function App() {
         updateImageList(updatedImageList)
     }
 
-    const handlePaginationPredication = (image: Image) => {
+    const handlePaginationPredication = (image: Buda.Image) => {
+        // @ts-ignore
         const cmp = curry(getComparator)(manifest)
         // TODO: the comparator is currently for the whole manifest, it might be
         // relevant to have it just for the specific image
@@ -569,7 +569,6 @@ function App() {
                                 handleSettingsUpdate={handleSettingsUpdate}
                                 manifest={manifest}
                                 foldCheckedImages={foldCheckedImages}
-                                updateImageValue={updateImageValue}
                             />
                             <div className="container mx-auto">
                                 <InfiniteScroll
@@ -588,7 +587,7 @@ function App() {
                                     useWindow={true}
                                 >
                                     {mapIndex(
-                                        (item: Image, i: number) => (
+                                        (item: Buda.Image, i: number) => (
                                             <React.Fragment key={i}>
                                                 {i === 0 && (
                                                     <CardDropZone

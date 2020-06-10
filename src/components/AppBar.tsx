@@ -6,10 +6,9 @@ import { lensPath } from 'ramda'
 import { useTranslation } from 'react-i18next'
 import AuthNavBar from './AuthNavBar'
 import { Buda } from '../../types'
-import Manifest = Buda.Manifest
 
 function AppBarTwo(props: {
-    manifest: Manifest
+    manifest: Buda.Manifest
     handleSettingsUpdate: (arg1: any, arg2: any) => void
 }) {
     const { manifest, handleSettingsUpdate } = props

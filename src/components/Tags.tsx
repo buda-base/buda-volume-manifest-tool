@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
         maxWidth: 300,
     },
 }))
-const Tags = props => {
+const Tags = (props: { tags?: any; id?: any; addImageTag?: any }) => {
     const { t } = useTranslation()
     const classes = useStyles()
 
@@ -36,7 +36,7 @@ const Tags = props => {
         },
     }
     const tagsSafe = props.tags || []
-    const handleChange = e => {
+    const handleChange = (e: { target: { value: any } }) => {
         const newTags = e.target.value
         addImageTag(id, newTags)
     }
@@ -51,9 +51,12 @@ const Tags = props => {
                     onChange={handleChange}
                     input={<Input />}
                     renderValue={(selected: any[]) => {
-                        return selected
-                            .map(tag => tags[tag].label.en)
-                            .join(', ')
+                        return (
+                            selected
+                                // @ts-ignore
+                                .map(tag => tags[tag].label.en)
+                                .join(', ')
+                        )
                     }}
                     MenuProps={MenuProps}
                 >

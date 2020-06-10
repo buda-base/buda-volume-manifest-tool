@@ -72,31 +72,31 @@ export default function ImageCard(props: {
     i: number
     imageListLength: any
     imageView: any
-    setImageView: any,
-    sectionInputs: any,
+    setImageView: any
+    sectionInputs: any
     data: any
-    markPreviousAsReviewed(i: any): any,
-    volumeId: string,
+    markPreviousAsReviewed(i: any): any
+    volumeId: string
     toggleCollapseImage: any
     insertMissing(x: any, y: string): any
     hideCardInManifest(id: any, b: boolean): void
-    updateUncheckedItems(image: any, i: number): void,
-    handlePaginationPredication: any,
-    uiLanguage: any,
-    removeImageTag: any,
-    addNote: any,
-    removeNote: any,
-    updateImageValue: any,
-    manifestLanguage: any,
-    toggleReview: any,
-    pagination: any,
-    updateImageSection: any,
-    addImageTag: any,
-    removeOfField: any,
-    setDuplicateType: any,
-    updateOfField: any,
-    selectType: any,
-    duplicateImageOptions: any,
+    updateUncheckedItems(image: any, i: number): void
+    handlePaginationPredication: any
+    uiLanguage: any
+    removeImageTag: any
+    addNote: any
+    removeNote: any
+    updateImageValue: any
+    manifestLanguage: any
+    toggleReview: any
+    pagination: any
+    updateImageSection: any
+    addImageTag: any
+    removeOfField: any
+    setDuplicateType: any
+    updateOfField: any
+    selectType: any
+    duplicateImageOptions: any
 }) {
     const classes = useStyles()
     const [editDialogOpen, setEditDialogOpen] = React.useState(false)
@@ -285,7 +285,6 @@ export default function ImageCard(props: {
                 setEditDialogOpen={setEditDialogOpen}
                 uiLanguage={props.uiLanguage}
                 data={image}
-                removeImageTag={props.removeImageTag}
                 addNote={props.addNote}
                 removeNote={props.removeNote}
                 updateImageValue={props.updateImageValue}
@@ -424,7 +423,18 @@ export default function ImageCard(props: {
                                                 </option>
                                                 )
                                                 {sectionInputs.map(
-                                                    (section: { id: string | number | string[]; name: { [x: string]: React.ReactNode } }, i: React.Key) => {
+                                                    (
+                                                        section: {
+                                                            id:
+                                                                | string
+                                                                | number
+                                                                | string[]
+                                                            name: {
+                                                                [x: string]: React.ReactNode
+                                                            }
+                                                        },
+                                                        i: React.Key
+                                                    ) => {
                                                         return (
                                                             <option
                                                                 key={i}
@@ -493,23 +503,16 @@ export default function ImageCard(props: {
                             id={image.id}
                             tags={image.tags}
                             addImageTag={props.addImageTag}
-                            removeImageTag={props.removeImageTag}
-                            removeOfField={props.removeOfField}
                         />
 
                         <TypeSelect
-                            image={image}
                             removeOfField={props.removeOfField}
                             tags={image.tags}
-                            setDuplicateType={props.setDuplicateType}
                             updateOfField={props.updateOfField}
                             id={image.id}
-                            duplicateType={image.duplicateType}
-                            selectType={props.selectType}
                             i={props.i}
                             duplicateImageOptions={props.duplicateImageOptions}
                             duplicateOf={image.duplicateOf}
-                            filename={image.filename}
                         />
                     </div>
                 </CardContent>

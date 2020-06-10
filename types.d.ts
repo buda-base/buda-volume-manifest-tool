@@ -1,3 +1,5 @@
+declare module 'history'
+
 export namespace Buda {
     type Text = { '@value': string; '@language': string }
 
@@ -60,11 +62,11 @@ export namespace Buda {
                 'margin-indication-odd'?: string
                 'margin-indication-even'?: string
                 'default-ui-string-lang': string
-                'margin-volname'?: string,
+                'margin-volname'?: string
                 'preview-image-view'?: {
-                    zoom: number,
-                    center: { x?: null | number, y?: null | number },
-                    rotation: number,
+                    zoom: number
+                    center: { x?: null | number; y?: null | number }
+                    rotation: number
                 }
             }
         }

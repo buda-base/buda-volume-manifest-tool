@@ -20,7 +20,6 @@ import { useTranslation } from 'react-i18next'
 import { getPaginationTypes } from '../utils/pagination-prediction'
 import { Formik } from 'formik'
 import { Buda } from '../../types'
-import Manifest = Buda.Manifest
 
 const styles = (theme: Theme) =>
     createStyles({
@@ -64,7 +63,16 @@ const DialogTitle = withStyles(styles)(
     }
 )
 
-function SectionInput(props: { defaultLanguage: any }) {
+function SectionInput(props: {
+    defaultLanguage?: any
+    handleAddSection?: any
+    handleRemoveSection?: any
+    sectionInUseCount?: any
+    key?: number
+    new?: any
+    data?: any
+    i?: number
+}) {
     const value = pathOr('', ['data', 'name', '@value'], props)
     const language = pathOr(
         props.defaultLanguage,
@@ -176,23 +184,32 @@ export default function SettingsDialog(props: {
 
     const handleAddSection = (value: string, language: string) => {
         const sectionsLens = lensPath(['sections'])
-        const currentSections = view(sectionsLens, manifest) as Manifest['sections'][]
+        const currentSections = view(
+            sectionsLens,
+            manifest
+        ) as Buda.Manifest['sections'][]
         const updatedSections = append(
+            // @ts-ignore
             { id: uuidv4(), name: { '@value': value, '@language': language } },
             currentSections
         )
         handleSettingsUpdate(sectionsLens, updatedSections)
     }
 
-    const handleRemoveSection = id => {
+    const handleRemoveSection = (id: string) => {
         const sectionsLens = lensPath(['sections'])
-        const currentSections = view(sectionsLens, manifest) as Manifest['sections'][]
+        const currentSections = view(
+            sectionsLens,
+            manifest
+        ) as Buda.Manifest['sections'][]
+        // @ts-ignore
         const updatedSections = reject(propEq('id', id), currentSections)
         handleSettingsUpdate(sectionsLens, updatedSections)
     }
 
     const { t } = useTranslation()
 
+    // @ts-ignore
     return (
         <Dialog
             onClose={props.handleClose}
@@ -320,6 +337,8 @@ export default function SettingsDialog(props: {
                         </FormControl>
                     </div>
                 </div>
+                {/*
+                    // @ts-ignore */}
                 {propOr([], 'sections', manifest).map((section, i) => {
                     return (
                         <SectionInput

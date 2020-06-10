@@ -13,15 +13,25 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const TypeSelect = props => {
+const TypeSelect = (props: {
+    id: any
+    duplicateImageOptions: readonly Record<'id', any>[]
+    duplicateOf: any
+    removeOfField: (arg0: any, arg1: string) => void
+    updateOfField: (arg0: any, arg1: any, arg2: string) => void
+    tags: any
+    i?: any
+}) => {
     const { t } = useTranslation()
     const classes = useStyles()
     const duplicateTags = ['T0018', 'T0017']
     const detailTags = ['T0016']
     const duplicateTag = find(
+        // @ts-ignore
         includes(__, duplicateTags),
         propOr([], 'tags', props)
     )
+    // @ts-ignore
     const detailTag = find(includes(__, detailTags), propOr([], 'tags', props))
     return (
         <div className="flex w-full">
@@ -41,7 +51,7 @@ const TypeSelect = props => {
                                     autoHighlight
                                     value={props.duplicateOf}
                                     getOptionLabel={({ name }) => name}
-                                    onChange={(event, newValue) => {
+                                    onChange={(event: any, newValue: any) => {
                                         if (!newValue) {
                                             props.removeOfField(
                                                 props.id,
@@ -86,7 +96,7 @@ const TypeSelect = props => {
                                     autoHighlight
                                     value={props.duplicateOf}
                                     getOptionLabel={({ name }) => name}
-                                    onChange={(event, newValue) => {
+                                    onChange={(event: any, newValue: any) => {
                                         if (!newValue) {
                                             props.removeOfField(
                                                 props.id,

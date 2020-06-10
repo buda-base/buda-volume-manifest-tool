@@ -2,8 +2,6 @@ import uuidv4 from 'uuid/v4'
 import axios from 'axios'
 import { assoc, lensPath, map, over } from 'ramda'
 import { Buda } from '../../types'
-import Image = Buda.Image
-import Manifest = Buda.Manifest
 
 var apiroot = 'https://iiifpres-dev.bdrc.io'
 
@@ -38,7 +36,7 @@ export async function getOrInitManifest(volumeQname: string, options: Options) {
         const images = await getImageList(volumeQname)
         manifest = initManifestFromImageList(images, volumeQname, options)
     }
-    const addIdsToImages = (manifest: Manifest) => {
+    const addIdsToImages = (manifest: Buda.Manifest) => {
         const imageListLens = lensPath(['view', 'view1', 'imagelist'])
         return over(
             imageListLens,
@@ -50,10 +48,10 @@ export async function getOrInitManifest(volumeQname: string, options: Options) {
 }
 
 function initManifestFromImageList(
-    images: Image[],
+    images: Buda.Image[],
     volumeQname: string,
     options: Options
-): Manifest {
+): Buda.Manifest {
     return {
         'for-volume': volumeQname,
         'volume-label': [], // an option
