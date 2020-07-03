@@ -1,5 +1,5 @@
 import React from 'react'
-import {withStyles} from '@material-ui/core/styles'
+import { createStyles, Theme, withStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import MuiDialogTitle from '@material-ui/core/DialogTitle'
@@ -10,72 +10,93 @@ import Typography from '@material-ui/core/Typography'
 import Select from '@material-ui/core/Select'
 import TextField from '@material-ui/core/TextField'
 import LanguageOptions from './LanguageOptions'
-import {append, lensPath, path, pathOr, propEq, propOr, reject, view,} from 'ramda'
+import { append, lensPath, path, pathOr, propEq, propOr, reject, view } from 'ramda'
 import InputLabel from '@material-ui/core/InputLabel'
 import FormControl from '@material-ui/core/FormControl'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
 import uuidv4 from 'uuid/v4'
-import {useTranslation} from 'react-i18next'
-import {getPaginationTypes} from '../utils/pagination-prediction'
-import {Formik} from 'formik'
+import { useTranslation } from 'react-i18next'
+import { getPaginationTypes } from '../utils/pagination-prediction'
+import { Formik } from 'formik'
+import { Buda } from '../../types'
 
-const styles = theme => ({
-    root: {
-        margin: 0,
-        padding: theme.spacing(2),
-    },
-    closeButton: {
-        position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
-        color: theme.palette.grey[500],
-    },
-});
+const styles = (theme: Theme) =>
+    createStyles({
+        root: {
+            margin: 0,
+            padding: theme.spacing(2),
+        },
+        closeButton: {
+            position: 'absolute',
+            right: theme.spacing(1),
+            top: theme.spacing(1),
+            color: theme.palette.grey[500],
+        },
+    })
 
-const DialogTitle = withStyles(styles)(props => {
-    const {children, classes, onClose, ...other} = props;
-    return (
-        <MuiDialogTitle disableTypography className={classes.root} {...other}>
-            <Typography variant="h6">{children}</Typography>
-            {onClose ? (
-                <IconButton
-                    aria-label="close"
-                    className={classes.closeButton}
-                    onClick={onClose}
-                >
-                    <CloseIcon/>
-                </IconButton>
-            ) : null}
-        </MuiDialogTitle>
-    )
-});
+const DialogTitle = withStyles(styles)(
+    (props: {
+        children: React.ReactElement
+        classes: any
+        onClose: () => void
+    }) => {
+        const { children, classes, onClose, ...other } = props
+        return (
+            <MuiDialogTitle
+                disableTypography
+                className={classes.root}
+                {...other}
+            >
+                <Typography variant="h6">{children}</Typography>
+                {onClose ? (
+                    <IconButton
+                        aria-label="close"
+                        className={classes.closeButton}
+                        onClick={onClose}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                ) : null}
+            </MuiDialogTitle>
+        )
+    }
+)
 
-function SectionInput(props) {
-    const value = pathOr('', ['data', 'name', '@value'], props);
+function SectionInput(props: {
+    defaultLanguage?: any
+    handleAddSection?: any
+    handleRemoveSection?: any
+    sectionInUseCount?: any
+    key?: number
+    new?: any
+    data?: any
+    i?: number
+}) {
+    const value = pathOr('', ['data', 'name', '@value'], props)
     const language = pathOr(
         props.defaultLanguage,
         ['data', 'name', '@language'],
         props
-    );
-    const id = pathOr(null, ['data', 'id'], props);
-    const [sectionValue, setSectionValue] = React.useState(value);
-    const [languageValue, setLanguageValue] = React.useState(language);
+    )
+    const id = pathOr(null, ['data', 'id'], props)
+    const [sectionValue, setSectionValue] = React.useState(value)
+    const [languageValue, setLanguageValue] = React.useState(language)
 
     React.useEffect(() => {
         if (!path(['data', 'name', '@language'], props)) {
             setLanguageValue(props.defaultLanguage)
         }
-    }, [props.defaultLanguage]);
+    }, [props.defaultLanguage])
 
     const {
         handleAddSection,
         handleRemoveSection,
         sectionInUseCount,
         key,
-    } = props;
-    const {t} = useTranslation();
-    const inputValid = sectionValue.length > 0;
+    } = props
+    const { t } = useTranslation()
+    const inputValid = sectionValue.length > 0
     return (
         <div className="w-full flex mb-6" key={key}>
             <div className="w-1/2">
@@ -84,7 +105,7 @@ function SectionInput(props) {
                     type="text"
                     disabled={!props.new}
                     value={sectionValue}
-                    style={{width: '100%'}}
+                    style={{ width: '100%' }}
                     onChange={e => {
                         setSectionValue(e.target.value)
                     }}
@@ -101,7 +122,7 @@ function SectionInput(props) {
                         setLanguageValue(e.target.value)
                     }}
                 >
-                    <LanguageOptions/>
+                    <LanguageOptions />
                 </Select>
             </FormControl>
 
@@ -114,8 +135,8 @@ function SectionInput(props) {
                         }}
                         onClick={() => {
                             if (inputValid) {
-                                setSectionValue('');
-                                setLanguageValue(props.defaultLanguage);
+                                setSectionValue('')
+                                setLanguageValue(props.defaultLanguage)
                                 handleAddSection(sectionValue, languageValue)
                             } else {
                                 alert(t('Section name must not be empty!'))
@@ -126,7 +147,7 @@ function SectionInput(props) {
                     <RemoveCircleIcon
                         className="cursor-pointer"
                         onClick={() => {
-                            const count = sectionInUseCount(id);
+                            const count = sectionInUseCount(id)
                             if (count > 0) {
                                 alert(
                                     `${t('alert before count')} ${count} ${t(
@@ -149,30 +170,46 @@ const DialogActions = withStyles(theme => ({
         margin: 0,
         padding: theme.spacing(1),
     },
-}))(MuiDialogActions);
+}))(MuiDialogActions)
 
-export default function SettingsDialog(props) {
-    const {handleSettingsUpdate, sectionInUseCount, appData, manifest} = props;
+export default function SettingsDialog(props: {
+    open: boolean
+    handleClose: any
+    handleSettingsUpdate: any
+    sectionInUseCount: any
+    appData: any
+    manifest: any
+}) {
+    const { handleSettingsUpdate, sectionInUseCount, appData, manifest } = props
 
-    const handleAddSection = (value, language) => {
-        const sectionsLens = lensPath(['sections']);
-        const currentSections = view(sectionsLens, manifest);
+    const handleAddSection = (value: string, language: string) => {
+        const sectionsLens = lensPath(['sections'])
+        const currentSections = view(
+            sectionsLens,
+            manifest
+        ) as Buda.Manifest['sections'][]
         const updatedSections = append(
-            {id: uuidv4(), name: {'@value': value, '@language': language}},
+            // @ts-ignore
+            { id: uuidv4(), name: { '@value': value, '@language': language } },
             currentSections
-        );
+        )
         handleSettingsUpdate(sectionsLens, updatedSections)
-    };
+    }
 
-    const handleRemoveSection = id => {
-        const sectionsLens = lensPath(['sections']);
-        const currentSections = view(sectionsLens, manifest);
-        const updatedSections = reject(propEq('id', id), currentSections);
+    const handleRemoveSection = (id: string) => {
+        const sectionsLens = lensPath(['sections'])
+        const currentSections = view(
+            sectionsLens,
+            manifest
+        ) as Buda.Manifest['sections'][]
+        // @ts-ignore
+        const updatedSections = reject(propEq('id', id), currentSections)
         handleSettingsUpdate(sectionsLens, updatedSections)
-    };
+    }
 
-    const {t} = useTranslation();
+    const { t } = useTranslation()
 
+    // @ts-ignore
     return (
         <Dialog
             onClose={props.handleClose}
@@ -180,12 +217,7 @@ export default function SettingsDialog(props) {
             open={props.open}
             fullWidth
         >
-            <DialogTitle
-                id="customized-dialog-title"
-                onClose={props.handleClose}
-            >
-                {t('Edit')}
-            </DialogTitle>
+            <DialogTitle onClose={props.handleClose}>{t('Edit')}</DialogTitle>
             <div className="p-3">
                 <div className="w-full">
                     <div className="w-2/4">
@@ -305,6 +337,8 @@ export default function SettingsDialog(props) {
                         </FormControl>
                     </div>
                 </div>
+                {/*
+                    // @ts-ignore */}
                 {propOr([], 'sections', manifest).map((section, i) => {
                     return (
                         <SectionInput
@@ -373,12 +407,12 @@ export default function SettingsDialog(props) {
                             language: pathOr(
                                 manifest.appData['bvmt'][
                                     'default-ui-string-lang'
-                                    ],
+                                ],
                                 ['note', 0, '@language'],
                                 manifest
                             ),
                         }}
-                        onSubmit={({note, language}) => {
+                        onSubmit={({ note, language }) => {
                             handleSettingsUpdate(lensPath(['note', 0]), {
                                 '@value': note,
                                 '@language': language,
@@ -386,18 +420,19 @@ export default function SettingsDialog(props) {
                         }}
                         enableReinitialize
                     >
-                        {({values, handleChange, handleSubmit}) => (
+                        {({ values, handleChange, handleSubmit }) => (
                             <div className="w-full flex">
                                 <div className="w-1/2">
                                     <TextField
                                         value={values.note}
                                         onChange={handleChange}
-                                        style={{width: '100%'}}
+                                        style={{ width: '100%' }}
                                         inputProps={{
                                             id: 'note',
                                         }}
                                         multiline
                                         rows="4"
+                                        // @ts-ignore
                                         onBlur={handleSubmit}
                                     />
                                 </div>
@@ -406,12 +441,13 @@ export default function SettingsDialog(props) {
                                         native
                                         value={values.language}
                                         onChange={handleChange}
+                                        // @ts-ignore
                                         onBlur={handleSubmit}
                                         inputProps={{
                                             id: 'language',
                                         }}
                                     >
-                                        <LanguageOptions/>
+                                        <LanguageOptions />
                                     </Select>
                                 </FormControl>
                             </div>

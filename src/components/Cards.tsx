@@ -1,14 +1,14 @@
 import React from 'react'
-import {makeStyles} from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import CardHeader from '@material-ui/core/CardHeader'
 import CardContent from '@material-ui/core/CardContent'
-import {red} from '@material-ui/core/colors'
+import { red } from '@material-ui/core/colors'
 import TextField from '@material-ui/core/TextField'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import DragHandleIcon from '@material-ui/icons/DragHandle'
 import Select from '@material-ui/core/Select'
 import FormControl from '@material-ui/core/FormControl'
-import {Checkbox} from '@material-ui/core'
+import { Checkbox } from '@material-ui/core'
 import Edit from '@material-ui/icons/Edit'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -22,14 +22,14 @@ import axios from 'axios'
 import BeenhereIcon from '@material-ui/icons/Beenhere'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import ReorderIcon from '@material-ui/icons/Reorder'
-import {useDrag} from 'react-dnd'
-import {useTranslation} from 'react-i18next'
+import { useDrag } from 'react-dnd'
+import { useTranslation } from 'react-i18next'
 import Tags from './Tags'
 import TypeSelect from './TypeSelect'
 import NoteIcon from '@material-ui/icons/Note'
-import {Formik} from 'formik'
+import { Formik } from 'formik'
 import DeleteIcon from '@material-ui/icons/Delete'
-import {pathOr} from 'ramda'
+import { pathOr } from 'ramda'
 import InputLabel from '@material-ui/core/InputLabel'
 import LanguageOptions from './LanguageOptions'
 
@@ -67,12 +67,41 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function ImageCard(props) {
+export default function ImageCard(props: {
+    hideDeletedImages: any
+    i: number
+    imageListLength: any
+    imageView: any
+    setImageView: any
+    sectionInputs: any
+    data: any
+    markPreviousAsReviewed(i: any): any
+    volumeId: string
+    toggleCollapseImage: any
+    insertMissing(x: any, y: string): any
+    hideCardInManifest(id: any, b: boolean): void
+    updateUncheckedItems(image: any, i: number): void
+    handlePaginationPredication: any
+    uiLanguage: any
+    removeImageTag: any
+    addNote: any
+    removeNote: any
+    updateImageValue: any
+    manifestLanguage: any
+    toggleReview: any
+    pagination: any
+    updateImageSection: any
+    addImageTag: any
+    removeOfField: any
+    setDuplicateType: any
+    updateOfField: any
+    selectType: any
+    duplicateImageOptions: any
+}) {
     const classes = useStyles()
     const [editDialogOpen, setEditDialogOpen] = React.useState(false)
     const [iiif, setiiif] = React.useState(null)
-    const { imageView, setImageView } = props
-    const { data: image, sectionInputs } = props
+    const { data: image, sectionInputs, imageView, setImageView } = props
 
     const [, dragRef] = useDrag({
         item: { type: 'CARD', imageId: image.id },
@@ -154,7 +183,7 @@ export default function ImageCard(props) {
 
         const { t } = useTranslation()
 
-        const handleClick = event => {
+        const handleClick = (event: { currentTarget: any }) => {
             setAnchorEl(event.currentTarget)
         }
 
@@ -256,7 +285,6 @@ export default function ImageCard(props) {
                 setEditDialogOpen={setEditDialogOpen}
                 uiLanguage={props.uiLanguage}
                 data={image}
-                removeImageTag={props.removeImageTag}
                 addNote={props.addNote}
                 removeNote={props.removeNote}
                 updateImageValue={props.updateImageValue}
@@ -266,9 +294,7 @@ export default function ImageCard(props) {
                 <CardContent className="flex" style={{ padding: 0 }}>
                     {iiif ? (
                         <PreviewImage
-                            showUpdateView
                             setImageView={setImageView}
-                            image={image}
                             i={props.i}
                             imageView={imageView}
                             iiif={iiif}
@@ -324,6 +350,7 @@ export default function ImageCard(props) {
                                                 type="text"
                                                 value={values.marginIndication}
                                                 onChange={handleChange}
+                                                // @ts-ignore
                                                 onBlur={handleSubmit}
                                                 inputProps={{
                                                     id: 'marginIndication',
@@ -341,6 +368,7 @@ export default function ImageCard(props) {
                                                     native
                                                     value={values.language}
                                                     onChange={handleChange}
+                                                    // @ts-ignore
                                                     onBlur={handleSubmit}
                                                     id="margin-indication-lang"
                                                     inputProps={{
@@ -395,7 +423,18 @@ export default function ImageCard(props) {
                                                 </option>
                                                 )
                                                 {sectionInputs.map(
-                                                    (section, i) => {
+                                                    (
+                                                        section: {
+                                                            id:
+                                                                | string
+                                                                | number
+                                                                | string[]
+                                                            name: {
+                                                                [x: string]: React.ReactNode
+                                                            }
+                                                        },
+                                                        i: React.Key
+                                                    ) => {
                                                         return (
                                                             <option
                                                                 key={i}
@@ -446,6 +485,7 @@ export default function ImageCard(props) {
                                                     helperText={t('Pagination')}
                                                     value={values.pagination}
                                                     onChange={handleChange}
+                                                    // @ts-ignore
                                                     onBlur={handleSubmit}
                                                     inputProps={{
                                                         id: 'pagination',
@@ -463,23 +503,16 @@ export default function ImageCard(props) {
                             id={image.id}
                             tags={image.tags}
                             addImageTag={props.addImageTag}
-                            removeImageTag={props.removeImageTag}
-                            removeOfField={props.removeOfField}
                         />
 
                         <TypeSelect
-                            image={image}
                             removeOfField={props.removeOfField}
                             tags={image.tags}
-                            setDuplicateType={props.setDuplicateType}
                             updateOfField={props.updateOfField}
                             id={image.id}
-                            duplicateType={image.duplicateType}
-                            selectType={props.selectType}
                             i={props.i}
                             duplicateImageOptions={props.duplicateImageOptions}
                             duplicateOf={image.duplicateOf}
-                            filename={image.filename}
                         />
                     </div>
                 </CardContent>

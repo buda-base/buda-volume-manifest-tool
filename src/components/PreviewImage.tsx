@@ -1,13 +1,44 @@
 import React from 'react'
+// @ts-ignore
 import OpenSeaDragon from 'openseadragon'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
-import {withStyles} from '@material-ui/core'
+import { withStyles } from '@material-ui/core'
 import Icon from '@material-ui/core/Icon'
-import {useTranslation} from 'react-i18next'
+import { useTranslation } from 'react-i18next'
 
-export default class PreviewImage extends React.Component {
-    constructor(props) {
+interface IState {
+    degrees?: number
+    center: null | number
+    zoom: null | number
+    viewer?: any
+}
+
+interface IProps {
+    iiif?: string
+    i: number
+    degrees?: number
+    zoom?: number
+    imageView: {
+        center: {
+            x?: number
+            y?: number
+        }
+        zoom?: number
+        rotation?: number
+    }
+    setImageView: (arg1: {
+        center: {
+            x?: number
+            y?: number
+        }
+        zoom?: number
+        rotation?: number
+    }) => void
+}
+
+export default class PreviewImage extends React.Component<IProps, IState> {
+    constructor(props: Readonly<IProps>) {
         super(props)
         this.state = {
             center: null,
@@ -40,7 +71,14 @@ export default class PreviewImage extends React.Component {
         }
     }
 
-    componentDidUpdate(prevProps) {
+    // @ts-ignore
+    componentDidUpdate(prevProps: {
+        imageView: {
+            center: { x: number; y: number }
+            zoom: number
+            rotation: number
+        }
+    }) {
         const hasViewDiff =
             this.props.imageView.center.x !== prevProps.imageView.center.x ||
             this.props.imageView.center.y !== prevProps.imageView.center.y ||
@@ -61,7 +99,7 @@ export default class PreviewImage extends React.Component {
             const [anchorEl, setAnchorEl] = React.useState(null)
             const { t } = useTranslation()
 
-            const handleClick = event => {
+            const handleClick = (event: { currentTarget: any }) => {
                 setAnchorEl(event.currentTarget)
             }
 
@@ -75,7 +113,7 @@ export default class PreviewImage extends React.Component {
                         position: 'absolute',
                         top: '0',
                         right: '0',
-                        zIndex: '40',
+                        zIndex: 40,
                     }}
                 >
                     <div

@@ -2,11 +2,15 @@ import React from 'react'
 import AppBar from '@material-ui/core/AppBar/AppBar'
 import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
-import {lensPath} from 'ramda'
-import {useTranslation} from 'react-i18next'
+import { lensPath } from 'ramda'
+import { useTranslation } from 'react-i18next'
 import AuthNavBar from './AuthNavBar'
+import { Buda } from '../../types'
 
-function AppBarTwo(props) {
+function AppBarTwo(props: {
+    manifest: Buda.Manifest
+    handleSettingsUpdate: (arg1: any, arg2: any) => void
+}) {
     const { manifest, handleSettingsUpdate } = props
     const { i18n, t } = useTranslation()
 
@@ -21,7 +25,7 @@ function AppBarTwo(props) {
                         <a href="/">
                             <span className="text-2xl">{t('siteName')}</span>
                         </a>
-                        <div style={{width: 300}}>
+                        <div style={{ width: 300 }}>
                             <div className="w-full flex flex-row justify-between content-between">
                                 <FormControl style={{ width: 200 }}>
                                     <Select
@@ -33,7 +37,8 @@ function AppBarTwo(props) {
                                             ]
                                         }
                                         onChange={e => {
-                                            i18n.changeLanguage(e.target.value)
+                                            i18n.changeLanguage(e.target
+                                                .value as string)
                                             handleSettingsUpdate(
                                                 lensPath([
                                                     'appData',

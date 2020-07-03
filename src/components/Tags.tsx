@@ -1,10 +1,10 @@
 import React from 'react'
 import Select from '@material-ui/core/Select'
-import {includes, toPairs} from 'ramda'
-import {useTranslation} from 'react-i18next'
-import tags from '../tags'
+import { includes, toPairs } from 'ramda'
+import { useTranslation } from 'react-i18next'
+import tags from '../tags.json'
 import FormHelperText from '@material-ui/core/FormHelperText'
-import {makeStyles} from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import Input from '@material-ui/core/Input'
 import MenuItem from '@material-ui/core/MenuItem'
 import FormControl from '@material-ui/core/FormControl'
@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
         maxWidth: 300,
     },
 }))
-const Tags = props => {
+const Tags = (props: { tags?: any; id?: any; addImageTag?: any }) => {
     const { t } = useTranslation()
     const classes = useStyles()
 
@@ -36,7 +36,7 @@ const Tags = props => {
         },
     }
     const tagsSafe = props.tags || []
-    const handleChange = e => {
+    const handleChange = (e: { target: { value: any } }) => {
         const newTags = e.target.value
         addImageTag(id, newTags)
     }
@@ -46,17 +46,19 @@ const Tags = props => {
             <FormControl className={classes.formControl}>
                 <Select
                     multiple
-                    helperText={t('Detail of File')}
+                    // helperText={t('Detail of File') as string}
                     value={props.tags || []}
                     onChange={handleChange}
                     input={<Input />}
-                    renderValue={selected => {
-                        return selected
-                            .map(tag => tags[tag].label.en)
-                            .join(', ')
+                    renderValue={(selected: any[]) => {
+                        return (
+                            selected
+                                // @ts-ignore
+                                .map(tag => tags[tag].label.en)
+                                .join(', ')
+                        )
                     }}
                     MenuProps={MenuProps}
-                    className={classes.select}
                 >
                     {tagOptions.map(([id, data]) => (
                         <MenuItem key={id} value={id}>

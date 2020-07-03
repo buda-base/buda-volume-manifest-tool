@@ -1,6 +1,11 @@
-import {pagination_types} from './pagination-prediction'
+// @ts-nocheck
+import { pagination_types } from './pagination-prediction'
 
-export function getComparator(manifest) {
+export function getComparator(manifest: {
+    pagination: any
+    section: any
+    sections: string | any[]
+}) {
     var paginations = manifest.pagination
     if (!paginations || paginations.length < 1) {
         // error
@@ -13,7 +18,7 @@ export function getComparator(manifest) {
     }
     var default_pg_name = paginations[0].id
     // TODO for Alex: this probably won't work as pagination_types is a variable of
-    // pagination-prediction.js which is not exported, not sure how to make it work
+    // pagination-prediction.ts which is not exported, not sure how to make it work
     var default_pg_type_info = pagination_types[paginations[0].type]
     var sections_id_map = null
     if (manifest.section) {
@@ -31,7 +36,7 @@ export function getComparator(manifest) {
             var a_dpg = a[default_pg_name]
             var b_dpg = b[default_pg_name]
             if (
-                sections_id_map && 
+                sections_id_map &&
                 a_dpg.section &&
                 b_dpg.section &&
                 a_dpg.section != b_dpg.section

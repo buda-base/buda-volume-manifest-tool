@@ -1,5 +1,5 @@
 import React from 'react'
-import {withStyles} from '@material-ui/core/styles'
+import { createStyles, Theme, withStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import MuiDialogTitle from '@material-ui/core/DialogTitle'
@@ -7,8 +7,8 @@ import MuiDialogActions from '@material-ui/core/DialogActions'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import Typography from '@material-ui/core/Typography'
-import {Checkbox} from '@material-ui/core'
-import {propOr, trim} from 'ramda'
+import { Checkbox } from '@material-ui/core'
+import { propOr, trim } from 'ramda'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
@@ -19,56 +19,72 @@ import FormControl from '@material-ui/core/FormControl'
 import InputLabel from '@material-ui/core/InputLabel'
 import Select from '@material-ui/core/Select'
 import AddIcon from '@material-ui/icons/Add'
-import {useTranslation} from 'react-i18next'
-import {Formik} from 'formik'
+import { useTranslation } from 'react-i18next'
+import { Formik } from 'formik'
 import LanguageOptions from './LanguageOptions'
 
-const styles = theme => ({
-    root: {
-        margin: 0,
-        padding: theme.spacing(2),
-    },
-    closeButton: {
-        position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
-        color: theme.palette.grey[500],
-    },
-});
+const styles = (theme: Theme) =>
+    createStyles({
+        root: {
+            margin: 0,
+            padding: theme.spacing(2),
+        },
+        closeButton: {
+            position: 'absolute',
+            right: theme.spacing(1),
+            top: theme.spacing(1),
+            color: theme.palette.grey[500],
+        },
+    })
 
-const DialogTitle = withStyles(styles)(props => {
-    const {children, classes, onClose, ...other} = props;
-    return (
-        <MuiDialogTitle disableTypography className={classes.root} {...other}>
-            <Typography variant="h6">{children}</Typography>
-            {onClose ? (
-                <IconButton
-                    aria-label="close"
-                    className={classes.closeButton}
-                    onClick={onClose}
-                >
-                    <CloseIcon/>
-                </IconButton>
-            ) : null}
-        </MuiDialogTitle>
-    )
-});
+const DialogTitle = withStyles(styles)(
+    (props: { children: React.ReactElement; classes: any; onClose: any }) => {
+        const { children, classes, onClose, ...other } = props
+        return (
+            <MuiDialogTitle
+                disableTypography
+                className={classes.root}
+                {...other}
+            >
+                <Typography variant="h6">{children}</Typography>
+                {onClose ? (
+                    <IconButton
+                        aria-label="close"
+                        className={classes.closeButton}
+                        onClick={onClose}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                ) : null}
+            </MuiDialogTitle>
+        )
+    }
+)
 
 const DialogActions = withStyles(theme => ({
     root: {
         margin: 0,
         padding: theme.spacing(1),
     },
-}))(MuiDialogActions);
+}))(MuiDialogActions)
 
-export default function EditCard(props) {
+export default function EditCard(props: {
+    setEditDialogOpen: any
+    data: any
+    open: boolean
+    uiLanguage: any
+    updateImageValue: any
+    addNote: any
+    removeNote: any
+}) {
     const handleClose = () => {
         props.setEditDialogOpen(false)
-    };
+    }
 
-    const {data} = props;
-    const {t} = useTranslation();
+    const { data } = props
+    const { t } = useTranslation()
 
+    // @ts-ignore
     return (
         <div>
             <Dialog
@@ -77,8 +93,10 @@ export default function EditCard(props) {
                 open={props.open}
                 fullWidth
             >
-                <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-                    {t('Edit-image')} {data.filename || data.type}
+                <DialogTitle onClose={handleClose}>
+                    <>
+                        {t('Edit-image')} {data.filename || data.type}
+                    </>
                 </DialogTitle>
                 <div className="p-3">
                     <div className="w-full">
@@ -155,7 +173,7 @@ export default function EditCard(props) {
                                                     data.id,
                                                     'belongsToVolume',
                                                     e.target.value
-                                                );
+                                                )
                                             }}
                                             color="primary"
                                         />
@@ -212,23 +230,23 @@ export default function EditCard(props) {
                                 note: '',
                                 language: props.uiLanguage,
                             }}
-                            onSubmit={({note, language}, {resetForm}) => {
+                            onSubmit={({ note, language }, { resetForm }) => {
                                 props.addNote(data.id, {
                                     '@value': trim(note),
                                     '@language': language,
-                                });
+                                })
                                 resetForm()
                             }}
                             enableReinitialize
                         >
-                            {({values, handleChange, handleSubmit}) => (
+                            {({ values, handleChange, handleSubmit }) => (
                                 <div className="w-full">
                                     <div className="flex flex-row w-1/2">
                                         <TextField
                                             label={' '}
                                             value={values.note}
                                             onChange={handleChange}
-                                            style={{width: '50%'}}
+                                            style={{ width: '50%' }}
                                             inputProps={{
                                                 id: 'note',
                                             }}
@@ -246,11 +264,12 @@ export default function EditCard(props) {
                                                     id: 'language',
                                                 }}
                                             >
-                                                <LanguageOptions/>
+                                                <LanguageOptions />
                                             </Select>
                                         </FormControl>
                                         <AddIcon
                                             className="self-center cursor-pointer"
+                                            // @ts-ignore
                                             onClick={handleSubmit}
                                         />
                                     </div>
@@ -259,6 +278,8 @@ export default function EditCard(props) {
                         </Formik>
 
                         <List>
+                            {/*
+                             // @ts-ignore */}
                             {propOr([], 'note', data).map((note, i) => (
                                 <ListItem key={i} button>
                                     <ListItemIcon>

@@ -1,19 +1,23 @@
 import FormControlLabel from '@material-ui/core/FormControlLabel'
-import {Checkbox} from '@material-ui/core'
+import { Checkbox } from '@material-ui/core'
 import React from 'react'
-import {lensPath, view} from 'ramda'
-import {useTranslation} from 'react-i18next'
+import { lensPath, view } from 'ramda'
+import { useTranslation } from 'react-i18next'
 import Button from '@material-ui/core/Button'
 
-export default function FilterList(props) {
-    const { handleSettingsUpdate, manifest } = props;
-    const { t } = useTranslation();
+export default function FilterList(props: {
+    foldCheckedImages?: any
+    handleSettingsUpdate?: any
+    manifest?: any
+}) {
+    const { handleSettingsUpdate, manifest } = props
+    const { t } = useTranslation()
     const hideDeletedImagesLens = lensPath([
         'volumeData',
         'bvmt_props',
         'hideDeletedImages',
-    ]);
-    const hideDeletedImages = view(hideDeletedImagesLens, manifest);
+    ])
+    const hideDeletedImages = view(hideDeletedImagesLens, manifest) as boolean
     return (
         <div className="container mx-auto flex flex-row justify-end">
             <Button
