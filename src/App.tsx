@@ -1,17 +1,19 @@
+// @ts-nocheck
+
 import React from 'react'
 import './index.css'
 import AppBar from './components/AppBar'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
-import Cards from './components/Cards'
 import { DndProvider } from 'react-dnd'
 import FilterList from './components/FilterList'
 import Backend from 'react-dnd-html5-backend'
 import { useTranslation } from 'react-i18next'
 import postUpdate from './api/postUpdate'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import getPagination from './utils/pagination-prediction'
 import { useAuth0 } from './react-auth0-spa'
 import { getComparator } from './utils/pagination-comparators'
+import { useBlockLayout, useTable } from 'react-table'
+
 import {
     addIndex,
     always,
@@ -45,12 +47,13 @@ import {
 import SettingsIcon from '@material-ui/icons/Settings'
 import Dialog from './components/Dialog'
 import uuidv4 from 'uuid/v4'
-import InfiniteScroll from 'react-infinite-scroller'
-import CardDropZone from './components/CardDropZone'
 import { getOrInitManifest } from './api/getManifest'
 import VolumeSearch from './components/VolumeSearch'
 import UpdateManifestError from './components/UpdateManifestError'
+import { FixedSizeList } from 'react-window'
 import { Buda } from '../types'
+import PreviewImage from './components/PreviewImage'
+import axios from 'axios'
 
 const mapIndex = addIndex(map)
 const theme = createMuiTheme({
@@ -502,6 +505,162 @@ function App() {
 
     const imageListLength = imageList.length
 
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: 'Image',
+                accessor: 'filename', // accessor is the "key" in the data
+            },
+            {
+                Header: 'Reviewed',
+                accessor: 'reviewed',
+            },
+            {
+                Header: 'Indication',
+                accessor: 'indication',
+            },
+            {
+                Header: 'Pagination',
+                accessor: 'pagination',
+            },
+        ],
+        []
+    )
+
+    const defaultColumn = React.useMemo(
+        () => ({
+            width: 150,
+        }),
+        []
+    )
+    const {
+        getTableProps,
+        getTableBodyProps,
+        headerGroups,
+        rows,
+        totalColumnsWidth,
+        prepareRow,
+    } = useTable(
+        {
+            columns,
+            data: imageList,
+            defaultColumn,
+        },
+        useBlockLayout
+    )
+
+    const ImageBoy = ({ filename }) => {
+        const [iiif, setiiif] = React.useState(null)
+
+        React.useEffect(() => {
+            const getData = async () => {
+                try {
+                    const data = await axios.get(
+                        `https://iiif-dev.bdrc.io/${manifest['for-volume']}::${filename}/info.json`
+                    )
+                    const iiif = data.data
+                    setiiif(iiif)
+                    return () => {}
+                } catch (err) {
+                    console.log('iiifErr', err)
+                }
+            }
+            getData()
+        }, [])
+        return (
+            <PreviewImage
+                setImageView={handleSettingsUpdate(
+                    lensPath(['appData', 'bvmt', 'preview-image-view'])
+                )}
+                i={filename}
+                imageView={pathOr(
+                    {
+                        zoom: 0,
+                        center: {
+                            x: null,
+                            y: null,
+                        },
+                    },
+                    ['appData', 'bvmt', 'preview-image-view'],
+                    manifest
+                )}
+                iiif={iiif}
+            />
+        )
+    }
+
+    const RenderRow = React.useCallback(
+        ({ index, style }) => {
+            const row = rows[index]
+            prepareRow(row)
+            return (
+                <div
+                    {...row.getRowProps({
+                        style,
+                    })}
+                    className="tr"
+                >
+                    {row.cells.map((cell, idx) => {
+                        return (
+                            <div {...cell.getCellProps()} className="td">
+                                {cell.render(x => {
+                                    // console.log('x',x )
+                                    if (x.column.id === 'indication') {
+                                        // return 'wow'
+                                        if (x.value) {
+                                            return `${x.value['@value']}  ${x.value['@language']}`
+                                        }
+                                    }
+                                    if (x.column.id === 'reviewed') {
+                                        return (
+                                            <input
+                                                type="checkbox"
+                                                checked={!!x.value}
+                                                onChange={() => {
+                                                    const newX = imageList.map(
+                                                        (row, index) => {
+                                                            if (
+                                                                index ===
+                                                                x.cell.row.index
+                                                            ) {
+                                                                return {
+                                                                    ...imageList[
+                                                                        x.cell
+                                                                            .row
+                                                                            .index
+                                                                    ],
+                                                                    ['reviewed']: !x.value,
+                                                                }
+                                                            }
+                                                            return row
+                                                        }
+                                                    )
+
+                                                    updateImageList(newX)
+                                                }}
+                                            />
+                                        )
+                                    }
+                                    if (x.column.id === 'pagination') {
+                                        return `${x.value.pgfolios['value']} ${x.value.pgfolios['section']}`
+                                    }
+                                    if (
+                                        x.column.id === 'filename' &&
+                                        !!x.value
+                                    ) {
+                                        return <ImageBoy filename={x.value} />
+                                    }
+                                    return x.value || ''
+                                })}
+                            </div>
+                        )
+                    })}
+                </div>
+            )
+        },
+        [prepareRow, rows]
+    )
+
     return (
         <ThemeProvider theme={theme}>
             <DndProvider backend={Backend}>
@@ -570,139 +729,169 @@ function App() {
                                 manifest={manifest}
                                 foldCheckedImages={foldCheckedImages}
                             />
-                            <div className="container mx-auto">
-                                <InfiniteScroll
-                                    pageStart={0}
-                                    key={0}
-                                    loadMore={handleLoadMore}
-                                    hasMore={
-                                        imageList.length > renderToIdx &&
-                                        !isLoadingMore
-                                    }
-                                    loader={
-                                        <div className="container mx-auto flex items-center justify-center">
-                                            <CircularProgress />
+                            <div {...getTableProps()} className="table">
+                                <div>
+                                    {headerGroups.map(headerGroup => (
+                                        <div
+                                            {...headerGroup.getHeaderGroupProps()}
+                                            className="tr"
+                                        >
+                                            {headerGroup.headers.map(column => (
+                                                <div
+                                                    {...column.getHeaderProps()}
+                                                    className="th"
+                                                >
+                                                    {column.render('Header')}
+                                                </div>
+                                            ))}
                                         </div>
-                                    }
-                                    useWindow={true}
-                                >
-                                    {mapIndex(
-                                        (item: Buda.Image, i: number) => (
-                                            <React.Fragment key={i}>
-                                                {i === 0 && (
-                                                    <CardDropZone
-                                                        i={-1}
-                                                        handleDrop={
-                                                            rearrangeImage
-                                                        }
-                                                    />
-                                                )}
-                                                <Cards
-                                                    handlePaginationPredication={
-                                                        handlePaginationPredication
-                                                    }
-                                                    hideCardInManifest={
-                                                        hideCardInManifest
-                                                    }
-                                                    removeOfField={
-                                                        removeOfField
-                                                    }
-                                                    volumeId={
-                                                        manifest['for-volume']
-                                                    }
-                                                    manifestLanguage={
-                                                        manifest.appData[
-                                                            'bvmt'
-                                                        ][
-                                                            'default-vol-string-lang'
-                                                        ]
-                                                    }
-                                                    uiLanguage={
-                                                        manifest.appData[
-                                                            'bvmt'
-                                                        ][
-                                                            'default-ui-string-lang'
-                                                        ]
-                                                    }
-                                                    pagination={
-                                                        manifest.pagination
-                                                    }
-                                                    imageListLength={
-                                                        imageListLength
-                                                    }
-                                                    updateImageSection={
-                                                        updateImageSection
-                                                    }
-                                                    sectionInputs={
-                                                        manifest.sections || []
-                                                    }
-                                                    updateImageValue={
-                                                        updateImageValue
-                                                    }
-                                                    selectType={selectType}
-                                                    addNote={addNote}
-                                                    imageView={pathOr(
-                                                        {
-                                                            zoom: 0,
-                                                            center: {
-                                                                x: null,
-                                                                y: null,
-                                                            },
-                                                        },
-                                                        [
-                                                            'appData',
-                                                            'bvmt',
-                                                            'preview-image-view',
-                                                        ],
-                                                        manifest
-                                                    )}
-                                                    data={item}
-                                                    toggleReview={toggleReview}
-                                                    insertMissing={
-                                                        insertMissing
-                                                    }
-                                                    toggleCollapseImage={
-                                                        toggleCollapseImage
-                                                    }
-                                                    key={item.id}
-                                                    duplicateImageOptions={duplicateImageOptions()}
-                                                    setImageView={handleSettingsUpdate(
-                                                        lensPath([
-                                                            'appData',
-                                                            'bvmt',
-                                                            'preview-image-view',
-                                                        ])
-                                                    )}
-                                                    i={i}
-                                                    updateOfField={
-                                                        updateOfField
-                                                    }
-                                                    setDuplicateType={
-                                                        setDuplicateType
-                                                    }
-                                                    addImageTag={addImageTag}
-                                                    removeImageTag={
-                                                        removeImageTag
-                                                    }
-                                                    removeNote={removeNote}
-                                                    markPreviousAsReviewed={
-                                                        markPreviousAsReviewed
-                                                    }
-                                                    updateUncheckedItems={
-                                                        updateUncheckedItems
-                                                    }
-                                                    hideDeletedImages={() => {}}
-                                                />
-                                                <CardDropZone
-                                                    i={i}
-                                                    handleDrop={rearrangeImage}
-                                                />
-                                            </React.Fragment>
-                                        ),
-                                        imageList.slice(0, renderToIdx)
-                                    )}
-                                </InfiniteScroll>
+                                    ))}
+                                </div>
+
+                                <div {...getTableBodyProps()}>
+                                    <FixedSizeList
+                                        height={400}
+                                        itemCount={rows.length}
+                                        itemSize={35}
+                                        width={totalColumnsWidth}
+                                    >
+                                        {RenderRow}
+                                    </FixedSizeList>
+                                </div>
                             </div>
+                            {/*<div className="container mx-auto">*/}
+                            {/*    <InfiniteScroll*/}
+                            {/*        pageStart={0}*/}
+                            {/*        key={0}*/}
+                            {/*        loadMore={handleLoadMore}*/}
+                            {/*        hasMore={*/}
+                            {/*            imageList.length > renderToIdx &&*/}
+                            {/*            !isLoadingMore*/}
+                            {/*        }*/}
+                            {/*        loader={*/}
+                            {/*            <div className="container mx-auto flex items-center justify-center">*/}
+                            {/*                <CircularProgress />*/}
+                            {/*            </div>*/}
+                            {/*        }*/}
+                            {/*        useWindow={true}*/}
+                            {/*    >*/}
+                            {/*        {mapIndex(*/}
+                            {/*            (item: Buda.Image, i: number) => (*/}
+                            {/*                <React.Fragment key={i}>*/}
+                            {/*                    {i === 0 && (*/}
+                            {/*                        <CardDropZone*/}
+                            {/*                            i={-1}*/}
+                            {/*                            handleDrop={*/}
+                            {/*                                rearrangeImage*/}
+                            {/*                            }*/}
+                            {/*                        />*/}
+                            {/*                    )}*/}
+                            {/*                    <Cards*/}
+                            {/*                        handlePaginationPredication={*/}
+                            {/*                            handlePaginationPredication*/}
+                            {/*                        }*/}
+                            {/*                        hideCardInManifest={*/}
+                            {/*                            hideCardInManifest*/}
+                            {/*                        }*/}
+                            {/*                        removeOfField={*/}
+                            {/*                            removeOfField*/}
+                            {/*                        }*/}
+                            {/*                        volumeId={*/}
+                            {/*                            manifest['for-volume']*/}
+                            {/*                        }*/}
+                            {/*                        manifestLanguage={*/}
+                            {/*                            manifest.appData[*/}
+                            {/*                                'bvmt'*/}
+                            {/*                            ][*/}
+                            {/*                                'default-vol-string-lang'*/}
+                            {/*                            ]*/}
+                            {/*                        }*/}
+                            {/*                        uiLanguage={*/}
+                            {/*                            manifest.appData[*/}
+                            {/*                                'bvmt'*/}
+                            {/*                            ][*/}
+                            {/*                                'default-ui-string-lang'*/}
+                            {/*                            ]*/}
+                            {/*                        }*/}
+                            {/*                        pagination={*/}
+                            {/*                            manifest.pagination*/}
+                            {/*                        }*/}
+                            {/*                        imageListLength={*/}
+                            {/*                            imageListLength*/}
+                            {/*                        }*/}
+                            {/*                        updateImageSection={*/}
+                            {/*                            updateImageSection*/}
+                            {/*                        }*/}
+                            {/*                        sectionInputs={*/}
+                            {/*                            manifest.sections || []*/}
+                            {/*                        }*/}
+                            {/*                        updateImageValue={*/}
+                            {/*                            updateImageValue*/}
+                            {/*                        }*/}
+                            {/*                        selectType={selectType}*/}
+                            {/*                        addNote={addNote}*/}
+                            {/*                        imageView={pathOr(*/}
+                            {/*                            {*/}
+                            {/*                                zoom: 0,*/}
+                            {/*                                center: {*/}
+                            {/*                                    x: null,*/}
+                            {/*                                    y: null,*/}
+                            {/*                                },*/}
+                            {/*                            },*/}
+                            {/*                            [*/}
+                            {/*                                'appData',*/}
+                            {/*                                'bvmt',*/}
+                            {/*                                'preview-image-view',*/}
+                            {/*                            ],*/}
+                            {/*                            manifest*/}
+                            {/*                        )}*/}
+                            {/*                        data={item}*/}
+                            {/*                        toggleReview={toggleReview}*/}
+                            {/*                        insertMissing={*/}
+                            {/*                            insertMissing*/}
+                            {/*                        }*/}
+                            {/*                        toggleCollapseImage={*/}
+                            {/*                            toggleCollapseImage*/}
+                            {/*                        }*/}
+                            {/*                        key={item.id}*/}
+                            {/*                        duplicateImageOptions={duplicateImageOptions()}*/}
+                            {/*                        setImageView={handleSettingsUpdate(*/}
+                            {/*                            lensPath([*/}
+                            {/*                                'appData',*/}
+                            {/*                                'bvmt',*/}
+                            {/*                                'preview-image-view',*/}
+                            {/*                            ])*/}
+                            {/*                        )}*/}
+                            {/*                        i={i}*/}
+                            {/*                        updateOfField={*/}
+                            {/*                            updateOfField*/}
+                            {/*                        }*/}
+                            {/*                        setDuplicateType={*/}
+                            {/*                            setDuplicateType*/}
+                            {/*                        }*/}
+                            {/*                        addImageTag={addImageTag}*/}
+                            {/*                        removeImageTag={*/}
+                            {/*                            removeImageTag*/}
+                            {/*                        }*/}
+                            {/*                        removeNote={removeNote}*/}
+                            {/*                        markPreviousAsReviewed={*/}
+                            {/*                            markPreviousAsReviewed*/}
+                            {/*                        }*/}
+                            {/*                        updateUncheckedItems={*/}
+                            {/*                            updateUncheckedItems*/}
+                            {/*                        }*/}
+                            {/*                        hideDeletedImages={() => {}}*/}
+                            {/*                    />*/}
+                            {/*                    <CardDropZone*/}
+                            {/*                        i={i}*/}
+                            {/*                        handleDrop={rearrangeImage}*/}
+                            {/*                    />*/}
+                            {/*                </React.Fragment>*/}
+                            {/*            ),*/}
+                            {/*            imageList.slice(0, renderToIdx)*/}
+                            {/*        )}*/}
+                            {/*    </InfiniteScroll>*/}
+                            {/*</div>*/}
                         </div>
                     </div>
                 )}
