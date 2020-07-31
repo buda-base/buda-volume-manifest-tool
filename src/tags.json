@@ -138,10 +138,10 @@
     },
     "T0017": {
         "label": {
-            "en": "duplicate in scans"
+            "en": "intentional duplicate shot"
         },
         "helpMessage": {
-            "en": "use this tag when the same original page has been digitized multiple times"
+            "en": "use this tag when the same original page has been digitized multiple times intentionally, for instance with various exposures to reveal details"
         },
         "ofField": "duplicate-of"
     },
@@ -177,5 +177,23 @@
         "helpMessage": {
             "en": ""
         }
+    },
+    "T0022": {
+        "label": {
+            "en": "unintentional duplicate shots"
+        },
+        "helpMessage": {
+            "en": "use this tag when the same original page has been digitized multiple times with no clear intention"
+        },
+        "ofField": "duplicate-of"
+    },
+    "T0023": {
+        "label": {
+            "en": "duplicate in files"
+        },
+        "helpMessage": {
+            "en": "use this tag when the same file is present several times"
+        },
+        "ofField": "duplicate-of"
     }
 }
