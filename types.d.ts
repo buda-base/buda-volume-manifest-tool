@@ -19,6 +19,9 @@ export namespace Buda {
         type?: string
         collapsed?: boolean
         hide?: boolean
+        thumbnailForVolume?: boolean
+        specialLabel: Text
+        belongsToVolume?: boolean
     }
 
     export interface Manifest {

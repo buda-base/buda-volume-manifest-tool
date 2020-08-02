@@ -44,6 +44,7 @@ export async function getOrInitManifest(volumeQname: string, options: Options) {
             manifest
         )
     }
+    manifest.appData.bvmt['default-ui-string-lang'] = options.uiLanguage
     return { manifest: addIdsToImages(manifest) }
 }
 

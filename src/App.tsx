@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import './index.css'
 import AppBar from './components/AppBar'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
@@ -6,45 +6,28 @@ import Cards from './components/Cards'
 import { DndProvider } from 'react-dnd'
 import FilterList from './components/FilterList'
 import Backend from 'react-dnd-html5-backend'
-import { useTranslation } from 'react-i18next'
 import postUpdate from './api/postUpdate'
+import { useTranslation } from 'react-i18next'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import getPagination from './utils/pagination-prediction'
 import { useAuth0 } from './react-auth0-spa'
-import { getComparator } from './utils/pagination-comparators'
 import {
     addIndex,
-    always,
-    append,
     assoc,
-    complement,
-    compose,
     curry,
-    dec,
     dissoc,
-    findIndex,
-    has,
     inc,
-    includes,
     insert,
-    intersection,
     lensPath,
     map,
     over,
-    pathOr,
-    prop,
     propEq,
-    propOr,
     reduce,
     reject,
-    remove,
     set,
     view,
-    when,
 } from 'ramda'
 import SettingsIcon from '@material-ui/icons/Settings'
 import Dialog from './components/Dialog'
-import uuidv4 from 'uuid/v4'
 import InfiniteScroll from 'react-infinite-scroller'
 import CardDropZone from './components/CardDropZone'
 import { getOrInitManifest } from './api/getManifest'
@@ -75,6 +58,7 @@ function App(props: any) {
     const [isLoadingMore, setIsLoadingMore] = React.useState(false)
     const [postErr, setPostErr] = React.useState(null)
 
+    const { dispatch } = props
     React.useEffect(() => {
         const search = window.location.search
         const params = new URLSearchParams(search)
@@ -90,8 +74,7 @@ function App(props: any) {
                         uiLanguage: 'en',
                     })
                     setIsFetching(false)
-                    console.log('----------', manifest)
-                    props.dispatch(setManifest(manifest))
+                    dispatch(setManifest(manifest))
                 } catch (err) {
                     setIsFetching(false)
                     setFetchErr(err.message)
@@ -99,7 +82,7 @@ function App(props: any) {
             }
             getData()
         }
-    }, [])
+    }, [dispatch])
 
     const saveUpdatesToManifest = async (auth: any) => {
         try {
@@ -146,245 +129,6 @@ function App(props: any) {
         const updatedManifest = set(lens, value, manifest)
         props.dispatch(setManifest(updatedManifest))
     })
-    const updateOfField = (imageId: string, val: { name: any }, key: any) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                return assoc(key, val.name, image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const setDuplicateType = (imageId: string, val: any) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                return assoc('duplicateType', val, image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const deleteImageChip = (imageId: string, chipId: string) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                const updatedChips = reject(
-                    ({ id }) => id === chipId,
-                    propOr([], 'chips', image)
-                )
-                return assoc('chips', updatedChips, image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const toggleReview = (imageId: string) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                const reviewed = prop('reviewed', image)
-                return compose(
-                    image =>
-                        !reviewed ? assoc('collapsed', true, image) : image,
-                    assoc('reviewed', !reviewed)
-                )(image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    // const insertMissing = (i: number, direction: 'before' | 'after') => {
-    //     const defaultMissingImage = {
-    //         id: uuidv4(),
-    //         type: 'missing',
-    //     } as Buda.Image
-    //     if (direction === 'before') {
-    //         updateImageList(insert(i, defaultMissingImage, imageList))
-    //     } else if (direction === 'after') {
-    //         updateImageList(insert(i + 1, defaultMissingImage, imageList))
-    //     }
-    // }
-    // const toggleCollapseImage = (imageId: string) => {
-    //     const updatedImageList = map(image => {
-    //         if (image.id === imageId) {
-    //             const hidden = !!prop('collapsed', image)
-    //             return assoc('collapsed', !hidden, image)
-    //         } else {
-    //             return image
-    //         }
-    //     }, imageList)
-    //     updateImageList(updatedImageList)
-    // }
-    // const selectType = (imageId: string, e: any, i: number) => {
-    //     const val = e.target.value
-    //     const attachDuplicateOfPreImage = (image: Buda.Image) => {
-    //         const previousImage = imageList[dec(i)]
-    //         const fileName = prop('filename', previousImage)
-    //         return fileName
-    //             ? assoc(
-    //                   'duplicateOf',
-    //                   { name: fileName, id: previousImage.id },
-    //                   image
-    //               )
-    //             : image
-    //     }
-    //     const updatedImageList = map(image => {
-    //         if (image.id === imageId) {
-    //             if (val === 'file') return dissoc('type', image)
-    //             if (val === 'duplicate') {
-    //                 return compose(
-    //                     attachDuplicateOfPreImage,
-    //                     // @ts-ignore
-    //                     assoc('type', val)
-    //                 )(image)
-    //             }
-    //             return assoc('type', val, image)
-    //         } else {
-    //             return image
-    //         }
-    //     }, imageList)
-    //     updateImageList(updatedImageList)
-    // }
-    // const addImageTag = (imageId: string, tags: readonly string[]) => {
-    //     const updatedImageList = map(image => {
-    //         if (image.id === imageId) {
-    //             const duplicateTags = ['T0018', 'T0017']
-    //             const detailTags = ['T0016']
-    //             const currentTags = propOr(
-    //                 [],
-    //                 'tags',
-    //                 image
-    //             ) as readonly string[]
-    //             const prevTagsHaveDuplicates =
-    //                 intersection(currentTags, duplicateTags).length > 0
-    //             const prevTagsHaveDetail =
-    //                 intersection(currentTags, detailTags).length > 0
-    //
-    //             const newTagsHaveDuplicates =
-    //                 intersection(tags, duplicateTags).length > 0
-    //
-    //             const newTagsHaveDetail =
-    //                 intersection(tags, detailTags).length > 0
-    //
-    //             const removeDuplicateOf =
-    //                 prevTagsHaveDuplicates && !newTagsHaveDuplicates
-    //             const removeDetailOf = prevTagsHaveDetail && !newTagsHaveDetail
-    //
-    //             return compose(
-    //                 when(always(removeDuplicateOf), dissoc('duplicate-of')),
-    //                 when(always(removeDetailOf), dissoc('detail-of')),
-    //                 assoc('tags', tags)
-    //             )(image)
-    //         } else {
-    //             return image
-    //         }
-    //     }, imageList)
-    //     updateImageList(updatedImageList)
-    // }
-
-    // const removeOfField = (imageId: string, ofField: string) => {
-    //     const updatedImageList = map(image => {
-    //         if (image.id === imageId) {
-    //             return dissoc(ofField, image)
-    //         } else {
-    //             return image
-    //         }
-    //     }, imageList)
-    //     updateImageList(updatedImageList)
-    // }
-
-    const removeImageTag = (imageId: string, tag: string) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                const updatedTags = reject(
-                    imgTag => imgTag === tag,
-                    propOr([], 'tags', image)
-                )
-                const duplicateTags = ['T0018', 'T0017']
-                const detailTags = ['T0016']
-                const isDuplicateTag = includes(tag, duplicateTags)
-                const isDetailTag = includes(tag, detailTags)
-
-                return compose(
-                    when(always(isDuplicateTag), dissoc('duplicate-of')),
-                    when(always(isDetailTag), dissoc('detail-of')),
-                    assoc('tags', updatedTags)
-                )(image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const setPagination = (
-        imageId: string,
-        pagination: Buda.Image['pagination']
-    ) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                return assoc('pagination', pagination, image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const addNote = (imageId: string, note: Buda.Image['note']) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                const updatedNotes = append(note, propOr([], 'note', image))
-                return assoc('note', updatedNotes, image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    // const removeNote = (imageId: string, noteIdx: number) => {
-    //     const updatedImageList = map(image => {
-    //         if (image.id === imageId) {
-    //             const updatedNotes = remove(
-    //                 noteIdx,
-    //                 1,
-    //                 propOr([], 'note', image)
-    //             )
-    //             return assoc('note', updatedNotes, image)
-    //         } else {
-    //             return image
-    //         }
-    //     }, imageList)
-    //     updateImageList(updatedImageList)
-    // }
-    const updateImageValue = (imageId: string, key: string, value: any) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                return assoc(key, value, image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-
-    // const markPreviousAsReviewed = (imageIdx: number) => {
-    //     const updatedImageList = mapIndex((image, idx: number) => {
-    //         if (idx <= imageIdx) {
-    //             return assoc('reviewed', true, image)
-    //         } else {
-    //             return image
-    //         }
-    //     }, imageList)
-    //     updateImageList(updatedImageList)
-    // }
-    const duplicateImageOptions = () =>
-        compose(
-            map(({ id, filename }) => ({ id, name: filename })),
-            // @ts-ignore
-            reject(complement(has)('filename'))
-            // @ts-ignore
-        )(imageList)
 
     const rearrangeImage = (imageId: string, idx: number) => {
         const { image, images } = reduce(
@@ -411,29 +155,6 @@ function App(props: any) {
         updateImageList(updatedImageList)
     }
 
-    const updateUncheckedItems = (image0: any, idx: number) => {
-        const getMargin = getPagination(manifest, image0)
-        // TODO: in the future it may depend on more elaborated checks:
-        let pagination_id = manifest.pagination[0].id
-        const updatedImageList = mapIndex((image: Buda.Image, i: number) => {
-            const diff = i - idx
-            // TODO: here we shouldn't change anything after the first reviewed image,
-            // even if some images are not reviewed
-            if (diff > 0 && !image.reviewed) {
-                let res = getMargin(diff)
-                let newimg = assoc('indication', res[1], image)
-                if (!newimg.pagination) {
-                    newimg.pagination = {}
-                }
-                // @ts-ignore
-                newimg.pagination[pagination_id] = res[0]
-                return newimg
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
     const foldCheckedImages = () => {
         const updatedImageList = map(
             image => (image.reviewed ? assoc('collapsed', true, image) : image),
@@ -442,19 +163,6 @@ function App(props: any) {
         updateImageList(updatedImageList)
     }
 
-    // const handlePaginationPredication = (image: Buda.Image) => {
-    //     // @ts-ignore
-    //     const cmp = curry(getComparator)(manifest)
-    //     // TODO: the comparator is currently for the whole manifest, it might be
-    //     // relevant to have it just for the specific image
-    //     const idx = findIndex(
-    //         img => cmp(image.pagination, img.pagination) < 0,
-    //         imageList
-    //     )
-    //     if (idx !== -1) {
-    //         rearrangeImage(image.id, dec(idx))
-    //     }
-    // }
     const { t } = useTranslation()
     const auth = useAuth0()
 
@@ -540,7 +248,7 @@ function App(props: any) {
                                         !isLoadingMore
                                     }
                                     loader={
-                                        <div className="container mx-auto flex items-center justify-center">
+                                        <div key="circular" className="container mx-auto flex items-center justify-center">
                                             <CircularProgress />
                                         </div>
                                     }
@@ -589,5 +297,4 @@ const mapStateToProps = function(state: any) {
     }
 }
 
-// @ts-ignore
 export default connect(mapStateToProps)(App)

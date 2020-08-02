@@ -8,7 +8,7 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import Typography from '@material-ui/core/Typography'
 import { Checkbox } from '@material-ui/core'
-import { propOr, trim } from 'ramda'
+import { pathOr, propOr, trim } from 'ramda'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { Formik } from 'formik'
 import LanguageOptions from './LanguageOptions'
 import { connect } from 'react-redux'
-import { updateImageValue, addNote, removeNote } from '../actions/manifest'
+import { addNote, removeNote, updateImageValue } from '../actions/manifest'
 
 const styles = (theme: Theme) =>
     createStyles({
@@ -84,7 +84,6 @@ function EditCard(props: {
     const { data } = props
     const { t } = useTranslation()
 
-    // @ts-ignore
     return (
         <div>
             <Dialog
@@ -105,13 +104,13 @@ function EditCard(props: {
                                 style={{ display: 'block' }}
                                 control={
                                     <Checkbox
-                                        checked={data.thumbnailForVolume}
-                                        onChange={e => {
+                                        checked={!!data.thumbnailForVolume}
+                                        onChange={() => {
                                             props.dispatch(
                                                 updateImageValue(
                                                     data.id,
                                                     'thumbnailForVolume',
-                                                    e.target.value
+                                                    !data.thumbnailForVolume
                                                 )
                                             )
                                         }}
@@ -121,48 +120,81 @@ function EditCard(props: {
                                 }
                                 label={t('Thumbnail for Volume')}
                             />
-                            <div className="w-full flex mb-6">
-                                <div className="w-1/2">
-                                    <TextField
-                                        label={t('Special Label')}
-                                        type="text"
-                                        defaultValue={data.specialLabel}
-                                        onBlur={e => {
-                                            props.dispatch(
-                                                updateImageValue(
-                                                    data.id,
-                                                    'specialLabel',
-                                                    e.target.value
-                                                )
-                                            )
-                                        }}
-                                        style={{ width: '100%' }}
-                                    />
-                                </div>
-                                <div className="w-1/2 pl-8">
-                                    <FormControl style={{ width: '100%' }}>
-                                        <InputLabel shrink>
-                                            {t('Language')}
-                                        </InputLabel>
-                                        <Select
-                                            native
-                                            value={data.language || 'en'} // todo: default this to volume language
-                                            onChange={e => {
-                                                props.dispatch(
-                                                    updateImageValue(
-                                                        data.id,
-                                                        'language',
-                                                        e.target.value
+
+                            <Formik
+                                initialValues={{
+                                    specialLabel: pathOr(
+                                        '',
+                                        ['specialLabel', '@value'],
+                                        data
+                                    ),
+                                    language: props.uiLanguage,
+                                }}
+                                onSubmit={(
+                                    { specialLabel, language },
+                                    { resetForm }
+                                ) => {
+                                    props.dispatch(
+                                        updateImageValue(
+                                            data.id,
+                                            'specialLabel',
+                                            {
+                                                '@value': trim(specialLabel),
+                                                '@language': language,
+                                            }
+                                        )
+                                    )
+                                    resetForm()
+                                }}
+                                enableReinitialize
+                            >
+                                {({ values, handleChange, handleSubmit }) => (
+                                    <div className="w-full flex mb-6">
+                                        <div className="w-1/2">
+                                            <TextField
+                                                label={t('Special Label')}
+                                                type="text"
+                                                onChange={e => {
+                                                    handleChange(e)
+                                                }}
+                                                onBlur={() => {
+                                                    setTimeout(
+                                                        handleSubmit,
+                                                        500
                                                     )
-                                                )
-                                            }}
-                                        >
-                                            <option value="bo">བོད</option>
-                                            <option value="en">English</option>
-                                        </Select>
-                                    </FormControl>
-                                </div>
-                            </div>
+                                                }}
+                                                value={values.specialLabel}
+                                                inputProps={{
+                                                    id: 'specialLabel',
+                                                }}
+                                                id="specialLabel"
+                                                // onBlur={() => handleSubmit()}
+                                                style={{ width: '100%' }}
+                                            />
+                                        </div>
+                                        <div className="w-1/2 pl-8">
+                                            <FormControl
+                                                style={{ width: '100%' }}
+                                            >
+                                                <InputLabel shrink>
+                                                    {t('Language')}
+                                                </InputLabel>
+                                                <Select
+                                                    native
+                                                    value={values.language}
+                                                    onChange={handleChange}
+                                                    id="specialLabel-language"
+                                                    inputProps={{
+                                                        id: 'language',
+                                                    }}
+                                                >
+                                                    <LanguageOptions />
+                                                </Select>
+                                            </FormControl>
+                                        </div>
+                                    </div>
+                                )}
+                            </Formik>
                         </div>
                     </div>
 
@@ -173,13 +205,13 @@ function EditCard(props: {
                                     style={{ display: 'block' }}
                                     control={
                                         <Checkbox
-                                            checked={data.belongsToVolume}
+                                            checked={!!data.belongsToVolume}
                                             onChange={e => {
                                                 props.dispatch(
                                                     updateImageValue(
                                                         data.id,
                                                         'belongsToVolume',
-                                                        e.target.value
+                                                        !data.belongsToVolume
                                                     )
                                                 )
                                             }}
@@ -281,11 +313,9 @@ function EditCard(props: {
                                                 <LanguageOptions />
                                             </Select>
                                         </FormControl>
-                                        {/*<AddIcon*/}
-                                        {/*    className="self-center cursor-pointer"*/}
-                                        {/*    */}
-                                        {/*    onClick={handleSubmit}*/}
-                                        {/*/>*/}
+                                        <div onClick={() => handleSubmit()}>
+                                            <AddIcon className="self-center cursor-pointer" />
+                                        </div>
                                     </div>
                                 </div>
                             )}

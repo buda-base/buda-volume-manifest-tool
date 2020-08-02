@@ -82,12 +82,14 @@ function SectionInput(props: {
     const id = pathOr(null, ['data', 'id'], props)
     const [sectionValue, setSectionValue] = React.useState(value)
     const [languageValue, setLanguageValue] = React.useState(language)
+    const { defaultLanguage } = props
+    const nameLanguage = path(['data', 'name', '@language'], props)
 
     React.useEffect(() => {
-        if (!path(['data', 'name', '@language'], props)) {
-            setLanguageValue(props.defaultLanguage)
+        if (!nameLanguage) {
+            setLanguageValue(defaultLanguage)
         }
-    }, [props.defaultLanguage])
+    }, [defaultLanguage, nameLanguage])
 
     const {
         handleAddSection,
@@ -294,8 +296,8 @@ export default function SettingsDialog(props: {
                                 }}
                                 native
                             >
-                                {getPaginationTypes().map(type => (
-                                    <option value="type">{t(type)}</option>
+                                {getPaginationTypes().map((type, i) => (
+                                    <option key={i} value="type">{t(type)}</option>
                                 ))}
                             </Select>
                         </FormControl>

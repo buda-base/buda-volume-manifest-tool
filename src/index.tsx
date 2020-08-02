@@ -10,10 +10,10 @@ import history from './utils/history'
 import store from './store'
 import { Provider } from 'react-redux'
 
-const whyDidYouRender = require('@welldone-software/why-did-you-render')
-whyDidYouRender(React, {
-    trackAllPureComponents: true,
-})
+// const whyDidYouRender = require('@welldone-software/why-did-you-render')
+// whyDidYouRender(React, {
+//     trackAllPureComponents: true,
+// })
 
 // A function that routes the user to the right place
 // after login

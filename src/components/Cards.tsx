@@ -34,15 +34,15 @@ import InputLabel from '@material-ui/core/InputLabel'
 import LanguageOptions from './LanguageOptions'
 import { connect } from 'react-redux'
 import {
-    updateImageValue,
+    handlePaginationPredication,
     hideCardInManifest,
-    updateImageSection,
-    toggleReview,
-    toggleCollapseImage,
     insertMissing,
     markPreviousAsReviewed,
+    toggleCollapseImage,
+    toggleReview,
+    updateImageSection,
+    updateImageValue,
     updateUncheckedItems,
-    handlePaginationPredication,
 } from '../actions/manifest'
 
 const useStyles = makeStyles(theme => ({
@@ -95,9 +95,6 @@ function ImageCard(props: {
     const [iiif, setiiif] = React.useState(null)
     const { data: image, sectionInputs } = props
 
-    // console.log('props', props)
-    console.log('RE RENDER!')
-
     const [, dragRef] = useDrag({
         item: { type: 'CARD', imageId: image.id },
         collect: monitor => ({
@@ -118,8 +115,10 @@ function ImageCard(props: {
                 console.log('iiifErr', err)
             }
         }
-        getData()
-    }, [])
+        if (props.volumeId && image.filename) {
+            getData()
+        }
+    }, [image.filename, props.volumeId])
 
     const Header = () => {
         return (
@@ -355,12 +354,15 @@ function ImageCard(props: {
                                                 type="text"
                                                 value={values.marginIndication}
                                                 onChange={handleChange}
-                                                // @ts-ignore
-                                                onBlur={handleSubmit}
-                                                inputProps={{
-                                                    id: 'marginIndication',
+                                                onBlur={() => {
+                                                    setTimeout(
+                                                        handleSubmit,
+                                                        500
+                                                    )
                                                 }}
-                                                id="margin-indication"
+                                                inputProps={{
+                                                    name: 'marginIndication',
+                                                }}
                                                 helperText={t(
                                                     'Margin Indication'
                                                 )}
@@ -373,9 +375,12 @@ function ImageCard(props: {
                                                     native
                                                     value={values.language}
                                                     onChange={handleChange}
-                                                    // @ts-ignore
-                                                    onBlur={handleSubmit}
-                                                    id="margin-indication-lang"
+                                                    onBlur={() => {
+                                                        setTimeout(
+                                                            handleSubmit,
+                                                            500
+                                                        )
+                                                    }}
                                                     inputProps={{
                                                         id: 'language',
                                                     }}
@@ -494,12 +499,15 @@ function ImageCard(props: {
                                                     helperText={t('Pagination')}
                                                     value={values.pagination}
                                                     onChange={handleChange}
-                                                    // @ts-ignore
-                                                    onBlur={handleSubmit}
-                                                    inputProps={{
-                                                        id: 'pagination',
+                                                    onBlur={() => {
+                                                        setTimeout(
+                                                            handleSubmit,
+                                                            500
+                                                        )
                                                     }}
-                                                    id="pagination"
+                                                    inputProps={{
+                                                        name: 'pagination',
+                                                    }}
                                                 />
                                             )}
                                         </Formik>

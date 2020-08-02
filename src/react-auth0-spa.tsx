@@ -29,17 +29,14 @@ export const Auth0Provider = ({
 }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>()
     const [user, setUser] = useState()
-    const [auth0Client, setAuth0] = useState()
+    const [auth0Client] = useState()
     const [loading, setLoading] = useState(true)
-    const [popupOpen, setPopupOpen] = useState(false)
+    const [popupOpen] = useState(false)
 
     useEffect(() => {
         const initAuth0 = async () => {
             auth = new auth0.WebAuth(initOptions as AuthOptions)
-            console.log('auth', auth)
-
             handleAuthentication()
-
             getUser()
         }
 
@@ -92,7 +89,6 @@ export const Auth0Provider = ({
     }
 
     const login = (redirect: any) => {
-        // console.log("auth1",this.auth1,auth0)
         console.log('redirect', redirect)
         if (redirect)
             localStorage.setItem('auth0_redirect', JSON.stringify(redirect))

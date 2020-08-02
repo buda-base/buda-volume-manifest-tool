@@ -9,7 +9,6 @@ import {
     dissoc,
     findIndex,
     inc,
-    includes,
     insert,
     intersection,
     lensPath,
@@ -345,7 +344,7 @@ export default (
             // relevant to have it just for the specific image
             const idx = findIndex(
                 // @ts-ignore
-                img => cmp(image.pagination, img.pagination) < 0,
+                img => cmp(action.payload.image.pagination, img.pagination) < 0,
                 imageList2
             )
             if (idx !== -1) {
@@ -357,61 +356,6 @@ export default (
             } else {
                 return manifest
             }
-
-        // case 'REMOVE_IMAGE_TAG':
-        //     const updateImageList11 = map(image => {
-        //         if (image.id === action.payload.imageId) {
-        //             const updatedTags = reject(
-        //                 imgTag => imgTag === action.payload.tag,
-        //                 propOr([], 'tags', image)
-        //             )
-        //             const duplicateTags = ['T0018', 'T0017']
-        //             const detailTags = ['T0016']
-        //             const isDuplicateTag = includes(action.payload.tag, duplicateTags)
-        //             const isDetailTag = includes(action.payload.tag, detailTags)
-        //
-        //             return compose(
-        //                 when(always(isDuplicateTag), dissoc('duplicate-of')),
-        //                 when(always(isDetailTag), dissoc('detail-of')),
-        //                 assoc('tags', updatedTags)
-        //             )(image)
-        //         } else {
-        //             return image
-        //         }
-        //     }, getImageList(manifest))
-        //     return set(imageListLens, updateImageList11, manifest)
-
-        // case 'SELECT_TYPE':
-        //     const imageList = getImageList(manifest)
-        //     const val = action.payload.e.target.value
-        //     const attachDuplicateOfPreImage = (image: Buda.Image) => {
-        //         const previousImage = imageList[dec(action.payload.i)]
-        //         const fileName = prop('filename', previousImage)
-        //         return fileName
-        //             ? assoc(
-        //                   'duplicateOf',
-        //                   { name: fileName, id: previousImage.id },
-        //                   image
-        //               )
-        //             : image
-        //     }
-        //     const updateImageList5 = map(image => {
-        //         if (image.id === action.payload.imageId) {
-        //             if (val === 'file') return dissoc('type', image)
-        //             if (val === 'duplicate') {
-        //                 return compose(
-        //                     attachDuplicateOfPreImage,
-        //                     // @ts-ignore
-        //                     assoc('type', val)
-        //                 )(image)
-        //             }
-        //             return assoc('type', val, image)
-        //         } else {
-        //             return image
-        //         }
-        //     }, imageList)
-        //     return set(imageListLens, updateImageList5, manifest)
-
         default:
             return manifest
     }
