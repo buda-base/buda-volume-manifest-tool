@@ -39,7 +39,7 @@ export function getComparator(manifest: {
                 sections_id_map &&
                 a_dpg.section &&
                 b_dpg.section &&
-                a_dpg.section != b_dpg.section
+                a_dpg.section !== b_dpg.section
             ) {
                 return (
                     sections_id_map[a_dpg.section] -

@@ -19,10 +19,16 @@ export namespace Buda {
         type?: string
         collapsed?: boolean
         hide?: boolean
+        thumbnailForVolume?: boolean
+        specialLabel: Text
+        belongsToVolume?: boolean
     }
 
     export interface Manifest {
         isDefault?: boolean
+        volumeData?: {
+            defaultLanguage: string
+        }
         'for-volume': string
         'spec-version': string
         status: string

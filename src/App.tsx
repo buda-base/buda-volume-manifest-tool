@@ -6,51 +6,36 @@ import Cards from './components/Cards'
 import { DndProvider } from 'react-dnd'
 import FilterList from './components/FilterList'
 import Backend from 'react-dnd-html5-backend'
-import { useTranslation } from 'react-i18next'
 import postUpdate from './api/postUpdate'
+import { useTranslation } from 'react-i18next'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import getPagination from './utils/pagination-prediction'
 import { useAuth0 } from './react-auth0-spa'
-import { getComparator } from './utils/pagination-comparators'
 import {
     addIndex,
-    always,
-    append,
     assoc,
-    complement,
-    compose,
     curry,
-    dec,
     dissoc,
-    findIndex,
-    has,
     inc,
-    includes,
     insert,
-    intersection,
     lensPath,
     map,
     over,
-    pathOr,
-    prop,
     propEq,
-    propOr,
     reduce,
     reject,
-    remove,
     set,
     view,
-    when,
 } from 'ramda'
 import SettingsIcon from '@material-ui/icons/Settings'
 import Dialog from './components/Dialog'
-import uuidv4 from 'uuid/v4'
 import InfiniteScroll from 'react-infinite-scroller'
 import CardDropZone from './components/CardDropZone'
 import { getOrInitManifest } from './api/getManifest'
 import VolumeSearch from './components/VolumeSearch'
 import UpdateManifestError from './components/UpdateManifestError'
 import { Buda } from '../types'
+import { setManifest } from './actions/manifest'
+import { connect } from 'react-redux'
 
 const mapIndex = addIndex(map)
 const theme = createMuiTheme({
@@ -62,28 +47,9 @@ const theme = createMuiTheme({
 })
 
 const imageListLens = lensPath(['view', 'view1', 'imagelist'])
-function App() {
-    const [manifest, updateManifest] = React.useState<Buda.Manifest>({
-        'default-view': 'view1',
-        'for-volume': '',
-        'spec-version': '',
-        'viewing-direction': '',
-        'volume-label': [],
-        attribution: [],
-        changes: [],
-        note: [],
-        pagination: [],
-        rev: '',
-        sections: [],
-        status: '',
-        view: { view1: { imagelist: [] } },
-        isDefault: true,
-        appData: {
-            bvmt: {
-                'default-ui-string-lang': 'en',
-            },
-        },
-    })
+function App(props: any) {
+    const { manifest } = props
+
     const [settingsDialogOpen, setSettingsDialog] = React.useState(false)
     const imageList = (view(imageListLens, manifest) as Buda.Image[]) || []
     const [isFetching, setIsFetching] = React.useState(false)
@@ -92,6 +58,7 @@ function App() {
     const [isLoadingMore, setIsLoadingMore] = React.useState(false)
     const [postErr, setPostErr] = React.useState(null)
 
+    const { dispatch } = props
     React.useEffect(() => {
         const search = window.location.search
         const params = new URLSearchParams(search)
@@ -107,7 +74,7 @@ function App() {
                         uiLanguage: 'en',
                     })
                     setIsFetching(false)
-                    updateManifest(manifest)
+                    dispatch(setManifest(manifest))
                 } catch (err) {
                     setIsFetching(false)
                     setFetchErr(err.message)
@@ -115,7 +82,7 @@ function App() {
             }
             getData()
         }
-    }, [])
+    }, [dispatch])
 
     const saveUpdatesToManifest = async (auth: any) => {
         try {
@@ -137,7 +104,9 @@ function App() {
         }
     }
     const updateImageList = (updatedImageList: unknown[]) => {
-        updateManifest(set(imageListLens, updatedImageList, manifest))
+        props.dispatch(
+            setManifest(set(imageListLens, updatedImageList, manifest))
+        )
     }
     const handleLoadMore = () => {
         setRenderToIdx(renderToIdx + 10)
@@ -158,275 +127,8 @@ function App() {
     }
     const handleSettingsUpdate = curry((lens, value) => {
         const updatedManifest = set(lens, value, manifest)
-        updateManifest(updatedManifest)
+        props.dispatch(setManifest(updatedManifest))
     })
-    const updateImageSection = (imageId: string, key: string, value: any) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                const sectionLens = lensPath([
-                    'pagination',
-                    manifest.pagination[0].id,
-                    key,
-                ])
-                return set(sectionLens, value, image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const updateOfField = (imageId: string, val: { name: any }, key: any) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                return assoc(key, val.name, image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const setDuplicateType = (imageId: string, val: any) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                return assoc('duplicateType', val, image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const deleteImageChip = (imageId: string, chipId: string) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                const updatedChips = reject(
-                    ({ id }) => id === chipId,
-                    propOr([], 'chips', image)
-                )
-                return assoc('chips', updatedChips, image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const toggleReview = (imageId: string) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                const reviewed = prop('reviewed', image)
-                return compose(
-                    image =>
-                        !reviewed ? assoc('collapsed', true, image) : image,
-                    assoc('reviewed', !reviewed)
-                )(image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const insertMissing = (i: number, direction: 'before' | 'after') => {
-        const defaultMissingImage = {
-            id: uuidv4(),
-            type: 'missing',
-        } as Buda.Image
-        if (direction === 'before') {
-            updateImageList(insert(i, defaultMissingImage, imageList))
-        } else if (direction === 'after') {
-            updateImageList(insert(i + 1, defaultMissingImage, imageList))
-        }
-    }
-    const toggleCollapseImage = (imageId: string) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                const hidden = !!prop('collapsed', image)
-                return assoc('collapsed', !hidden, image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const selectType = (imageId: string, e: any, i: number) => {
-        const val = e.target.value
-        const attachDuplicateOfPreImage = (image: Buda.Image) => {
-            const previousImage = imageList[dec(i)]
-            const fileName = prop('filename', previousImage)
-            return fileName
-                ? assoc(
-                      'duplicateOf',
-                      { name: fileName, id: previousImage.id },
-                      image
-                  )
-                : image
-        }
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                if (val === 'file') return dissoc('type', image)
-                if (val === 'duplicate') {
-                    return compose(
-                        attachDuplicateOfPreImage,
-                        // @ts-ignore
-                        assoc('type', val)
-                    )(image)
-                }
-                return assoc('type', val, image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const addImageTag = (imageId: string, tags: readonly string[]) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                const duplicateTags = ['T0018', 'T0017']
-                const detailTags = ['T0016']
-                const currentTags = propOr(
-                    [],
-                    'tags',
-                    image
-                ) as readonly string[]
-                const prevTagsHaveDuplicates =
-                    intersection(currentTags, duplicateTags).length > 0
-                const prevTagsHaveDetail =
-                    intersection(currentTags, detailTags).length > 0
-
-                const newTagsHaveDuplicates =
-                    intersection(tags, duplicateTags).length > 0
-
-                const newTagsHaveDetail =
-                    intersection(tags, detailTags).length > 0
-
-                const removeDuplicateOf =
-                    prevTagsHaveDuplicates && !newTagsHaveDuplicates
-                const removeDetailOf = prevTagsHaveDetail && !newTagsHaveDetail
-
-                return compose(
-                    when(always(removeDuplicateOf), dissoc('duplicate-of')),
-                    when(always(removeDetailOf), dissoc('detail-of')),
-                    assoc('tags', tags)
-                )(image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-
-    const removeOfField = (imageId: string, ofField: string) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                return dissoc(ofField, image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-
-    const removeImageTag = (imageId: string, tag: string) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                const updatedTags = reject(
-                    imgTag => imgTag === tag,
-                    propOr([], 'tags', image)
-                )
-                const duplicateTags = ['T0018', 'T0017']
-                const detailTags = ['T0016']
-                const isDuplicateTag = includes(tag, duplicateTags)
-                const isDetailTag = includes(tag, detailTags)
-
-                return compose(
-                    when(always(isDuplicateTag), dissoc('duplicate-of')),
-                    when(always(isDetailTag), dissoc('detail-of')),
-                    assoc('tags', updatedTags)
-                )(image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const setPagination = (
-        imageId: string,
-        pagination: Buda.Image['pagination']
-    ) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                return assoc('pagination', pagination, image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const addNote = (imageId: string, note: Buda.Image['note']) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                const updatedNotes = append(note, propOr([], 'note', image))
-                return assoc('note', updatedNotes, image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const removeNote = (imageId: string, noteIdx: number) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                const updatedNotes = remove(
-                    noteIdx,
-                    1,
-                    propOr([], 'note', image)
-                )
-                return assoc('note', updatedNotes, image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const updateImageValue = (imageId: string, key: string, value: any) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                return assoc(key, value, image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const hideCardInManifest = (imageId: string, hide: Buda.Image['hide']) => {
-        const updatedImageList = map(image => {
-            if (image.id === imageId) {
-                return compose(
-                    assoc('collapsed', hide),
-                    // @ts-ignore
-                    assoc('hide', hide)
-                )(image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const markPreviousAsReviewed = (imageIdx: number) => {
-        const updatedImageList = mapIndex((image, idx: number) => {
-            if (idx <= imageIdx) {
-                return assoc('reviewed', true, image)
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
-    const duplicateImageOptions = () =>
-        compose(
-            map(({ id, filename }) => ({ id, name: filename })),
-            // @ts-ignore
-            reject(complement(has)('filename'))
-            // @ts-ignore
-        )(imageList)
 
     const rearrangeImage = (imageId: string, idx: number) => {
         const { image, images } = reduce(
@@ -453,29 +155,6 @@ function App() {
         updateImageList(updatedImageList)
     }
 
-    const updateUncheckedItems = (image0: any, idx: number) => {
-        const getMargin = getPagination(manifest, image0)
-        // TODO: in the future it may depend on more elaborated checks:
-        let pagination_id = manifest.pagination[0].id
-        const updatedImageList = mapIndex((image: Buda.Image, i: number) => {
-            const diff = i - idx
-            // TODO: here we shouldn't change anything after the first reviewed image,
-            // even if some images are not reviewed
-            if (diff > 0 && !image.reviewed) {
-                let res = getMargin(diff)
-                let newimg = assoc('indication', res[1], image)
-                if (!newimg.pagination) {
-                    newimg.pagination = {}
-                }
-                // @ts-ignore
-                newimg.pagination[pagination_id] = res[0]
-                return newimg
-            } else {
-                return image
-            }
-        }, imageList)
-        updateImageList(updatedImageList)
-    }
     const foldCheckedImages = () => {
         const updatedImageList = map(
             image => (image.reviewed ? assoc('collapsed', true, image) : image),
@@ -484,23 +163,12 @@ function App() {
         updateImageList(updatedImageList)
     }
 
-    const handlePaginationPredication = (image: Buda.Image) => {
-        // @ts-ignore
-        const cmp = curry(getComparator)(manifest)
-        // TODO: the comparator is currently for the whole manifest, it might be
-        // relevant to have it just for the specific image
-        const idx = findIndex(
-            img => cmp(image.pagination, img.pagination) < 0,
-            imageList
-        )
-        if (idx !== -1) {
-            rearrangeImage(image.id, dec(idx))
-        }
-    }
     const { t } = useTranslation()
     const auth = useAuth0()
 
     const imageListLength = imageList.length
+
+    const CardMemo = React.useMemo(() => Cards, [])
 
     return (
         <ThemeProvider theme={theme}>
@@ -580,7 +248,7 @@ function App() {
                                         !isLoadingMore
                                     }
                                     loader={
-                                        <div className="container mx-auto flex items-center justify-center">
+                                        <div key="circular" className="container mx-auto flex items-center justify-center">
                                             <CircularProgress />
                                         </div>
                                     }
@@ -597,101 +265,13 @@ function App() {
                                                         }
                                                     />
                                                 )}
-                                                <Cards
-                                                    handlePaginationPredication={
-                                                        handlePaginationPredication
-                                                    }
-                                                    hideCardInManifest={
-                                                        hideCardInManifest
-                                                    }
-                                                    removeOfField={
-                                                        removeOfField
-                                                    }
-                                                    volumeId={
-                                                        manifest['for-volume']
-                                                    }
-                                                    manifestLanguage={
-                                                        manifest.appData[
-                                                            'bvmt'
-                                                        ][
-                                                            'default-vol-string-lang'
-                                                        ]
-                                                    }
-                                                    uiLanguage={
-                                                        manifest.appData[
-                                                            'bvmt'
-                                                        ][
-                                                            'default-ui-string-lang'
-                                                        ]
-                                                    }
-                                                    pagination={
-                                                        manifest.pagination
-                                                    }
+                                                <CardMemo
                                                     imageListLength={
                                                         imageListLength
                                                     }
-                                                    updateImageSection={
-                                                        updateImageSection
-                                                    }
-                                                    sectionInputs={
-                                                        manifest.sections || []
-                                                    }
-                                                    updateImageValue={
-                                                        updateImageValue
-                                                    }
-                                                    selectType={selectType}
-                                                    addNote={addNote}
-                                                    imageView={pathOr(
-                                                        {
-                                                            zoom: 0,
-                                                            center: {
-                                                                x: null,
-                                                                y: null,
-                                                            },
-                                                        },
-                                                        [
-                                                            'appData',
-                                                            'bvmt',
-                                                            'preview-image-view',
-                                                        ],
-                                                        manifest
-                                                    )}
                                                     data={item}
-                                                    toggleReview={toggleReview}
-                                                    insertMissing={
-                                                        insertMissing
-                                                    }
-                                                    toggleCollapseImage={
-                                                        toggleCollapseImage
-                                                    }
                                                     key={item.id}
-                                                    duplicateImageOptions={duplicateImageOptions()}
-                                                    setImageView={handleSettingsUpdate(
-                                                        lensPath([
-                                                            'appData',
-                                                            'bvmt',
-                                                            'preview-image-view',
-                                                        ])
-                                                    )}
                                                     i={i}
-                                                    updateOfField={
-                                                        updateOfField
-                                                    }
-                                                    setDuplicateType={
-                                                        setDuplicateType
-                                                    }
-                                                    addImageTag={addImageTag}
-                                                    removeImageTag={
-                                                        removeImageTag
-                                                    }
-                                                    removeNote={removeNote}
-                                                    markPreviousAsReviewed={
-                                                        markPreviousAsReviewed
-                                                    }
-                                                    updateUncheckedItems={
-                                                        updateUncheckedItems
-                                                    }
-                                                    hideDeletedImages={() => {}}
                                                 />
                                                 <CardDropZone
                                                     i={i}
@@ -711,4 +291,10 @@ function App() {
     )
 }
 
-export default App
+const mapStateToProps = function(state: any) {
+    return {
+        manifest: state.manifest,
+    }
+}
+
+export default connect(mapStateToProps)(App)

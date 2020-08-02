@@ -6,6 +6,9 @@ import MenuItem from '@material-ui/core/MenuItem'
 import { withStyles } from '@material-ui/core'
 import Icon from '@material-ui/core/Icon'
 import { useTranslation } from 'react-i18next'
+import { connect } from 'react-redux'
+import { setImageView } from '../actions/manifest'
+import { pathOr } from 'ramda'
 
 interface IState {
     degrees?: number
@@ -19,25 +22,24 @@ interface IProps {
     i: number
     degrees?: number
     zoom?: number
-    imageView: {
-        center: {
-            x?: number
-            y?: number
-        }
-        zoom?: number
-        rotation?: number
-    }
-    setImageView: (arg1: {
-        center: {
-            x?: number
-            y?: number
-        }
-        zoom?: number
-        rotation?: number
-    }) => void
+    pZoom: number
+    pX: number
+    pY: number
+    dispatch: any
 }
 
-export default class PreviewImage extends React.Component<IProps, IState> {
+const getImageProps = (props: any) => {
+    return {
+        zoom: props.pZoom,
+        center: {
+            x: props.pX,
+            y: props.pY,
+        },
+        rotation: props.pRotation,
+    }
+}
+
+class PreviewImage extends React.Component<IProps, IState> {
     constructor(props: Readonly<IProps>) {
         super(props)
         this.state = {
@@ -46,6 +48,7 @@ export default class PreviewImage extends React.Component<IProps, IState> {
         }
     }
     componentDidMount() {
+        const imageView = getImageProps(this.props)
         if (this.props.iiif) {
             const viewer = OpenSeaDragon({
                 id: `openseadragon${this.props.i}`,
@@ -55,14 +58,12 @@ export default class PreviewImage extends React.Component<IProps, IState> {
                 tileSources: [this.props.iiif],
             })
 
-            if (this.props.imageView) {
+            if (imageView) {
                 viewer.addHandler('open', () => {
-                    if (this.props.imageView.center.x) {
-                        viewer.viewport.panTo(this.props.imageView.center, true)
-                        viewer.viewport.zoomTo(this.props.imageView.zoom)
-                        viewer.viewport.setRotation(
-                            this.props.imageView.rotation
-                        )
+                    if (imageView.center.x) {
+                        viewer.viewport.panTo(imageView.center, true)
+                        viewer.viewport.zoomTo(imageView.zoom)
+                        viewer.viewport.setRotation(imageView.rotation)
                     }
                 })
             }
@@ -79,18 +80,18 @@ export default class PreviewImage extends React.Component<IProps, IState> {
             rotation: number
         }
     }) {
+        const imageView = getImageProps(this.props)
+        const prevImage = getImageProps(prevProps)
         const hasViewDiff =
-            this.props.imageView.center.x !== prevProps.imageView.center.x ||
-            this.props.imageView.center.y !== prevProps.imageView.center.y ||
-            this.props.imageView.zoom !== prevProps.imageView.zoom ||
-            this.props.imageView.rotation !== prevProps.imageView.rotation
+            imageView.center.x !== prevImage.center.x ||
+            imageView.center.y !== prevImage.center.y ||
+            imageView.zoom !== prevImage.zoom ||
+            imageView.rotation !== prevImage.rotation
 
-        if (this.props.imageView.center.x && hasViewDiff) {
-            this.state.viewer.viewport.panTo(this.props.imageView.center, true)
-            this.state.viewer.viewport.zoomTo(this.props.imageView.zoom)
-            this.state.viewer.viewport.setRotation(
-                this.props.imageView.rotation
-            )
+        if (imageView.center.x && hasViewDiff) {
+            this.state.viewer.viewport.panTo(imageView.center, true)
+            this.state.viewer.viewport.zoomTo(imageView.zoom)
+            this.state.viewer.viewport.setRotation(imageView.rotation)
         }
     }
 
@@ -147,11 +148,14 @@ export default class PreviewImage extends React.Component<IProps, IState> {
                                 const rotation = this.state.viewer.viewport.getRotation(
                                     true
                                 )
-                                this.props.setImageView({
-                                    zoom,
-                                    center,
-                                    rotation,
-                                })
+
+                                this.props.dispatch(
+                                    setImageView({
+                                        zoom,
+                                        center,
+                                        rotation,
+                                    })
+                                )
                             }}
                         >
                             {t('Set Preview')}
@@ -194,3 +198,27 @@ export default class PreviewImage extends React.Component<IProps, IState> {
         )
     }
 }
+
+const mapStateToProps = function(state: any) {
+    const { zoom, center, rotation } = pathOr(
+        {
+            zoom: 0,
+            center: {
+                x: null,
+                y: null,
+            },
+            rotation: 90,
+        },
+        ['appData', 'bvmt', 'preview-image-view'],
+        state.manifest
+    )
+    return {
+        pZoom: zoom,
+        pX: center.x,
+        pY: center.y,
+        pRotation: rotation,
+    }
+}
+
+// @ts-ignore
+export default connect(mapStateToProps)(PreviewImage)

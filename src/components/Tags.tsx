@@ -10,6 +10,8 @@ import MenuItem from '@material-ui/core/MenuItem'
 import FormControl from '@material-ui/core/FormControl'
 import ListItemText from '@material-ui/core/ListItemText'
 import Checkbox from '@material-ui/core/Checkbox'
+import { connect } from 'react-redux'
+import { addImageTag } from '../actions/manifest'
 
 const useStyles = makeStyles(theme => ({
     formControl: {
@@ -17,12 +19,16 @@ const useStyles = makeStyles(theme => ({
         maxWidth: 300,
     },
 }))
-const Tags = (props: { tags?: any; id?: any; addImageTag?: any }) => {
+const Tags = (props: {
+    tags?: any
+    id?: any
+    dispatch: any
+}) => {
     const { t } = useTranslation()
     const classes = useStyles()
 
     const [tagOptions, setTagOptions] = React.useState([])
-    const { id, addImageTag } = props
+    const { id } = props
     React.useEffect(() => {
         setTagOptions(toPairs(tags))
     }, [props.tags])
@@ -38,7 +44,7 @@ const Tags = (props: { tags?: any; id?: any; addImageTag?: any }) => {
     const tagsSafe = props.tags || []
     const handleChange = (e: { target: { value: any } }) => {
         const newTags = e.target.value
-        addImageTag(id, newTags)
+        props.dispatch(addImageTag(id, newTags))
     }
 
     return (
@@ -73,4 +79,9 @@ const Tags = (props: { tags?: any; id?: any; addImageTag?: any }) => {
     )
 }
 
-export default Tags
+const mapStateToProps = function(state: any) {
+    return {}
+}
+
+// @ts-ignore
+export default connect(mapStateToProps)(Tags)
