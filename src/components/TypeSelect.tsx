@@ -1,10 +1,13 @@
 import React from 'react'
 import FormControl from '@material-ui/core/FormControl'
 import Autocomplete from '@material-ui/lab/Autocomplete'
-import { __, find, includes, propEq, propOr, reject } from 'ramda'
+import { __, complement, compose, find, has, includes, lensPath, map, propEq, propOr, reject, view } from 'ramda'
 import TextField from '@material-ui/core/TextField'
 import { useTranslation } from 'react-i18next'
 import { makeStyles } from '@material-ui/core/styles'
+import { connect } from 'react-redux'
+import { removeOfField, updateOfField } from '../actions/manifest'
+import { Buda } from '../../types'
 
 const useStyles = makeStyles(theme => ({
     formControl: {
@@ -17,10 +20,9 @@ const TypeSelect = (props: {
     id: any
     duplicateImageOptions: readonly Record<'id', any>[]
     duplicateOf: any
-    removeOfField: (arg0: any, arg1: string) => void
-    updateOfField: (arg0: any, arg1: any, arg2: string) => void
     tags: any
     i?: any
+    dispatch: any
 }) => {
     const { t } = useTranslation()
     const classes = useStyles()
@@ -53,15 +55,19 @@ const TypeSelect = (props: {
                                     getOptionLabel={({ name }) => name}
                                     onChange={(event: any, newValue: any) => {
                                         if (!newValue) {
-                                            props.removeOfField(
-                                                props.id,
-                                                'duplicate-of'
+                                            props.dispatch(
+                                                removeOfField(
+                                                    props.id,
+                                                    'duplicate-of'
+                                                )
                                             )
                                         } else {
-                                            props.updateOfField(
-                                                props.id,
-                                                newValue,
-                                                'duplicate-of'
+                                            props.dispatch(
+                                                updateOfField(
+                                                    props.id,
+                                                    newValue,
+                                                    'duplicate-of'
+                                                )
                                             )
                                         }
                                     }}
@@ -98,15 +104,19 @@ const TypeSelect = (props: {
                                     getOptionLabel={({ name }) => name}
                                     onChange={(event: any, newValue: any) => {
                                         if (!newValue) {
-                                            props.removeOfField(
-                                                props.id,
-                                                'detail-of'
+                                            props.dispatch(
+                                                removeOfField(
+                                                    props.id,
+                                                    'detail-of'
+                                                )
                                             )
                                         } else {
-                                            props.updateOfField(
-                                                props.id,
-                                                newValue,
-                                                'detail-of'
+                                            props.dispatch(
+                                                updateOfField(
+                                                    props.id,
+                                                    newValue,
+                                                    'detail-of'
+                                                )
                                             )
                                         }
                                     }}
@@ -129,4 +139,19 @@ const TypeSelect = (props: {
     )
 }
 
-export default TypeSelect
+TypeSelect.whyDidYouRender = false
+
+const mapStateToProps = function(state: any) {
+    const imageListLens = lensPath(['view', 'view1', 'imagelist'])
+    const imageList = (view(imageListLens, state.manifest) as Buda.Image[]) || []
+    return {
+        duplicateImageOptions: compose(
+            map(({ id, filename }) => ({ id, name: filename })),
+            // @ts-ignore
+            reject(complement(has)('filename'))
+            // @ts-ignore
+        )(imageList)
+    }
+}
+
+export default connect(mapStateToProps)(TypeSelect)

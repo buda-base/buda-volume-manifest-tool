@@ -32,6 +32,18 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import { pathOr } from 'ramda'
 import InputLabel from '@material-ui/core/InputLabel'
 import LanguageOptions from './LanguageOptions'
+import { connect } from 'react-redux'
+import {
+    updateImageValue,
+    hideCardInManifest,
+    updateImageSection,
+    toggleReview,
+    toggleCollapseImage,
+    insertMissing,
+    markPreviousAsReviewed,
+    updateUncheckedItems,
+    handlePaginationPredication,
+} from '../actions/manifest'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -67,41 +79,24 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function ImageCard(props: {
-    hideDeletedImages: any
+function ImageCard(props: {
     i: number
     imageListLength: any
-    imageView: any
-    setImageView: any
     sectionInputs: any
     data: any
-    markPreviousAsReviewed(i: any): any
     volumeId: string
-    toggleCollapseImage: any
-    insertMissing(x: any, y: string): any
-    hideCardInManifest(id: any, b: boolean): void
-    updateUncheckedItems(image: any, i: number): void
-    handlePaginationPredication: any
     uiLanguage: any
-    removeImageTag: any
-    addNote: any
-    removeNote: any
-    updateImageValue: any
     manifestLanguage: any
-    toggleReview: any
     pagination: any
-    updateImageSection: any
-    addImageTag: any
-    removeOfField: any
-    setDuplicateType: any
-    updateOfField: any
-    selectType: any
-    duplicateImageOptions: any
+    dispatch: any
 }) {
     const classes = useStyles()
     const [editDialogOpen, setEditDialogOpen] = React.useState(false)
     const [iiif, setiiif] = React.useState(null)
-    const { data: image, sectionInputs, imageView, setImageView } = props
+    const { data: image, sectionInputs } = props
+
+    // console.log('props', props)
+    console.log('RE RENDER!')
 
     const [, dragRef] = useDrag({
         item: { type: 'CARD', imageId: image.id },
@@ -158,7 +153,9 @@ export default function ImageCard(props: {
                     )}
                     <span
                         className="cursor-pointer"
-                        onClick={() => props.toggleCollapseImage(image.id)}
+                        onClick={() =>
+                            props.dispatch(toggleCollapseImage(image.id))
+                        }
                     >
                         {image.collapsed ? (
                             <VisibilityOnIcon className="mr-4" />
@@ -208,13 +205,17 @@ export default function ImageCard(props: {
                     onClose={handleClose}
                 >
                     <MenuItem
-                        onClick={() => props.insertMissing(props.i, 'before')}
+                        onClick={() =>
+                            props.dispatch(insertMissing(props.i, 'before'))
+                        }
                     >
                         <ArrowUpwardIcon className="mr-2" />
                         {t('Insert One Above')}
                     </MenuItem>
                     <MenuItem
-                        onClick={() => props.insertMissing(props.i, 'after')}
+                        onClick={() =>
+                            props.dispatch(insertMissing(props.i, 'after'))
+                        }
                     >
                         <ArrowDownwardIcon className="mr-2" />
                         {t('Insert One Below')}
@@ -223,7 +224,9 @@ export default function ImageCard(props: {
                     {!image.hide && (
                         <MenuItem
                             onClick={() => {
-                                props.hideCardInManifest(image.id, true)
+                                props.dispatch(
+                                    hideCardInManifest(image.id, true)
+                                )
                             }}
                         >
                             <DeleteIcon className="mr-2" />
@@ -233,7 +236,9 @@ export default function ImageCard(props: {
                     {image.hide && (
                         <MenuItem
                             onClick={() => {
-                                props.hideCardInManifest(image.id, false)
+                                props.dispatch(
+                                    hideCardInManifest(image.id, false)
+                                )
                             }}
                         >
                             <DeleteIcon className="mr-2" />
@@ -243,7 +248,9 @@ export default function ImageCard(props: {
                     {image.pagination && (
                         <MenuItem
                             onClick={() => {
-                                props.updateUncheckedItems(image, props.i)
+                                props.dispatch(
+                                    updateUncheckedItems(image, props.i)
+                                )
                             }}
                         >
                             <BeenhereIcon className="mr-2" />
@@ -253,7 +260,9 @@ export default function ImageCard(props: {
                     {image.pagination && (
                         <MenuItem
                             onClick={() => {
-                                props.handlePaginationPredication(props.data)
+                                props.dispatch(
+                                    handlePaginationPredication(props.data)
+                                )
                             }}
                         >
                             <ReorderIcon className="mr-2" />
@@ -263,7 +272,9 @@ export default function ImageCard(props: {
                         </MenuItem>
                     )}
                     <MenuItem
-                        onClick={() => props.markPreviousAsReviewed(props.i)}
+                        onClick={() =>
+                            props.dispatch(markPreviousAsReviewed(props.i))
+                        }
                     >
                         <CheckBoxIcon className="mr-2" />
                         {t('Mark all images down to this one as checked')}
@@ -274,7 +285,7 @@ export default function ImageCard(props: {
     }
 
     const { t } = useTranslation()
-    const hideImage = props.hideDeletedImages && image.hide
+    const hideImage = image.hide
     return hideImage ? null : (
         <div
             className="shadow-sm hover:shadow-md w-full border-2 rounded border-gray-200 bg-white"
@@ -285,20 +296,12 @@ export default function ImageCard(props: {
                 setEditDialogOpen={setEditDialogOpen}
                 uiLanguage={props.uiLanguage}
                 data={image}
-                addNote={props.addNote}
-                removeNote={props.removeNote}
-                updateImageValue={props.updateImageValue}
             />
             <CardHeader className={classes.cardHeader} component={Header} />
             {!image.collapsed && (
                 <CardContent className="flex" style={{ padding: 0 }}>
                     {iiif ? (
-                        <PreviewImage
-                            setImageView={setImageView}
-                            i={props.i}
-                            imageView={imageView}
-                            iiif={iiif}
-                        />
+                        <PreviewImage i={props.i} iiif={iiif} />
                     ) : (
                         <div className="border-r border-gray-300 mr-2">
                             <div
@@ -328,13 +331,15 @@ export default function ImageCard(props: {
                                         marginIndication,
                                         language,
                                     }) => {
-                                        props.updateImageValue(
-                                            image.id,
-                                            'indication',
-                                            {
-                                                '@value': marginIndication,
-                                                '@language': language,
-                                            }
+                                        props.dispatch(
+                                            updateImageValue(
+                                                image.id,
+                                                'indication',
+                                                {
+                                                    '@value': marginIndication,
+                                                    '@language': language,
+                                                }
+                                            )
                                         )
                                     }}
                                     enableReinitialize
@@ -385,7 +390,7 @@ export default function ImageCard(props: {
                                 <Checkbox
                                     checked={!!image.reviewed}
                                     onChange={() => {
-                                        props.toggleReview(image.id)
+                                        props.dispatch(toggleReview(image.id))
                                     }}
                                     value="reviewed"
                                     color="primary"
@@ -409,10 +414,12 @@ export default function ImageCard(props: {
                                                     image
                                                 )}
                                                 onChange={e => {
-                                                    props.updateImageSection(
-                                                        image.id,
-                                                        'section',
-                                                        e.target.value
+                                                    props.dispatch(
+                                                        updateImageSection(
+                                                            image.id,
+                                                            'section',
+                                                            e.target.value
+                                                        )
                                                     )
                                                 }}
                                                 className="mr-2"
@@ -468,10 +475,12 @@ export default function ImageCard(props: {
                                                 ),
                                             }}
                                             onSubmit={({ pagination }) => {
-                                                props.updateImageSection(
-                                                    image.id,
-                                                    'value',
-                                                    pagination
+                                                props.dispatch(
+                                                    updateImageSection(
+                                                        image.id,
+                                                        'value',
+                                                        pagination
+                                                    )
                                                 )
                                             }}
                                             enableReinitialize
@@ -499,19 +508,12 @@ export default function ImageCard(props: {
                             </div>
                         </div>
 
-                        <Tags
-                            id={image.id}
-                            tags={image.tags}
-                            addImageTag={props.addImageTag}
-                        />
+                        <Tags id={image.id} tags={image.tags} />
 
                         <TypeSelect
-                            removeOfField={props.removeOfField}
                             tags={image.tags}
-                            updateOfField={props.updateOfField}
                             id={image.id}
                             i={props.i}
-                            duplicateImageOptions={props.duplicateImageOptions}
                             duplicateOf={image.duplicateOf}
                         />
                     </div>
@@ -520,3 +522,21 @@ export default function ImageCard(props: {
         </div>
     )
 }
+
+ImageCard.whyDidYouRender = true
+
+const emptyArr: any[] = []
+
+const mapStateToProps = function(state: any) {
+    const { manifest } = state
+    return {
+        volumeId: manifest['for-volume'],
+        manifestLanguage: manifest.appData['bvmt']['default-vol-string-lang'],
+        uiLanguage: manifest.appData['bvmt']['default-ui-string-lang'],
+        pagination: manifest.pagination,
+        sectionInputs: manifest.sections || emptyArr,
+    }
+}
+
+// @ts-ignore
+export default connect(mapStateToProps)(ImageCard)
