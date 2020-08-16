@@ -2,7 +2,7 @@ import React from 'react'
 import './index.css'
 import AppBar from './components/AppBar'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
-import Cards from './components/Cards'
+import Card from './components/Card'
 import { DndProvider } from 'react-dnd'
 import FilterList from './components/FilterList'
 import Backend from 'react-dnd-html5-backend'
@@ -34,7 +34,7 @@ import { getOrInitManifest } from './api/getManifest'
 import VolumeSearch from './components/VolumeSearch'
 import UpdateManifestError from './components/UpdateManifestError'
 import { Buda } from '../types'
-import { setManifest } from './actions/manifest'
+import { setManifest } from './redux/actions/manifest'
 import { connect } from 'react-redux'
 
 const mapIndex = addIndex(map)
@@ -47,6 +47,7 @@ const theme = createMuiTheme({
 })
 
 const imageListLens = lensPath(['view', 'view1', 'imagelist'])
+
 function App(props: any) {
     const { manifest } = props
 
@@ -90,7 +91,7 @@ function App(props: any) {
             const formattedManifest = over(
                 imageListLens,
                 removeCollapsed,
-                manifest
+                manifest,
             )
             await postUpdate(formattedManifest, auth)
         } catch (error) {
@@ -105,7 +106,7 @@ function App(props: any) {
     }
     const updateImageList = (updatedImageList: unknown[]) => {
         props.dispatch(
-            setManifest(set(imageListLens, updatedImageList, manifest))
+            setManifest(set(imageListLens, updatedImageList, manifest)),
         )
     }
     const handleLoadMore = () => {
@@ -122,7 +123,7 @@ function App(props: any) {
                 return val.sectionId === sectionId ? ++acc : acc
             },
             0,
-            imageList
+            imageList,
         )
     }
     const handleSettingsUpdate = curry((lens, value) => {
@@ -146,11 +147,11 @@ function App(props: any) {
                 image: null,
                 images: [],
             },
-            imageList
+            imageList,
         )
         const updatedImageList = reject(
             propEq('remove', true),
-            insert(inc(idx), image, images)
+            insert(inc(idx), image, images),
         )
         updateImageList(updatedImageList)
     }
@@ -158,7 +159,7 @@ function App(props: any) {
     const foldCheckedImages = () => {
         const updatedImageList = map(
             image => (image.reviewed ? assoc('collapsed', true, image) : image),
-            imageList
+            imageList,
         )
         updateImageList(updatedImageList)
     }
@@ -167,8 +168,6 @@ function App(props: any) {
     const auth = useAuth0()
 
     const imageListLength = imageList.length
-
-    const CardMemo = React.useMemo(() => Cards, [])
 
     return (
         <ThemeProvider theme={theme}>
@@ -213,7 +212,7 @@ function App(props: any) {
                                             }
                                             className="underline text-md font-medium cursor-pointer"
                                         >
-                                            <SettingsIcon />
+                                            <SettingsIcon/>
                                         </span>
                                     </span>
                                     {/*<span className="underline text-blue-600 cursor-pointer">*/}
@@ -248,8 +247,9 @@ function App(props: any) {
                                         !isLoadingMore
                                     }
                                     loader={
-                                        <div key="circular" className="container mx-auto flex items-center justify-center">
-                                            <CircularProgress />
+                                        <div key="circular"
+                                             className="container mx-auto flex items-center justify-center">
+                                            <CircularProgress/>
                                         </div>
                                     }
                                     useWindow={true}
@@ -265,7 +265,7 @@ function App(props: any) {
                                                         }
                                                     />
                                                 )}
-                                                <CardMemo
+                                                <Card
                                                     imageListLength={
                                                         imageListLength
                                                     }
@@ -279,7 +279,7 @@ function App(props: any) {
                                                 />
                                             </React.Fragment>
                                         ),
-                                        imageList.slice(0, renderToIdx)
+                                        imageList.slice(0, renderToIdx),
                                     )}
                                 </InfiniteScroll>
                             </div>

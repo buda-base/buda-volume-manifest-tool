@@ -23,10 +23,10 @@ import {
     view,
     when,
 } from 'ramda'
-import { Buda } from '../../types'
+import { Buda } from '../../../types'
 import uuidv4 from 'uuid/v4'
-import getPagination from '../utils/pagination-prediction'
-import { getComparator } from '../utils/pagination-comparators'
+import getPagination from '../../utils/pagination-prediction'
+import { getComparator } from '../../utils/pagination-comparators'
 
 const mapIndex = addIndex(map)
 
@@ -81,8 +81,15 @@ export default (
             imageIdx?: number
             image?: any
         }
-    }
+    },
 ) => {
+
+    const updateImage = (idx: number, fn: (image: any) => any) => {
+        const imageList = getImageList(manifest)
+        const image = imageList[idx]
+        imageList[idx] = fn(image)
+        return set(imageListLens, imageList, manifest)
+    }
     switch (action.type) {
         case 'SET_MANIFEST':
             return action.payload.manifest
@@ -90,101 +97,73 @@ export default (
             return set(
                 lensPath(['appData', 'bvmt', 'default-ui-string-lang']),
                 action.payload,
-                manifest
+                manifest,
             )
         case 'UPDATE_IMAGE_VALUE':
-            const updateImageList = map(image => {
-                if (image.id === action.payload.imageId) {
-                    return assoc(
-                        action.payload.key,
-                        action.payload.value,
-                        image
-                    )
-                } else {
-                    return image
-                }
-            }, getImageList(manifest))
-            return set(imageListLens, updateImageList, manifest)
-        case 'HIDE_CARD_IN_MANIFEST':
-            const updateImageList2 = map(image => {
-                if (image.id === action.payload.imageId) {
-                    return compose(
-                        assoc('collapsed', action.payload.hide),
-                        // @ts-ignore
-                        assoc('hide', action.payload.hide)
-                    )(image)
-                } else {
-                    return image
-                }
-            }, getImageList(manifest))
-            return set(imageListLens, updateImageList2, manifest)
+            return updateImage(action.payload.idx, (image: Buda.Image) =>
+                assoc(
+                    action.payload.key,
+                    action.payload.value,
+                    image,
+                ),
+            )
+        case 'HIDE_CARD_IN_MANIFEST': {
+            return updateImage(action.payload.idx, (image: Buda.Image) =>
+                compose(
+                    assoc('collapsed', action.payload.hide),
+                    // @ts-ignore
+                    assoc('hide', action.payload.hide),
+                )(image),
+            )
+        }
+
         case 'REMOVE_OF_FIELD':
-            const updateImageList3 = map(image => {
-                if (image.id === action.payload.imageId) {
-                    return dissoc(action.payload.ofField, image)
-                } else {
-                    return image
-                }
-            }, getImageList(manifest))
-            return set(imageListLens, updateImageList3, manifest)
+            return updateImage(action.payload.idx, (image: Buda.Image) =>
+                dissoc(action.payload.ofField, image),
+            )
+
         case 'ADD_NOTE':
-            const updateImageList6 = map(image => {
-                if (image.id === action.payload.imageId) {
+            return updateImage(action.payload.idx, (image: Buda.Image) => {
                     const updatedNotes = append(
                         action.payload.note,
-                        propOr([], 'note', image)
+                        propOr([], 'note', image),
                     )
                     return assoc('note', updatedNotes, image)
-                } else {
-                    return image
-                }
-            }, getImageList(manifest))
-            return set(imageListLens, updateImageList6, manifest)
+
+                },
+            )
 
         case 'UPDATE_IMAGE_SECTION':
-            const updateImageList4 = map(image => {
-                if (image.id === action.payload.imageId) {
+            return updateImage(action.payload.idx, (image: Buda.Image) => {
                     const sectionLens = lensPath([
                         'pagination',
                         manifest.pagination[0].id,
                         action.payload.key,
                     ])
                     return set(sectionLens, action.payload.value, image)
-                } else {
-                    return image
-                }
-            }, getImageList(manifest))
-            return set(imageListLens, updateImageList4, manifest)
+                },
+            )
+
 
         case 'TOGGLE_REVIEW':
-            const updateImageList7 = map(image => {
-                if (image.id === action.payload.imageId) {
+            return updateImage(action.payload.idx, (image: Buda.Image) => {
                     const reviewed = prop('reviewed', image)
                     return compose(
                         image =>
                             !reviewed ? assoc('collapsed', true, image) : image,
-                        assoc('reviewed', !reviewed)
+                        assoc('reviewed', !reviewed),
                     )(image)
-                } else {
-                    return image
-                }
-            }, getImageList(manifest))
-            return set(imageListLens, updateImageList7, manifest)
+                },
+            )
 
         case 'UPDATE_OF_FIELD':
-            const updateImageList8 = map(image => {
-                if (image.id === action.payload.imageId) {
-                    return assoc(
-                        action.payload.key,
-                        action.payload.val.name,
-                        image
-                    )
-                } else {
-                    return image
-                }
-            }, getImageList(manifest))
-            return set(imageListLens, updateImageList8, manifest)
-
+            return updateImage(action.payload.idx, (image: Buda.Image) =>
+                assoc(
+                    action.payload.key,
+                    action.payload.val.name,
+                    image,
+                ),
+            )
         case 'INSERT_MISSING':
             const defaultMissingImage = {
                 id: uuidv4(),
@@ -195,43 +174,40 @@ export default (
                 updateImageList9 = insert(
                     action.payload.i,
                     defaultMissingImage,
-                    getImageList(manifest)
+                    getImageList(manifest),
                 )
             } else if (action.payload.direction === 'after') {
                 updateImageList9 = insert(
                     action.payload.i + 1,
                     defaultMissingImage,
-                    getImageList(manifest)
+                    getImageList(manifest),
                 )
             }
             return set(imageListLens, updateImageList9, manifest)
 
         case 'TOGGLE_COLLAPSE_IMAGE':
-            const updateImageList10 = map(image => {
-                if (image.id === action.payload.imageId) {
+            return updateImage(action.payload.idx, (image: Buda.Image) => {
                     const hidden = !!prop('collapsed', image)
                     return assoc('collapsed', !hidden, image)
-                } else {
-                    return image
-                }
-            }, getImageList(manifest))
-            return set(imageListLens, updateImageList10, manifest)
+
+                },
+            )
+
 
         case 'SET_IMAGE_VIEW':
             return set(
                 lensPath(['appData', 'bvmt', 'preview-image-view']),
                 action.payload.value,
-                manifest
+                manifest,
             )
         case 'ADD_IMAGE_TAG':
-            const updateImageList12 = map(image => {
-                if (image.id === action.payload.imageId) {
+            return updateImage(action.payload.idx, (image: Buda.Image) => {
                     const duplicateTags = ['T0018', 'T0017']
                     const detailTags = ['T0016']
                     const currentTags = propOr(
                         [],
                         'tags',
-                        image
+                        image,
                     ) as readonly string[]
                     const prevTagsHaveDuplicates =
                         intersection(currentTags, duplicateTags).length > 0
@@ -253,28 +229,22 @@ export default (
                     return compose(
                         when(always(removeDuplicateOf), dissoc('duplicate-of')),
                         when(always(removeDetailOf), dissoc('detail-of')),
-                        assoc('tags', action.payload.tags)
+                        assoc('tags', action.payload.tags),
                     )(image)
-                } else {
-                    return image
-                }
-            }, getImageList(manifest))
-            return set(imageListLens, updateImageList12, manifest)
+                },
+            )
 
         case 'REMOVE_NOTE':
-            const updateImageList13 = map(image => {
-                if (image.id === action.payload.imageId) {
+            return updateImage(action.payload.idx, (image: Buda.Image) => {
                     const updatedNotes = remove(
                         action.payload.noteIdx,
                         1,
-                        propOr([], 'note', image)
+                        propOr([], 'note', image),
                     )
                     return assoc('note', updatedNotes, image)
-                } else {
-                    return image
-                }
-            }, getImageList(manifest))
-            return set(imageListLens, updateImageList13, manifest)
+
+                },
+            )
 
         case 'MARK_PREVIOUS_AS_REVIEWED':
             const updateImageList14 = mapIndex((image, idx) => {
@@ -309,7 +279,7 @@ export default (
                         return image
                     }
                 },
-                getImageList(manifest)
+                getImageList(manifest),
             )
             return set(imageListLens, updateImageList15, manifest)
         case 'HANDLE_PAGINATION_PREDICTION':
@@ -331,11 +301,11 @@ export default (
                         image: null,
                         images: [],
                     },
-                    imageList2
+                    imageList2,
                 )
                 return reject(
                     propEq('remove', true),
-                    insert(inc(idx), image, images)
+                    insert(inc(idx), image, images),
                 )
             }
             // @ts-ignore
@@ -345,13 +315,13 @@ export default (
             const idx = findIndex(
                 // @ts-ignore
                 img => cmp(action.payload.image.pagination, img.pagination) < 0,
-                imageList2
+                imageList2,
             )
             if (idx !== -1) {
                 return set(
                     imageListLens,
                     rearrangeImage(action.payload.image.id, dec(idx)),
-                    manifest
+                    manifest,
                 )
             } else {
                 return manifest

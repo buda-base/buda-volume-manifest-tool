@@ -6,7 +6,7 @@ import TextField from '@material-ui/core/TextField'
 import { useTranslation } from 'react-i18next'
 import { makeStyles } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
-import { removeOfField, updateOfField } from '../actions/manifest'
+import { removeOfField, updateOfField } from '../redux/actions/manifest'
 import { Buda } from '../../types'
 
 const useStyles = makeStyles(theme => ({
@@ -57,14 +57,14 @@ const TypeSelect = (props: {
                                         if (!newValue) {
                                             props.dispatch(
                                                 removeOfField(
-                                                    props.id,
+                                                    props.i,
                                                     'duplicate-of'
                                                 )
                                             )
                                         } else {
                                             props.dispatch(
                                                 updateOfField(
-                                                    props.id,
+                                                    props.i,
                                                     newValue,
                                                     'duplicate-of'
                                                 )
@@ -106,14 +106,14 @@ const TypeSelect = (props: {
                                         if (!newValue) {
                                             props.dispatch(
                                                 removeOfField(
-                                                    props.id,
+                                                    props.i,
                                                     'detail-of'
                                                 )
                                             )
                                         } else {
                                             props.dispatch(
                                                 updateOfField(
-                                                    props.id,
+                                                    props.i,
                                                     newValue,
                                                     'detail-of'
                                                 )
