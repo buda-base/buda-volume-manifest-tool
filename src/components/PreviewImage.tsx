@@ -7,7 +7,7 @@ import { withStyles } from '@material-ui/core'
 import Icon from '@material-ui/core/Icon'
 import { useTranslation } from 'react-i18next'
 import { connect } from 'react-redux'
-import { setImageView } from '../actions/manifest'
+import { setImageView } from '../redux/actions/manifest'
 import { pathOr } from 'ramda'
 
 interface IState {

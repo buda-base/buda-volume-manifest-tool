@@ -23,10 +23,10 @@ import {
     view,
     when,
 } from 'ramda'
-import { Buda } from '../../types'
+import { Buda } from '../../../types'
 import uuidv4 from 'uuid/v4'
-import getPagination from '../utils/pagination-prediction'
-import { getComparator } from '../utils/pagination-comparators'
+import getPagination from '../../utils/pagination-prediction'
+import { getComparator } from '../../utils/pagination-comparators'
 
 const mapIndex = addIndex(map)
 

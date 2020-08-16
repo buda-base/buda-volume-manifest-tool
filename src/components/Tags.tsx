@@ -11,7 +11,7 @@ import FormControl from '@material-ui/core/FormControl'
 import ListItemText from '@material-ui/core/ListItemText'
 import Checkbox from '@material-ui/core/Checkbox'
 import { connect } from 'react-redux'
-import { addImageTag } from '../actions/manifest'
+import { addImageTag } from '../redux/actions/manifest'
 
 const useStyles = makeStyles(theme => ({
     formControl: {

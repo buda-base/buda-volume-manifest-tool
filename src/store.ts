@@ -1,9 +1,9 @@
-import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
+import { applyMiddleware, combineReducers, compose, createStore } from 'redux'
 // import events from "./reducers/events"
 // import { getAllEvents } from "./services/events"
 // import { setAllEvents, startFetchingEvents } from "./actions/events"
 // import { reducer as formReducer } from 'redux-form'
-import manifest from './reducers/index'
+import manifest from './redux/reducers/index'
 
 const composeWithDevTools =
     // @ts-ignore

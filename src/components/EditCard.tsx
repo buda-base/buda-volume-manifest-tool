@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { Formik } from 'formik'
 import LanguageOptions from './LanguageOptions'
 import { connect } from 'react-redux'
-import { addNote, removeNote, updateImageValue } from '../actions/manifest'
+import { addNote, removeNote, updateImageValue } from '../redux/actions/manifest'
 
 const styles = (theme: Theme) =>
     createStyles({

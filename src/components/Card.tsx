@@ -43,7 +43,7 @@ import {
     updateImageSection,
     updateImageValue,
     updateUncheckedItems,
-} from '../actions/manifest'
+} from '../redux/actions/manifest'
 
 const useStyles = makeStyles(theme => ({
     card: {

@@ -2,7 +2,7 @@ import React from 'react'
 import './index.css'
 import AppBar from './components/AppBar'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
-import Cards from './components/Cards'
+import Card from './components/Card'
 import { DndProvider } from 'react-dnd'
 import FilterList from './components/FilterList'
 import Backend from 'react-dnd-html5-backend'
@@ -34,7 +34,7 @@ import { getOrInitManifest } from './api/getManifest'
 import VolumeSearch from './components/VolumeSearch'
 import UpdateManifestError from './components/UpdateManifestError'
 import { Buda } from '../types'
-import { setManifest } from './actions/manifest'
+import { setManifest } from './redux/actions/manifest'
 import { connect } from 'react-redux'
 
 const mapIndex = addIndex(map)
@@ -265,7 +265,7 @@ function App(props: any) {
                                                         }
                                                     />
                                                 )}
-                                                <Cards
+                                                <Card
                                                     imageListLength={
                                                         imageListLength
                                                     }
