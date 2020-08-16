@@ -57,14 +57,14 @@ const TypeSelect = (props: {
                                         if (!newValue) {
                                             props.dispatch(
                                                 removeOfField(
-                                                    props.id,
+                                                    props.i,
                                                     'duplicate-of'
                                                 )
                                             )
                                         } else {
                                             props.dispatch(
                                                 updateOfField(
-                                                    props.id,
+                                                    props.i,
                                                     newValue,
                                                     'duplicate-of'
                                                 )
@@ -106,14 +106,14 @@ const TypeSelect = (props: {
                                         if (!newValue) {
                                             props.dispatch(
                                                 removeOfField(
-                                                    props.id,
+                                                    props.i,
                                                     'detail-of'
                                                 )
                                             )
                                         } else {
                                             props.dispatch(
                                                 updateOfField(
-                                                    props.id,
+                                                    props.i,
                                                     newValue,
                                                     'detail-of'
                                                 )

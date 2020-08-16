@@ -106,11 +106,12 @@ function ImageCard(props: {
         const getData = async () => {
             try {
                 const data = await axios.get(
-                    `https://iiif-dev.bdrc.io/${props.volumeId}::${image.filename}/info.json`
+                    `https://iiif-dev.bdrc.io/${props.volumeId}::${image.filename}/info.json`,
                 )
                 const iiif = data.data
                 setiiif(iiif)
-                return () => {}
+                return () => {
+                }
             } catch (err) {
                 console.log('iiifErr', err)
             }
@@ -133,7 +134,7 @@ function ImageCard(props: {
                     />
                     <h3
                         className={`font-bold ${image.hide &&
-                            'text-red-600'} flex align-center`}
+                        'text-red-600'} flex align-center`}
                     >
                         {image.hide && (
                             <DeleteIcon
@@ -143,23 +144,23 @@ function ImageCard(props: {
                         )}
                         {image.filename || image.type}{' '}
                         <span className="text-gray-500 text-sm ml-4">{`(${props.i +
-                            1} of ${props.imageListLength})`}</span>
+                        1} of ${props.imageListLength})`}</span>
                     </h3>
                 </div>
                 <div className="self-end flex">
                     {image.note && image.note.length > 0 && (
-                        <NoteIcon className="mr-4" />
+                        <NoteIcon className="mr-4"/>
                     )}
                     <span
                         className="cursor-pointer"
                         onClick={() =>
-                            props.dispatch(toggleCollapseImage(image.id))
+                            props.dispatch(toggleCollapseImage(props.i))
                         }
                     >
                         {image.collapsed ? (
-                            <VisibilityOnIcon className="mr-4" />
+                            <VisibilityOnIcon className="mr-4"/>
                         ) : (
-                            <VisibilityOffIcon className="mr-4" />
+                            <VisibilityOffIcon className="mr-4"/>
                         )}
                     </span>
 
@@ -168,7 +169,7 @@ function ImageCard(props: {
                         className="mr-4 cursor-pointer"
                     />
 
-                    <SimpleMenu />
+                    <SimpleMenu/>
                 </div>
             </div>
         )
@@ -208,7 +209,7 @@ function ImageCard(props: {
                             props.dispatch(insertMissing(props.i, 'before'))
                         }
                     >
-                        <ArrowUpwardIcon className="mr-2" />
+                        <ArrowUpwardIcon className="mr-2"/>
                         {t('Insert One Above')}
                     </MenuItem>
                     <MenuItem
@@ -216,7 +217,7 @@ function ImageCard(props: {
                             props.dispatch(insertMissing(props.i, 'after'))
                         }
                     >
-                        <ArrowDownwardIcon className="mr-2" />
+                        <ArrowDownwardIcon className="mr-2"/>
                         {t('Insert One Below')}
                     </MenuItem>
 
@@ -224,11 +225,11 @@ function ImageCard(props: {
                         <MenuItem
                             onClick={() => {
                                 props.dispatch(
-                                    hideCardInManifest(image.id, true)
+                                    hideCardInManifest(props.i, true),
                                 )
                             }}
                         >
-                            <DeleteIcon className="mr-2" />
+                            <DeleteIcon className="mr-2"/>
                             {t('Hide in Manifest')}
                         </MenuItem>
                     )}
@@ -236,11 +237,11 @@ function ImageCard(props: {
                         <MenuItem
                             onClick={() => {
                                 props.dispatch(
-                                    hideCardInManifest(image.id, false)
+                                    hideCardInManifest(props.i, false),
                                 )
                             }}
                         >
-                            <DeleteIcon className="mr-2" />
+                            <DeleteIcon className="mr-2"/>
                             {t('Unhide in Manifest')}
                         </MenuItem>
                     )}
@@ -248,11 +249,11 @@ function ImageCard(props: {
                         <MenuItem
                             onClick={() => {
                                 props.dispatch(
-                                    updateUncheckedItems(image, props.i)
+                                    updateUncheckedItems(image, props.i),
                                 )
                             }}
                         >
-                            <BeenhereIcon className="mr-2" />
+                            <BeenhereIcon className="mr-2"/>
                             {t('Update following unchecked items')}
                         </MenuItem>
                     )}
@@ -260,13 +261,13 @@ function ImageCard(props: {
                         <MenuItem
                             onClick={() => {
                                 props.dispatch(
-                                    handlePaginationPredication(props.data)
+                                    handlePaginationPredication(props.data),
                                 )
                             }}
                         >
-                            <ReorderIcon className="mr-2" />
+                            <ReorderIcon className="mr-2"/>
                             {t(
-                                'Reorder this image according to indicated pagination'
+                                'Reorder this image according to indicated pagination',
                             )}
                         </MenuItem>
                     )}
@@ -275,7 +276,7 @@ function ImageCard(props: {
                             props.dispatch(markPreviousAsReviewed(props.i))
                         }
                     >
-                        <CheckBoxIcon className="mr-2" />
+                        <CheckBoxIcon className="mr-2"/>
                         {t('Mark all images down to this one as checked')}
                     </MenuItem>
                 </Menu>
@@ -295,12 +296,13 @@ function ImageCard(props: {
                 setEditDialogOpen={setEditDialogOpen}
                 uiLanguage={props.uiLanguage}
                 data={image}
+                idx={props.i}
             />
-            <CardHeader className={classes.cardHeader} component={Header} />
+            <CardHeader className={classes.cardHeader} component={Header}/>
             {!image.collapsed && (
                 <CardContent className="flex" style={{ padding: 0 }}>
                     {iiif ? (
-                        <PreviewImage i={props.i} iiif={iiif} />
+                        <PreviewImage i={props.i} iiif={iiif}/>
                     ) : (
                         <div className="border-r border-gray-300 mr-2">
                             <div
@@ -322,32 +324,32 @@ function ImageCard(props: {
                                         marginIndication: pathOr(
                                             '',
                                             ['indication', '@value'],
-                                            image
+                                            image,
                                         ),
                                         language: props.manifestLanguage,
                                     }}
                                     onSubmit={({
-                                        marginIndication,
-                                        language,
-                                    }) => {
+                                                   marginIndication,
+                                                   language,
+                                               }) => {
                                         props.dispatch(
                                             updateImageValue(
-                                                image.id,
+                                                props.i,
                                                 'indication',
                                                 {
                                                     '@value': marginIndication,
                                                     '@language': language,
-                                                }
-                                            )
+                                                },
+                                            ),
                                         )
                                     }}
                                     enableReinitialize
                                 >
                                     {({
-                                        values,
-                                        handleChange,
-                                        handleSubmit,
-                                    }) => (
+                                          values,
+                                          handleChange,
+                                          handleSubmit,
+                                      }) => (
                                         <>
                                             <TextField
                                                 label={' '}
@@ -357,14 +359,14 @@ function ImageCard(props: {
                                                 onBlur={() => {
                                                     setTimeout(
                                                         handleSubmit,
-                                                        500
+                                                        500,
                                                     )
                                                 }}
                                                 inputProps={{
                                                     name: 'marginIndication',
                                                 }}
                                                 helperText={t(
-                                                    'Margin Indication'
+                                                    'Margin Indication',
                                                 )}
                                             />
                                             <FormControl>
@@ -378,14 +380,14 @@ function ImageCard(props: {
                                                     onBlur={() => {
                                                         setTimeout(
                                                             handleSubmit,
-                                                            500
+                                                            500,
                                                         )
                                                     }}
                                                     inputProps={{
                                                         id: 'language',
                                                     }}
                                                 >
-                                                    <LanguageOptions />
+                                                    <LanguageOptions/>
                                                 </Select>
                                             </FormControl>
                                         </>
@@ -395,7 +397,7 @@ function ImageCard(props: {
                                 <Checkbox
                                     checked={!!image.reviewed}
                                     onChange={() => {
-                                        props.dispatch(toggleReview(image.id))
+                                        props.dispatch(toggleReview(props.i))
                                     }}
                                     value="reviewed"
                                     color="primary"
@@ -416,15 +418,15 @@ function ImageCard(props: {
                                                         props.pagination[0].id,
                                                         'section',
                                                     ],
-                                                    image
+                                                    image,
                                                 )}
                                                 onChange={e => {
                                                     props.dispatch(
                                                         updateImageSection(
-                                                            image.id,
+                                                            props.i,
                                                             'section',
-                                                            e.target.value
-                                                        )
+                                                            e.target.value,
+                                                        ),
                                                     )
                                                 }}
                                                 className="mr-2"
@@ -445,7 +447,7 @@ function ImageCard(props: {
                                                                 [x: string]: React.ReactNode
                                                             }
                                                         },
-                                                        i: React.Key
+                                                        i: React.Key,
                                                     ) => {
                                                         return (
                                                             <option
@@ -458,11 +460,11 @@ function ImageCard(props: {
                                                                     section
                                                                         .name[
                                                                         '@value'
-                                                                    ]
+                                                                        ]
                                                                 }
                                                             </option>
                                                         )
-                                                    }
+                                                    },
                                                 )}
                                             </Select>
                                         )}
@@ -476,25 +478,25 @@ function ImageCard(props: {
                                                         props.pagination[0].id,
                                                         'value',
                                                     ],
-                                                    image
+                                                    image,
                                                 ),
                                             }}
                                             onSubmit={({ pagination }) => {
                                                 props.dispatch(
                                                     updateImageSection(
-                                                        image.id,
+                                                        props.i,
                                                         'value',
-                                                        pagination
-                                                    )
+                                                        pagination,
+                                                    ),
                                                 )
                                             }}
                                             enableReinitialize
                                         >
                                             {({
-                                                values,
-                                                handleChange,
-                                                handleSubmit,
-                                            }) => (
+                                                  values,
+                                                  handleChange,
+                                                  handleSubmit,
+                                              }) => (
                                                 <TextField
                                                     helperText={t('Pagination')}
                                                     value={values.pagination}
@@ -502,7 +504,7 @@ function ImageCard(props: {
                                                     onBlur={() => {
                                                         setTimeout(
                                                             handleSubmit,
-                                                            500
+                                                            500,
                                                         )
                                                     }}
                                                     inputProps={{
@@ -516,7 +518,7 @@ function ImageCard(props: {
                             </div>
                         </div>
 
-                        <Tags id={image.id} tags={image.tags} />
+                        <Tags idx={props.i} id={image.id} tags={image.tags}/>
 
                         <TypeSelect
                             tags={image.tags}

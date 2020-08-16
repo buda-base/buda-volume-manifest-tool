@@ -76,6 +76,7 @@ function EditCard(props: {
     open: boolean
     uiLanguage: any
     dispatch: any
+    idx: number
 }) {
     const handleClose = () => {
         props.setEditDialogOpen(false)
@@ -108,7 +109,7 @@ function EditCard(props: {
                                         onChange={() => {
                                             props.dispatch(
                                                 updateImageValue(
-                                                    data.id,
+                                                    props.idx,
                                                     'thumbnailForVolume',
                                                     !data.thumbnailForVolume
                                                 )
@@ -136,7 +137,7 @@ function EditCard(props: {
                                 ) => {
                                     props.dispatch(
                                         updateImageValue(
-                                            data.id,
+                                            props.idx,
                                             'specialLabel',
                                             {
                                                 '@value': trim(specialLabel),
@@ -209,7 +210,7 @@ function EditCard(props: {
                                             onChange={e => {
                                                 props.dispatch(
                                                     updateImageValue(
-                                                        data.id,
+                                                        props.idx,
                                                         'belongsToVolume',
                                                         !data.belongsToVolume
                                                     )
@@ -229,7 +230,7 @@ function EditCard(props: {
                                     onBlur={e => {
                                         props.dispatch(
                                             updateImageValue(
-                                                data.id,
+                                                props.idx,
                                                 'belongsToVolId',
                                                 e.target.value
                                             )
@@ -249,7 +250,7 @@ function EditCard(props: {
                                     onChange={e => {
                                         props.dispatch(
                                             updateImageValue(
-                                                data.id,
+                                                props.idx,
                                                 'pageSide',
                                                 e.target.value
                                             )
@@ -276,7 +277,7 @@ function EditCard(props: {
                             }}
                             onSubmit={({ note, language }, { resetForm }) => {
                                 props.dispatch(
-                                    addNote(data.id, {
+                                    addNote(props.idx, {
                                         '@value': trim(note),
                                         '@language': language,
                                     })
@@ -330,7 +331,7 @@ function EditCard(props: {
                                         <CloseIcon
                                             onClick={() => {
                                                 props.dispatch(
-                                                    removeNote(data.id, i)
+                                                    removeNote(props.idx, i)
                                                 )
                                             }}
                                         />

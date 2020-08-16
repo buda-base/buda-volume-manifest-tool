@@ -23,12 +23,12 @@ const Tags = (props: {
     tags?: any
     id?: any
     dispatch: any
+    idx: number
 }) => {
     const { t } = useTranslation()
     const classes = useStyles()
 
     const [tagOptions, setTagOptions] = React.useState([])
-    const { id } = props
     React.useEffect(() => {
         setTagOptions(toPairs(tags))
     }, [props.tags])
@@ -44,7 +44,7 @@ const Tags = (props: {
     const tagsSafe = props.tags || []
     const handleChange = (e: { target: { value: any } }) => {
         const newTags = e.target.value
-        props.dispatch(addImageTag(id, newTags))
+        props.dispatch(addImageTag(props.idx, newTags))
     }
 
     return (
@@ -55,7 +55,7 @@ const Tags = (props: {
                     // helperText={t('Detail of File') as string}
                     value={props.tags || []}
                     onChange={handleChange}
-                    input={<Input />}
+                    input={<Input/>}
                     renderValue={(selected: any[]) => {
                         return (
                             selected
@@ -68,8 +68,8 @@ const Tags = (props: {
                 >
                     {tagOptions.map(([id, data]) => (
                         <MenuItem key={id} value={id}>
-                            <Checkbox checked={includes(id, tagsSafe)} />
-                            <ListItemText primary={data.label.en} />
+                            <Checkbox checked={includes(id, tagsSafe)}/>
+                            <ListItemText primary={data.label.en}/>
                         </MenuItem>
                     ))}
                 </Select>
