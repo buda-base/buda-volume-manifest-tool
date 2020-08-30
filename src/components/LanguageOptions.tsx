@@ -4,7 +4,7 @@ const LanguageOptions = () => {
     return (
         <>
             <option value="bo">བོད</option>
-            <option value="en">English</option>,
+            <option value="en">En</option>,
         </>
     )
 }
