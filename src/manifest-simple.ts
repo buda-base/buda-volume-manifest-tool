@@ -1,5 +1,5 @@
 const data = {
-    'for-volume': 'bdr:I1KG9128',
+    'imggroup': 'bdr:I1KG9128',
     'spec-version': '0.1.0',
     status: 'released',
     'volume-label': [

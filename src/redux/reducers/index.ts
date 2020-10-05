@@ -38,7 +38,7 @@ const getImageList = (manifest: any) => {
 export default (
     manifest: Buda.Manifest = {
         'default-view': 'view1',
-        'for-volume': '',
+        'imggroup': '',
         'spec-version': '',
         'viewing-direction': '',
         'volume-label': [],

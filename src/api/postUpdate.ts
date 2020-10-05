@@ -31,7 +31,7 @@ async function saveManifest(
         // and a changelog string must be provided (when the save button is pressed)
 
         // post updated manifest to api!
-        const volume = manifest['for-volume']
+        const volume = manifest['imggroup']
         add_changelog(manifest, auth0.user.bdrcID, changelogStr)
         try {
             const { rev } = await axios.put(

@@ -184,8 +184,8 @@ function App(props: any) {
                     <VolumeSearch
                         isFetching={isFetching}
                         fetchErr={fetchErr}
-                        {...(manifest && manifest['for-volume']
-                            ? { forVolume: manifest['for-volume'] }
+                        {...(manifest && manifest['imggroup']
+                            ? { forVolume: manifest['imggroup'] }
                             : {})}
                     />
                 ) : (
@@ -205,7 +205,7 @@ function App(props: any) {
                                         {t('Volume')}
                                     </span>
                                     <span className="text-sm font-bold text-xl mb-3">
-                                        {manifest['for-volume']}
+                                        {manifest['imggroup']}
                                         <span
                                             onClick={() =>
                                                 setSettingsDialog(true)

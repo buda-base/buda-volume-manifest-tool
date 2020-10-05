@@ -54,7 +54,7 @@ function initManifestFromImageList(
     options: Options
 ): Buda.Manifest {
     return {
-        'for-volume': volumeQname,
+        'imggroup': volumeQname,
         'volume-label': [], // an option
         'spec-version': '0.1.0',
         rev: null,

@@ -540,7 +540,7 @@ const emptyArr: any[] = []
 const mapStateToProps = function(state: any) {
     const { manifest } = state
     return {
-        volumeId: manifest['for-volume'],
+        volumeId: manifest['imggroup'],
         manifestLanguage: manifest.appData['bvmt']['default-vol-string-lang'],
         uiLanguage: manifest.appData['bvmt']['default-ui-string-lang'],
         pagination: manifest.pagination,

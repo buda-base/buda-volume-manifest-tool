@@ -1,5 +1,5 @@
 {
-	"for-volume": "bdr:ITEST",
+	"imggroup": "bdr:ITEST",
 	"spec-version": "0.1.0",
 	"rev": "860f508e-608e-484d-9fc3-62392fab0b12",
 	"attribution": [{"@value": "data contributed by rKTs", "@language": "en"}],
@@ -65,11 +65,11 @@
 				},
 				{
 					"filename": "I1KG9128005.tif",
-					"display": false,
-					"of": "I1KG9128004.tif"
+					"display": false
 				},
 				{
 					"filename": "I1KG9128004.tif",
+					"imggroup": "bdr:ITEST2",
 					"pagination": { "pgfolios": {"value": "1'a", "section": "intro"} },
 					"rotation": 180
 				}
