@@ -29,7 +29,7 @@ export namespace Buda {
         volumeData?: {
             defaultLanguage: string
         }
-        'for-volume': string
+        'imggroup': string
         'spec-version': string
         status: string
         'volume-label': Text[]
