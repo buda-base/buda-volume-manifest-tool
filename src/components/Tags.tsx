@@ -68,7 +68,7 @@ const Tags = (props: {
                 >
                     {tagOptions.map(([id, data]) => (
                         <MenuItem key={id} value={id}>
-                            <Checkbox checked={includes(id, tagsSafe)}/>
+                            <Checkbox checked={includes(id, tagsSafe) as unknown as boolean}/>
                             <ListItemText primary={data.label.en}/>
                         </MenuItem>
                     ))}

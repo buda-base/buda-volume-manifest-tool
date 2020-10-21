@@ -302,7 +302,7 @@ function ImageCard(props: {
             {!image.collapsed && (
                 <CardContent className="flex" style={{ padding: 0 }}>
                     {iiif ? (
-                        <PreviewImage i={props.i} iiif={iiif}/>
+                        <PreviewImage i={props.i as never} iiif={iiif as never}/>
                     ) : (
                         <div className="border-r border-gray-300 mr-2">
                             <div

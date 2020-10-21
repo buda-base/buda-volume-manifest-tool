@@ -113,6 +113,7 @@ export default (
                     assoc('collapsed', action.payload.hide),
                     // @ts-ignore
                     assoc('hide', action.payload.hide),
+            // @ts-ignore
                 )(image),
             )
         }
