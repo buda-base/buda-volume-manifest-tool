@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { AxiosResponse } from "axios";
 import { Buda } from '../../types'
 
 // having a changelog is mandatory
@@ -10,6 +11,10 @@ function add_changelog(manifest: Buda.Manifest, userQname: string, changelogStr:
         user: userQname,
     }
     manifest.changes.push(changelog)
+}
+
+interface PutAnswer {
+    rev: string
 }
 
 async function saveManifest(
@@ -34,7 +39,7 @@ async function saveManifest(
         const volume = manifest['imggroup']
         add_changelog(manifest, auth0.user.bdrcID, changelogStr)
         try {
-            const { rev } = await axios.put(
+            const response: AxiosResponse<PutAnswer> = await axios.put(
                 `https://iiifpres-dev.bdrc.io/bvm/ig:${volume}`,
                 manifest,
                 {
@@ -43,7 +48,7 @@ async function saveManifest(
                     },
                 }
             )
-            manifest.rev = rev
+            manifest.rev = response.data.rev
         } catch (err) {
             // TODO: print error:
             console.error(err)
