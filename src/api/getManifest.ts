@@ -3,7 +3,7 @@ import axios from 'axios'
 import { assoc, lensPath, map, over } from 'ramda'
 import { Buda } from '../../types'
 
-var apiroot = 'https://iiifpres-dev.bdrc.io'
+var apiroot = 'https://iiifpres.bdrc.io'
 
 interface Options {
     uiLanguage: string
