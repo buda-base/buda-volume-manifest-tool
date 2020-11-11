@@ -138,7 +138,7 @@
     },
     "T0017": {
         "label": {
-            "en": "intentional duplicate shot"
+            "en": "duplicate (intentional)"
         },
         "helpMessage": {
             "en": "use this tag when the same original page has been digitized multiple times intentionally, for instance with various exposures to reveal details"
@@ -156,7 +156,7 @@
     },
     "T0019": {
         "label": {
-            "en": "missing from scans"
+            "en": "missing (from scans)"
         },
         "helpMessage": {
             "en": "use this tag for pages that are in the artefact (in its present state of conservation) but which digitization has been overlooked"
@@ -164,7 +164,7 @@
     },
     "T0020": {
         "label": {
-            "en": "missing from artefact"
+            "en": "missing (from artefact)"
         },
         "helpMessage": {
             "en": "use this tag for pages that are missing in the artefact in its present state of conservation"
@@ -180,7 +180,7 @@
     },
     "T0022": {
         "label": {
-            "en": "unintentional duplicate shots"
+            "en": "duplicate (unintentional)"
         },
         "helpMessage": {
             "en": "use this tag when the same original page has been digitized multiple times with no clear intention"
@@ -189,7 +189,7 @@
     },
     "T0023": {
         "label": {
-            "en": "duplicate in files"
+            "en": "duplicate (file)"
         },
         "helpMessage": {
             "en": "use this tag when the same file is present several times"
