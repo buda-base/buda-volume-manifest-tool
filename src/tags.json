@@ -1,199 +1,140 @@
-{
-    "T0001": {
-        "label": {
-            "en": "cover page"
-        },
-        "helpMessage": {
-            "en": ""
-        }
+[
+    {
+        "helpMessage": { "en": "" },
+        "id": "T0001",
+        "label": { "en": "cover page" }
     },
-    "T0002": {
-        "label": {
-            "en": "cover page (inside)"
-        },
-        "helpMessage": {
-            "en": ""
-        }
+    {
+        "helpMessage": { "en": "" },
+        "id": "T0002",
+        "label": { "en": "cover page (inside)" }
     },
-    "T0003": {
-        "label": {
-            "en": "back cover"
-        },
-        "helpMessage": {
-            "en": ""
-        }
+    {
+        "helpMessage": { "en": "" },
+        "id": "T0003",
+        "label": { "en": "back cover" }
     },
-    "T0022": {
-        "label": {
-            "en": "back cover (inside)"
-        },
-        "helpMessage": {
-            "en": ""
-        }
-    },
-    "T0004": {
-        "label": {
-            "en": "catalog card (not part of the original, added for cataloging)"
-        },
-        "helpMessage": {
-            "en": ""
-        }
-    },
-    "T0005": {
-        "label": {
-            "en": "bdrc scan request page"
-        },
-        "helpMessage": {
-            "en": ""
-        }
-    },
-    "T0006": {
-        "label": {
-            "en": "picture of book side"
-        },
-        "helpMessage": {
-            "en": ""
-        }
-    },
-    "T0007": {
-        "label": {
-            "en": "picture of a side of a volume"
-        },
-        "helpMessage": {
-            "en": ""
-        }
-    },
-    "T0008": {
-        "label": {
-            "en": "picture of close volume"
-        },
-        "helpMessage": {
-            "en": ""
-        }
-    },
-    "T0009": {
-        "label": {
-            "en": "picture of wrapped volume"
-        },
-        "helpMessage": {
-            "en": ""
-        }
-    },
-    "T0010": {
-        "label": {
-            "en": "picture of wrapping cloth"
-        },
-        "helpMessage": {
-            "en": ""
-        }
-    },
-    "T0011": {
-        "label": {
-            "en": "volume title page"
-        },
-        "helpMessage": {
-            "en": ""
-        }
-    },
-    "T0012": {
-        "label": {
-            "en": "text title page"
-        },
-        "helpMessage": {
-            "en": ""
-        }
-    },
-    "T0013": {
-        "label": {
-            "en": "blank page"
-        },
-        "helpMessage": {
-            "en": ""
-        }
-    },
-    "T0014": {
-        "label": {
-            "en": "has illustrations"
-        },
-        "helpMessage": {
-            "en": ""
-        }
-    },
-    "T0015": {
-        "label": {
-            "en": "color/lens checker"
-        },
-        "helpMessage": {
-            "en": "for pictures containing only color or lens checkers (and no page)"
-        }
-    },
-    "T0016": {
-        "label": {
-            "en": "detail"
-        },
-        "helpMessage": {
-            "en": "used to tag picture that are detail of a feature of a page (seal, etc.)"
-        },
-        "ofField": "detail-of"
-    },
-    "T0017": {
-        "label": {
-            "en": "duplicate (intentional)"
-        },
-        "helpMessage": {
-            "en": "use this tag when the same original page has been digitized multiple times intentionally, for instance with various exposures to reveal details"
-        },
-        "ofField": "duplicate-of"
-    },
-    "T0018": {
-        "label": {
-            "en": "duplicate in artefact"
-        },
-        "helpMessage": {
-            "en": "use this tag when the same page appears several times in the artefact (don't use it for different pages with the same pagination)"
-        },
-        "ofField": "duplicate-of"
-    },
-    "T0019": {
-        "label": {
-            "en": "missing (from scans)"
-        },
-        "helpMessage": {
-            "en": "use this tag for pages that are in the artefact (in its present state of conservation) but which digitization has been overlooked"
-        }
-    },
-    "T0020": {
-        "label": {
-            "en": "missing (from artefact)"
-        },
-        "helpMessage": {
-            "en": "use this tag for pages that are missing in the artefact in its present state of conservation"
-        }
-    },
-    "T0021": {
-        "label": {
-            "en": "thumbnail for volume"
-        },
-        "helpMessage": {
-            "en": ""
-        }
-    },
-    "T0022": {
-        "label": {
-            "en": "duplicate (unintentional)"
-        },
+    {
         "helpMessage": {
             "en": "use this tag when the same original page has been digitized multiple times with no clear intention"
         },
+        "id": "T0022",
+        "label": { "en": "duplicate (unintentional)" },
         "ofField": "duplicate-of"
     },
-    "T0023": {
+    {
+        "helpMessage": { "en": "" },
+        "id": "T0004",
         "label": {
-            "en": "duplicate (file)"
+            "en": "catalog card (not part of the original, added for cataloging)"
+        }
+    },
+    {
+        "helpMessage": { "en": "" },
+        "id": "T0005",
+        "label": { "en": "bdrc scan request page" }
+    },
+    {
+        "helpMessage": { "en": "" },
+        "id": "T0006",
+        "label": { "en": "picture of book side" }
+    },
+    {
+        "helpMessage": { "en": "" },
+        "id": "T0007",
+        "label": { "en": "picture of a side of a volume" }
+    },
+    {
+        "helpMessage": { "en": "" },
+        "id": "T0008",
+        "label": { "en": "picture of close volume" }
+    },
+    {
+        "helpMessage": { "en": "" },
+        "id": "T0009",
+        "label": { "en": "picture of wrapped volume" }
+    },
+    {
+        "helpMessage": { "en": "" },
+        "id": "T0010",
+        "label": { "en": "picture of wrapping cloth" }
+    },
+    {
+        "helpMessage": { "en": "" },
+        "id": "T0011",
+        "label": { "en": "volume title page" }
+    },
+    {
+        "helpMessage": { "en": "" },
+        "id": "T0012",
+        "label": { "en": "text title page" }
+    },
+    {
+        "helpMessage": { "en": "" },
+        "id": "T0013",
+        "label": { "en": "blank page" }
+    },
+    {
+        "helpMessage": { "en": "" },
+        "id": "T0014",
+        "label": { "en": "has illustrations" }
+    },
+    {
+        "helpMessage": {
+            "en": "for pictures containing only color or lens checkers (and no page)"
         },
+        "id": "T0015",
+        "label": { "en": "color/lens checker" }
+    },
+    {
+        "helpMessage": {
+            "en": "used to tag picture that are detail of a feature of a page (seal, etc.)"
+        },
+        "id": "T0016",
+        "label": { "en": "detail" },
+        "ofField": "detail-of"
+    },
+    {
+        "helpMessage": {
+            "en": "use this tag when the same original page has been digitized multiple times intentionally, for instance with various exposures to reveal details"
+        },
+        "id": "T0017",
+        "label": { "en": "duplicate (intentional)" },
+        "ofField": "duplicate-of"
+    },
+    {
+        "helpMessage": {
+            "en": "use this tag when the same page appears several times in the artefact (don't use it for different pages with the same pagination)"
+        },
+        "id": "T0018",
+        "label": { "en": "duplicate in artefact" },
+        "ofField": "duplicate-of"
+    },
+    {
+        "helpMessage": {
+            "en": "use this tag for pages that are in the artefact (in its present state of conservation) but which digitization has been overlooked"
+        },
+        "id": "T0019",
+        "label": { "en": "missing (from scans)" }
+    },
+    {
+        "helpMessage": {
+            "en": "use this tag for pages that are missing in the artefact in its present state of conservation"
+        },
+        "id": "T0020",
+        "label": { "en": "missing (from artefact)" }
+    },
+    {
+        "helpMessage": { "en": "" },
+        "id": "T0021",
+        "label": { "en": "thumbnail for volume" }
+    },
+    {
         "helpMessage": {
             "en": "use this tag when the same file is present several times"
         },
+        "id": "T0023",
+        "label": { "en": "duplicate (file)" },
         "ofField": "duplicate-of"
     }
-}
+]
