@@ -1,6 +1,6 @@
 import React from 'react'
 import Select from '@material-ui/core/Select'
-import { includes, toPairs } from 'ramda'
+import { assoc, includes } from 'ramda'
 import { useTranslation } from 'react-i18next'
 import tags from '../tags.json'
 import FormHelperText from '@material-ui/core/FormHelperText'
@@ -13,31 +13,30 @@ import Checkbox from '@material-ui/core/Checkbox'
 import { connect } from 'react-redux'
 import { addImageTag } from '../redux/actions/manifest'
 
-const useStyles = makeStyles(theme => ({
+const tagMap = tags.reduce((acc, val) => {
+    return assoc(val.id, val, acc)
+}, {})
+
+const useStyles = makeStyles(() => ({
     formControl: {
         minWidth: 120,
         maxWidth: 300,
     },
 }))
-const Tags = (props: {
-    tags?: any
-    id?: any
-    dispatch: any
-    idx: number
-}) => {
+const Tags = (props: { tags?: any; id?: any; dispatch: any; idx: number }) => {
     const { t } = useTranslation()
     const classes = useStyles()
 
     const [tagOptions, setTagOptions] = React.useState([])
     React.useEffect(() => {
-        setTagOptions(toPairs(tags))
+        setTagOptions(tags)
     }, [props.tags])
 
     const MenuProps = {
         PaperProps: {
             style: {
                 height: 500,
-                width: 250,
+                width: 500,
             },
         },
     }
@@ -52,24 +51,30 @@ const Tags = (props: {
             <FormControl className={classes.formControl}>
                 <Select
                     multiple
-                    // helperText={t('Detail of File') as string}
                     value={props.tags || []}
                     onChange={handleChange}
-                    input={<Input/>}
+                    input={<Input />}
                     renderValue={(selected: any[]) => {
                         return (
                             selected
                                 // @ts-ignore
-                                .map(tag => tags[tag].label.en)
+                                .map(tag => tagMap[tag].label.en)
                                 .join(', ')
                         )
                     }}
                     MenuProps={MenuProps}
                 >
-                    {tagOptions.map(([id, data]) => (
-                        <MenuItem key={id} value={id}>
-                            <Checkbox checked={includes(id, tagsSafe) as unknown as boolean}/>
-                            <ListItemText primary={data.label.en}/>
+                    {tagOptions.map(tag => (
+                        <MenuItem key={tag.id} value={tag.id}>
+                            <Checkbox
+                                checked={
+                                    (includes(
+                                        tag.id,
+                                        tagsSafe
+                                    ) as unknown) as boolean
+                                }
+                            />
+                            <ListItemText primary={tag.label.en} />
                         </MenuItem>
                     ))}
                 </Select>
@@ -79,7 +84,7 @@ const Tags = (props: {
     )
 }
 
-const mapStateToProps = function(state: any) {
+const mapStateToProps = function() {
     return {}
 }
 

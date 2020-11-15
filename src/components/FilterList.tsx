@@ -5,6 +5,7 @@ import { lensPath, view } from 'ramda'
 import { useTranslation } from 'react-i18next'
 import Button from '@material-ui/core/Button'
 
+
 export default function FilterList(props: {
     foldCheckedImages?: any
     handleSettingsUpdate?: any
@@ -19,7 +20,7 @@ export default function FilterList(props: {
     ])
     const hideDeletedImages = view(hideDeletedImagesLens, manifest) as boolean
     return (
-        <div className="container mx-auto flex flex-row justify-end">
+        <div className="container mx-auto flex flex-row justify-end bg-white py-4">
             <Button
                 onClick={props.foldCheckedImages}
                 color="primary"

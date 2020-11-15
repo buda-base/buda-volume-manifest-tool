@@ -91,7 +91,7 @@ function App(props: any) {
             const formattedManifest = over(
                 imageListLens,
                 removeCollapsed,
-                manifest,
+                manifest
             )
             await postUpdate(formattedManifest, auth)
         } catch (error) {
@@ -106,7 +106,7 @@ function App(props: any) {
     }
     const updateImageList = (updatedImageList: unknown[]) => {
         props.dispatch(
-            setManifest(set(imageListLens, updatedImageList, manifest)),
+            setManifest(set(imageListLens, updatedImageList, manifest))
         )
     }
     const handleLoadMore = () => {
@@ -123,7 +123,7 @@ function App(props: any) {
                 return val.sectionId === sectionId ? ++acc : acc
             },
             0,
-            imageList,
+            imageList
         )
     }
     const handleSettingsUpdate = curry((lens, value) => {
@@ -147,11 +147,11 @@ function App(props: any) {
                 image: null,
                 images: [],
             },
-            imageList,
+            imageList
         )
         const updatedImageList = reject(
             propEq('remove', true),
-            insert(inc(idx), image, images),
+            insert(inc(idx), image, images)
         )
         updateImageList(updatedImageList)
     }
@@ -159,7 +159,7 @@ function App(props: any) {
     const foldCheckedImages = () => {
         const updatedImageList = map(
             image => (image.reviewed ? assoc('collapsed', true, image) : image),
-            imageList,
+            imageList
         )
         updateImageList(updatedImageList)
     }
@@ -175,12 +175,20 @@ function App(props: any) {
                 <AppBar
                     manifest={manifest}
                     handleSettingsUpdate={handleSettingsUpdate}
-                />
+                >
+                    {!manifest.isDefault && (
+                        <FilterList
+                            handleSettingsUpdate={handleSettingsUpdate}
+                            manifest={manifest}
+                            foldCheckedImages={foldCheckedImages}
+                        />
+                    )}
+                </AppBar>
                 <UpdateManifestError
                     postErr={postErr}
                     setPostErr={setPostErr}
                 />
-                {manifest.isDefault || !auth.user ? (
+                {manifest.isDefault ? (
                     <VolumeSearch
                         isFetching={isFetching}
                         fetchErr={fetchErr}
@@ -189,7 +197,7 @@ function App(props: any) {
                             : {})}
                     />
                 ) : (
-                    <div className="App" style={{ paddingTop: 60 }}>
+                    <div className="App" style={{ paddingTop: 125 }}>
                         <div>
                             <Dialog
                                 appData={manifest.appData}
@@ -212,7 +220,7 @@ function App(props: any) {
                                             }
                                             className="underline text-md font-medium cursor-pointer"
                                         >
-                                            <SettingsIcon/>
+                                            <SettingsIcon />
                                         </span>
                                     </span>
                                     {/*<span className="underline text-blue-600 cursor-pointer">*/}
@@ -221,22 +229,19 @@ function App(props: any) {
                                 </div>
                                 <div className="w-1/2 flex flex-col">
                                     <div className="self-end">
-                                        <span
-                                            className="underline text-md font-medium cursor-pointer mr-5"
-                                            onClick={() =>
-                                                saveUpdatesToManifest(auth)
-                                            }
-                                        >
-                                            {t('SAVE')}
-                                        </span>
+                                        {auth.isAuthenticated && (
+                                            <span
+                                                className="underline text-md font-medium cursor-pointer mr-5"
+                                                onClick={() =>
+                                                    saveUpdatesToManifest(auth)
+                                                }
+                                            >
+                                                {t('SAVE')}
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                             </div>
-                            <FilterList
-                                handleSettingsUpdate={handleSettingsUpdate}
-                                manifest={manifest}
-                                foldCheckedImages={foldCheckedImages}
-                            />
                             <div className="container mx-auto">
                                 <InfiniteScroll
                                     pageStart={0}
@@ -247,9 +252,11 @@ function App(props: any) {
                                         !isLoadingMore
                                     }
                                     loader={
-                                        <div key="circular"
-                                             className="container mx-auto flex items-center justify-center">
-                                            <CircularProgress/>
+                                        <div
+                                            key="circular"
+                                            className="container mx-auto flex items-center justify-center"
+                                        >
+                                            <CircularProgress />
                                         </div>
                                     }
                                     useWindow={true}
@@ -279,7 +286,7 @@ function App(props: any) {
                                                 />
                                             </React.Fragment>
                                         ),
-                                        imageList.slice(0, renderToIdx),
+                                        imageList.slice(0, renderToIdx)
                                     )}
                                 </InfiniteScroll>
                             </div>

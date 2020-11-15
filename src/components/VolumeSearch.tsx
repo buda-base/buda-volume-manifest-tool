@@ -14,7 +14,7 @@ const VolumeSearch = (props: {
 }) => {
     const { t } = useTranslation()
     const [volume, setVolume] = React.useState('')
-    const { user, loading } = useAuth0()
+    const { loading } = useAuth0()
     return props.isFetching || loading ? (
         <CircularProgress />
     ) : (
@@ -55,17 +55,6 @@ const VolumeSearch = (props: {
                     </MuiAlert>
                 )}
             </div>
-            {!user && !loading && (
-                <div
-                    style={{
-                        width: '100%',
-                        textAlign: 'center',
-                        marginTop: '10px',
-                    }}
-                >
-                    Please login first
-                </div>
-            )}
         </div>
     )
 }

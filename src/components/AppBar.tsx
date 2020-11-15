@@ -10,6 +10,7 @@ import { Buda } from '../../types'
 function AppBarTwo(props: {
     manifest: Buda.Manifest
     handleSettingsUpdate: (arg1: any, arg2: any) => void
+    children: React.ReactElement
 }) {
     const { manifest, handleSettingsUpdate } = props
     const { i18n, t } = useTranslation()
@@ -64,6 +65,7 @@ function AppBarTwo(props: {
                         </div>
                     </div>
                 </AppBar>
+                {props.children}
             </div>
         </header>
     )
