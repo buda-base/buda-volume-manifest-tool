@@ -40,7 +40,7 @@ async function saveManifest(
         add_changelog(manifest, auth0.user.bdrcID, changelogStr)
         try {
             const response: AxiosResponse<PutAnswer> = await axios.put(
-                `https://iiifpres-dev.bdrc.io/bvm/ig:${volume}`,
+                `https://iiifpres.bdrc.io/bvm/ig:${volume}`,
                 manifest,
                 {
                     headers: {
