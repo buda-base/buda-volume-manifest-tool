@@ -63,7 +63,8 @@ function App(props: any) {
     React.useEffect(() => {
         const search = window.location.search
         const params = new URLSearchParams(search)
-        const volume = params.get('volume')
+        const volume = params.get('volume') || props.volume
+        console.log("vol:",volume,props)
         setFetchErr(null)
         if (!volume) {
             setIsFetching(false)

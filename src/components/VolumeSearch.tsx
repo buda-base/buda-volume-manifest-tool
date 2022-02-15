@@ -44,7 +44,8 @@ const VolumeSearch = (props: {
                     color="primary"
                     style={{ marginLeft: '1em' }}
                     onClick={() => {
-                        window.location.search = `?volume=${volume}`
+                        if(window.location.pathname.startsWith("/bvmt")) window.location.pathname = "/bvmt/"+volume
+                        else window.location.search = `?volume=${volume}`
                     }}
                 >
                     {t('submit')}
