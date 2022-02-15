@@ -44,7 +44,7 @@ const VolumeSearch = (props: {
                     color="primary"
                     style={{ marginLeft: '1em' }}
                     onClick={() => {
-                        window.location.href = `/?volume=${volume}`
+                        window.location.search = `?volume=${volume}`
                     }}
                 >
                     {t('submit')}
