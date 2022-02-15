@@ -60,11 +60,25 @@ function App(props: any) {
     const [postErr, setPostErr] = React.useState(null)
 
     const { dispatch } = props
+
+    const search = window.location.search
+    const params = new URLSearchParams(search)
+    const volume = params.get('volume') || props.volume
+    
+    console.log("vol:",volume,props,manifest)
+    
+    if(!volume && !manifest.isDefault) { 
+        manifest.isDefault = true
+        if(manifest.imggroup) delete manifest.imggroup 
+    }
+
     React.useEffect(() => {
-        const search = window.location.search
-        const params = new URLSearchParams(search)
-        const volume = params.get('volume') || props.volume
-        console.log("vol:",volume,props)
+        return () => {
+            console.log("unmounting BVMT")
+        }
+    }, [])
+
+    React.useEffect(() => {
         setFetchErr(null)
         if (!volume) {
             setIsFetching(false)
@@ -84,7 +98,7 @@ function App(props: any) {
             }
             getData()
         }
-    }, [dispatch])
+    }, [dispatch,volume])
 
     const saveUpdatesToManifest = async (auth: any) => {
         try {
@@ -191,6 +205,7 @@ function App(props: any) {
                 />
                 {manifest.isDefault ? (
                     <VolumeSearch
+                        history={props.history}
                         isFetching={isFetching}
                         fetchErr={fetchErr}
                         {...(manifest && manifest['imggroup']

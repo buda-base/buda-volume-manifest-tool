@@ -15,6 +15,7 @@ const VolumeSearch = (props: {
     const { t } = useTranslation()
     const [volume, setVolume] = React.useState('')
     const { loading } = useAuth0()
+
     return props.isFetching || loading ? (
         <CircularProgress />
     ) : (
@@ -44,7 +45,7 @@ const VolumeSearch = (props: {
                     color="primary"
                     style={{ marginLeft: '1em' }}
                     onClick={() => {
-                        if(window.location.pathname.startsWith("/bvmt")) window.location.pathname = "/bvmt/"+volume
+                        if(props.history?.location.pathname.startsWith("/bvmt")) props.history.push({pathname:"/bvmt/"+volume})
                         else window.location.search = `?volume=${volume}`
                     }}
                 >
