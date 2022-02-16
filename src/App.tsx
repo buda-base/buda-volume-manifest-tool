@@ -72,6 +72,10 @@ function App(props: any) {
         if(manifest.imggroup) delete manifest.imggroup 
     }
 
+    // fix for hot reload triggering "Cannot have two HTML5 backends at the same time" error
+    // (see https://github.com/react-dnd/react-dnd/issues/894#issuecomment-386698852)
+    window.__isReactDndBackendSetUp = false;
+
     React.useEffect(() => {
         return () => {
             //console.log("unmounting BVMT")
