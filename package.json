@@ -41,7 +41,8 @@
     "eject": "react-scripts eject",
     "prestart": "tailwind build ./src/index.tailwind.css -c ./tailwind.config.js -o ./src/index.css",
     "tailwind:css": "tailwind build src/css/tailwind.src.css -c  tailwind.js -o src/css/tailwind.css",
-    "check:types": "tsc"
+    "check:types": "tsc",
+    "postinstall": "ln -nsf $(pwd)/public/images $(pwd)/public/images/OSD"
   },
   "eslintConfig": {
     "extends": "react-app"

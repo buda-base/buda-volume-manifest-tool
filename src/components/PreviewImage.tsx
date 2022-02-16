@@ -56,6 +56,7 @@ class PreviewImage extends React.Component<IProps, IState> {
                 defaultZoomLevel: this.props.zoom,
                 showRotationControl: true,
                 tileSources: [this.props.iiif],
+                prefixUrl:'/images/OSD/'
             })
 
             if (imageView) {
