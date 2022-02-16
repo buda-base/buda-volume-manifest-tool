@@ -65,7 +65,7 @@ function App(props: any) {
     const params = new URLSearchParams(search)
     const volume = params.get('volume') || props.volume
     
-    console.log("vol:",volume,props,manifest)
+    //console.log("vol:",volume,props,manifest)
     
     if(!volume && !manifest.isDefault) { 
         manifest.isDefault = true
@@ -74,7 +74,7 @@ function App(props: any) {
 
     React.useEffect(() => {
         return () => {
-            console.log("unmounting BVMT")
+            //console.log("unmounting BVMT")
         }
     }, [])
 
@@ -245,11 +245,11 @@ function App(props: any) {
                                 </div>
                                 <div className="w-1/2 flex flex-col">
                                     <div className="self-end">
-                                        {auth.isAuthenticated && (
+                                        {(props.auth?.isAuthenticated || auth.isAuthenticated) && (
                                             <span
                                                 className="underline text-md font-medium cursor-pointer mr-5"
                                                 onClick={() =>
-                                                    saveUpdatesToManifest(auth)
+                                                    saveUpdatesToManifest(props.auth?props.auth:auth)
                                                 }
                                             >
                                                 {t('SAVE')}
