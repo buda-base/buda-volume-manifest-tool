@@ -16,6 +16,9 @@ import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import VisibilityOnIcon from '@material-ui/icons/Visibility'
+import ArrowDropDown from '@material-ui/icons/ArrowDropDown'
+import ArrowDropUp from '@material-ui/icons/ArrowDropUp'
+import NotInterestedIcon from '@material-ui/icons/NotInterested';
 import EditCard from './EditCard'
 import PreviewImage from './PreviewImage'
 import axios from 'axios'
@@ -124,17 +127,20 @@ function ImageCard(props: {
     const Header = () => {
         return (
             <div
-                className="flex p-2 justify-between"
+                className="flex justify-between card-head"
                 style={{ borderBottom: '1px solid rgb(235, 235, 235)' }}
             >
-                <div className="flex">
+                <div className="flex pl-2" >
                     <DragHandleIcon
                         className="mr-2"
                         style={{ cursor: 'move' }}
                     />
                     <h3
-                        className={`font-bold ${image.hide &&
-                        'text-red-600'} flex align-center`}
+                        className={`py-2 font-bold ${image.hide &&
+                        'text-red-600'} flex align-center`}                         
+                        onClick={() =>
+                            props.dispatch(toggleCollapseImage(props.i))
+                        }
                     >
                         {image.hide && (
                             <DeleteIcon
@@ -147,7 +153,7 @@ function ImageCard(props: {
                         1} of ${props.imageListLength})`}</span>
                     </h3>
                 </div>
-                <div className="self-end flex">
+                <div className="self-center flex pr-4">
                     {image.note && image.note.length > 0 && (
                         <NoteIcon className="mr-4"/>
                     )}
@@ -158,15 +164,15 @@ function ImageCard(props: {
                         }
                     >
                         {image.collapsed ? (
-                            <VisibilityOnIcon className="mr-4"/>
+                            <ArrowDropDown className="mr-2" style={{fontSize:"32px"}}/>
                         ) : (
-                            <VisibilityOffIcon className="mr-4"/>
+                            <ArrowDropUp className="mr-2" style={{fontSize:"32px"}}/>
                         )}
                     </span>
 
                     <Edit
                         onClick={() => setEditDialogOpen(true)}
-                        className="mr-4 cursor-pointer"
+                        className="mr-2 cursor-pointer"
                     />
 
                     <SimpleMenu/>
@@ -199,10 +205,20 @@ function ImageCard(props: {
 
                 <Menu
                     id="simple-menu"
+                    getContentAnchorEl={null}
                     anchorEl={anchorEl}
                     keepMounted
                     open={Boolean(anchorEl)}
                     onClose={handleClose}
+                    anchorOrigin={{
+                        vertical: 36,
+                        horizontal: 44,
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                    }}
+                    elevation={0}
                 >
                     <MenuItem
                         onClick={() =>
@@ -300,23 +316,24 @@ function ImageCard(props: {
             />
             <CardHeader className={classes.cardHeader} component={Header}/>
             {!image.collapsed && (
-                <CardContent className="flex" style={{ padding: 0 }}>
+                <CardContent className="flex justify-between" style={{ padding: 0 }}>
                     {iiif ? (
                         <PreviewImage i={props.i as never} iiif={iiif as never}/>
                     ) : (
-                        <div className="border-r border-gray-300 mr-2">
+                        <div className="flex border-r border-gray-300 mr-2 w-3/5">
                             <div
                                 style={{
-                                    width: 300,
-                                    height: 192,
+                                    backgroundColor:"#ddd",
+                                    width:"100%",
+                                    height:"100%",
                                     position: 'relative',
                                 }}
-                                className="items-center flex justify-centermr-2"
-                            ></div>
+                                className="nOSD items-center flex justify-center"
+                            ><NotInterestedIcon /></div>
                         </div>
                     )}
 
-                    <div className="flex flex-col w-1/2">
+                    <div className="flex flex-col w-2/5 px-4 py-3">
                         <div className="w-full flex flex-row  w-1/3">
                             <div className="mb-2">
                                 <Formik

@@ -173,7 +173,7 @@ class PreviewImage extends React.Component<IProps, IState> {
         }))(ImageMenu)
 
         return (
-            <div className="border-r border-gray-300 mr-2 w-1/2">
+            <div className="border-r border-gray-300 mr-2 w-3/5">
                 <div
                     style={{
                         width: '100%',

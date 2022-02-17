@@ -29,7 +29,7 @@ function CardDropZone({
                 padding: isOver ? '2em 0' : 0,
                 backgroundColor: 'white',
             }}
-            className="my-4"
+            className="my-4 drop-zone"
         >
             {isOver && (
                 <div
@@ -40,7 +40,7 @@ function CardDropZone({
                         height: '100%',
                         width: '100%',
                         zIndex: 1,
-                        backgroundColor: 'black',
+                        backgroundColor: '#bbb',
                     }}
                     className="flex justify-center items-center"
                 >
