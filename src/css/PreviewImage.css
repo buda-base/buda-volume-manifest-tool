@@ -1,0 +1,22 @@
+
+.card-head + div > div { position: relative;}
+
+.osd-toolbar-ui { display: flex; align-items: center; height:40px; background:#172832; position: absolute !important; width:100%; bottom:-40px; transition:bottom 300ms ease-in-out; 
+  justify-content: space-between; padding:0 8px;
+}
+.osd-preview { overflow: hidden;}
+.osd-preview:hover .osd-toolbar-ui { bottom:0; }
+
+.osd-toolbar-ui .preview { display: inline-flex !important; flex-shrink:0; color:white; flex-wrap: nowrap; font-size:12px; font-weight:500; order:1; cursor:pointer;}
+.osd-toolbar-ui .preview img { margin-left:5px; }
+.osd-toolbar-ui .preview + div { display: inline-flex; align-items: center;height:100%; order:0; }
+.osd-toolbar-ui .preview + div > div { position:relative !important; display: inline-flex; align-items: center;height:100%;}
+.osd-toolbar-ui .preview + div > div > div { display: inline-flex; align-items: center; height:100%;}
+.osd-toolbar-ui .preview + div > div > div > div { display: inline-flex !important; align-items: center; height:100%;}
+.osd-toolbar-ui .preview + div > div > div > div > div:nth-child(3) img,
+.osd-toolbar-ui .preview + div > div > div > div > div:first-child img { height:18px; }
+.osd-toolbar-ui .preview + div > div > div > div > div img:not(:first-child) { display:none !important; }
+.osd-toolbar-ui .preview + div > div > div > div > div { padding: 0 8px !important; border-right:1px solid rgba(255,255,255,0.65) !important; height:24px; 
+  display: flex !important; align-items: center; cursor: pointer;
+}
+.osd-toolbar-ui .preview + div > div > div > div > div:last-child { border-right:none !important; }
