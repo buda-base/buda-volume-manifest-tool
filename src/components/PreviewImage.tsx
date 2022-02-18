@@ -236,7 +236,8 @@ class PreviewImage extends React.Component<IProps, IState> {
                         {/* <ImageMenuOverlay /> */}
                     </div>                
                 </div>
-                <div id={`openseadragon${this.props.i}_toolbar`} class="osd-toolbar-ui">
+                <div  class="osd-toolbar-ui">
+                    <div id={`openseadragon${this.props.i}_toolbar`} class="osd-toolbar-ui-container"></div>
                     <div className="preview" style={{display:"inline-block"}} onClick={() => {
                         const zoom = this.state.viewer.viewport.getZoom(
                             true
