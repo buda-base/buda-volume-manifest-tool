@@ -18,7 +18,13 @@ async function getImageList(volumeQname: string) {
 
 async function getManifest(volumeQname: string) {
     // this returns an existing manifest, might return a 404
-    const { data } = await axios.get(`${apiroot}/bvm/ig:${volumeQname}`)
+    const idToken = localStorage.getItem("BLMPidToken")
+    const { data } = await axios.get(`${apiroot}/bvm/ig:${volumeQname}`,
+    { 
+        headers: {
+            Authorization: `Bearer ${idToken}`,
+        }
+    })
     return data
 }
 

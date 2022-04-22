@@ -108,8 +108,14 @@ function ImageCard(props: {
     React.useEffect(() => {
         const getData = async () => {
             try {
+                const idToken = localStorage.getItem("BLMPidToken")
                 const data = await axios.get(
                     `https://iiif.bdrc.io/${props.volumeId}::${image.filename}/info.json`,
+                    { 
+                        headers: {
+                            Authorization: `Bearer ${idToken}`,
+                        }
+                    }
                 )
                 const iiif = data.data
                 setiiif(iiif)

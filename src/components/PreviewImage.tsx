@@ -60,6 +60,7 @@ class PreviewImage extends React.Component<IProps, IState> {
                 tileSources: [this.props.iiif],
                 toolbar:`openseadragon${this.props.i}_toolbar`,
                 prefixUrl:'/images/osd/',
+                ajaxWithCredentials: true,
                 navImages:{
                     zoomIn:{ 
                         REST:"plus.svg",
@@ -99,6 +100,7 @@ class PreviewImage extends React.Component<IProps, IState> {
                     }
                 }
             })
+            //console.log("viewer:",viewer,this.props.iiif)
 
             if (imageView) {
                 viewer.addHandler('open', () => {
