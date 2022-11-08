@@ -5,11 +5,14 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
 import Card from './components/Card'
 import { DndProvider } from 'react-dnd'
 import FilterList from './components/FilterList'
-import Backend from 'react-dnd-html5-backend'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 import postUpdate from './api/postUpdate'
 import { useTranslation } from 'react-i18next'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { useAuth0 } from './react-auth0-spa'
+import {
+  useParams,
+} from "react-router-dom"
 import {
     addIndex,
     assoc,
@@ -50,7 +53,7 @@ const imageListLens = lensPath(['view', 'view1', 'imagelist'])
 
 function App(props: any) {
     const { manifest } = props
-
+    const params = useParams()
     const [settingsDialogOpen, setSettingsDialog] = React.useState(false)
     const imageList = (view(imageListLens, manifest) as Buda.Image[]) || []
     const [isFetching, setIsFetching] = React.useState(false)
@@ -61,8 +64,6 @@ function App(props: any) {
 
     const { dispatch } = props
     React.useEffect(() => {
-        const search = window.location.search
-        const params = new URLSearchParams(search)
         const volume = params.get('volume')
         setFetchErr(null)
         if (!volume) {
@@ -171,7 +172,7 @@ function App(props: any) {
 
     return (
         <ThemeProvider theme={theme}>
-            <DndProvider backend={Backend}>
+            <DndProvider backend={HTML5Backend}>
                 <AppBar
                     manifest={manifest}
                     handleSettingsUpdate={handleSettingsUpdate}
