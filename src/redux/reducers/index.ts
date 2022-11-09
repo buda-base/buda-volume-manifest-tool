@@ -96,7 +96,7 @@ export default (
         case 'SET_UI_LANGUAGE':
             return set(
                 lensPath(['appData', 'bvmt', 'default-ui-string-lang']),
-                action.payload,
+                action.payload.value,
                 manifest,
             )
         case 'UPDATE_IMAGE_VALUE':
@@ -120,7 +120,7 @@ export default (
 
         case 'REMOVE_OF_FIELD':
             return updateImage(action.payload.idx, (image: Buda.Image) =>
-                dissoc(action.payload.ofField, image),
+                dissoc(action.payload.ofField as keyof Buda.Image, image),
             )
 
         case 'ADD_NOTE':

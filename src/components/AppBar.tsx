@@ -1,7 +1,5 @@
 import React from 'react'
-import AppBar from '@material-ui/core/AppBar/AppBar'
-import FormControl from '@material-ui/core/FormControl'
-import Select from '@material-ui/core/Select'
+import { AppBar, FormControl, Select } from "@mui/material"
 import { lensPath } from 'ramda'
 import { useTranslation } from 'react-i18next'
 import AuthNavBar from './AuthNavBar'

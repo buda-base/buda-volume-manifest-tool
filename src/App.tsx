@@ -10,6 +10,7 @@ import postUpdate from './api/postUpdate'
 import { useTranslation } from 'react-i18next'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { useAuth0 } from './react-auth0-spa'
+import { AxiosError } from "axios"
 import {
   useParams,
 } from "react-router-dom"
@@ -51,18 +52,42 @@ const theme = createMuiTheme({
 
 const imageListLens = lensPath(['view', 'view1', 'imagelist'])
 
+type ImageAndRemove = Buda.Image & { remove?: boolean }
+
 function App(props: any) {
     const { manifest } = props
     const params = useParams()
     const [settingsDialogOpen, setSettingsDialog] = React.useState(false)
     const imageList = (view(imageListLens, manifest) as Buda.Image[]) || []
     const [isFetching, setIsFetching] = React.useState(false)
-    const [fetchErr, setFetchErr] = React.useState(null)
+    const [fetchErr, setFetchErr] = React.useState<string|null>(null)
     const [renderToIdx, setRenderToIdx] = React.useState(9)
     const [isLoadingMore, setIsLoadingMore] = React.useState(false)
-    const [postErr, setPostErr] = React.useState(null)
+    const [postErr, setPostErr] = React.useState<string|null>(null)
 
     const { dispatch } = props
+
+    const search = window.location.search
+    const params = new URLSearchParams(search)
+    const volume = params.get('volume') || props.volume
+    
+    //console.log("vol:",volume,props,manifest)
+    
+    if(!volume && !manifest.isDefault) { 
+        manifest.isDefault = true
+        if(manifest.imggroup) delete manifest.imggroup 
+    }
+
+    // fix for hot reload triggering "Cannot have two HTML5 backends at the same time" error
+    // (see https://github.com/react-dnd/react-dnd/issues/894#issuecomment-386698852)
+    (window as any).__isReactDndBackendSetUp = false;
+
+    React.useEffect(() => {
+        return () => {
+            //console.log("unmounting BVMT")
+        }
+    }, [])
+
     React.useEffect(() => {
         const volume = params.get('volume')
         setFetchErr(null)
@@ -77,7 +102,8 @@ function App(props: any) {
                     })
                     setIsFetching(false)
                     dispatch(setManifest(manifest))
-                } catch (err) {
+                } catch (error) {
+                    const err = error as AxiosError
                     setIsFetching(false)
                     setFetchErr(err.message)
                 }
@@ -96,16 +122,17 @@ function App(props: any) {
             )
             await postUpdate(formattedManifest, auth)
         } catch (error) {
-            if (error.response) {
-                setPostErr(error.response.data)
-            } else if (error.request) {
-                setPostErr(error.request)
+            const err = error as AxiosError
+            if (err.response) {
+                setPostErr(err.response.data)
+            } else if (err.request) {
+                setPostErr(err.request)
             } else {
-                setPostErr(error.message)
+                setPostErr(err.message)
             }
         }
     }
-    const updateImageList = (updatedImageList: unknown[]) => {
+    const updateImageList = (updatedImageList: Buda.Image[]) => {
         props.dispatch(
             setManifest(set(imageListLens, updatedImageList, manifest))
         )
@@ -134,12 +161,9 @@ function App(props: any) {
 
     const rearrangeImage = (imageId: string, idx: number) => {
         const { image, images } = reduce(
-            (acc, val) => {
+            (acc: {image: Buda.Image | null, images: Buda.Image[]}, val: Buda.Image) => {
                 if (val.id === imageId) {
-                    const valToRemove = assoc('remove', true, val)
                     acc.image = val
-                    acc.images.push(valToRemove)
-                    return acc
                 }
                 acc.images.push(val)
                 return acc
@@ -150,10 +174,11 @@ function App(props: any) {
             },
             imageList
         )
-        const updatedImageList = reject(
-            propEq('remove', true),
-            insert(inc(idx), image, images)
-        )
+        const tmpList = insert(inc(idx), image, images)
+        // TODO: check
+        const updatedImageList = tmpList.filter( img => {
+          return img && imageId != img.id
+        }) as Buda.Image[]
         updateImageList(updatedImageList)
     }
 
@@ -177,13 +202,13 @@ function App(props: any) {
                     manifest={manifest}
                     handleSettingsUpdate={handleSettingsUpdate}
                 >
-                    {!manifest.isDefault && (
+                    <>{!manifest.isDefault && (
                         <FilterList
                             handleSettingsUpdate={handleSettingsUpdate}
                             manifest={manifest}
                             foldCheckedImages={foldCheckedImages}
                         />
-                    )}
+                    )}</>
                 </AppBar>
                 <UpdateManifestError
                     postErr={postErr}

@@ -113,9 +113,9 @@ export function handlePaginationPredication(image: Buda.Image) {
 }
 
 
-export function setUILanguage(language: any) {
+export function setUILanguage(language: string) {
     return {
         type: 'SET_UI_LANGUAGE',
-        payload: language,
+        payload: { value: language },
     }
 }

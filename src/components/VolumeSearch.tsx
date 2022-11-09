@@ -6,6 +6,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import MuiAlert from '@material-ui/lab/Alert'
 import { isNil } from 'ramda'
 import { useAuth0 } from '../react-auth0-spa'
+import { useLocation, useNavigate } from "react-router-dom"
 
 const VolumeSearch = (props: {
     isFetching: any
@@ -15,6 +16,9 @@ const VolumeSearch = (props: {
     const { t } = useTranslation()
     const [volume, setVolume] = React.useState('')
     const { loading } = useAuth0()
+    const location = useLocation()
+    const navigate = useNavigate()
+
     return props.isFetching || loading ? (
         <CircularProgress />
     ) : (
@@ -44,7 +48,8 @@ const VolumeSearch = (props: {
                     color="primary"
                     style={{ marginLeft: '1em' }}
                     onClick={() => {
-                        window.location.href = `/?volume=${volume}`
+                        if(location.pathname.startsWith("/bvmt")) navigate({pathname:"/bvmt/"+volume})
+                        else window.location.search = `?volume=${volume}`
                     }}
                 >
                     {t('submit')}

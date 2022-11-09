@@ -4,17 +4,27 @@ import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import MuiDialogTitle from '@material-ui/core/DialogTitle'
 import MuiDialogActions from '@material-ui/core/DialogActions'
-import IconButton from '@material-ui/core/IconButton'
-import CloseIcon from '@material-ui/icons/Close'
-import Typography from '@material-ui/core/Typography'
-import Select from '@material-ui/core/Select'
-import TextField from '@material-ui/core/TextField'
 import LanguageOptions from './LanguageOptions'
 import { append, lensPath, path, pathOr, propEq, propOr, reject, view } from 'ramda'
-import InputLabel from '@material-ui/core/InputLabel'
-import FormControl from '@material-ui/core/FormControl'
-import AddCircleIcon from '@material-ui/icons/AddCircle'
-import RemoveCircleIcon from '@material-ui/icons/RemoveCircle'
+
+import {
+  CardHeader,
+  CardContent,
+  TextField,
+  Select,
+  FormControl,
+  Checkbox,
+  InputLabel,
+  Typography,
+  IconButton,
+  Menu,
+} from "@mui/material"
+import {
+  RemoveCircle as RemoveCircleIcon,
+  AddCircle as AddCircleIcon,
+  Close as CloseIcon
+} from '@mui/icons-material'
+
 import uuidv4 from 'uuid/v4'
 import { useTranslation } from 'react-i18next'
 import { getPaginationTypes } from '../utils/pagination-prediction'

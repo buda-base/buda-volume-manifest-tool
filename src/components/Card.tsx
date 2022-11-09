@@ -1,36 +1,43 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import CardHeader from '@material-ui/core/CardHeader'
-import CardContent from '@material-ui/core/CardContent'
 import { red } from '@material-ui/core/colors'
-import TextField from '@material-ui/core/TextField'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
-import DragHandleIcon from '@material-ui/icons/DragHandle'
-import Select from '@material-ui/core/Select'
-import FormControl from '@material-ui/core/FormControl'
-import { Checkbox } from '@material-ui/core'
-import Edit from '@material-ui/icons/Edit'
-import Menu from '@material-ui/core/Menu'
+import {
+  MoreVert as MoreVertIcon,
+  ArrowUpward as ArrowUpwardIcon,
+  ArrowDownward as ArrowDownwardIcon,
+  VisibilityOff as VisibilityOffIcon,
+  Visibility as VisibilityIcon,
+  DragHandle as DragHandleIcon,
+  NotInterested as NotInterestedIcon,
+  Beenhere as BeenhereIcon,
+  CheckBox as CheckBoxIcon,
+  Reorder as ReorderIcon,
+  Note as NoteIcon,
+  Delete as DeleteIcon,
+  Edit
+} from '@mui/icons-material'
+import {
+  CardHeader,
+  CardContent,
+  TextField,
+  Select,
+  FormControl,
+  Checkbox,
+  InputLabel,
+  Menu,
+} from "@mui/material"
 import MenuItem from '@material-ui/core/MenuItem'
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
-import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
-import VisibilityOnIcon from '@material-ui/icons/Visibility'
+import ArrowDropDown from '@material-ui/icons/ArrowDropDown'
+import ArrowDropUp from '@material-ui/icons/ArrowDropUp'
 import EditCard from './EditCard'
 import PreviewImage from './PreviewImage'
 import axios from 'axios'
-import BeenhereIcon from '@material-ui/icons/Beenhere'
-import CheckBoxIcon from '@material-ui/icons/CheckBox'
-import ReorderIcon from '@material-ui/icons/Reorder'
-import { useDrag } from 'react-dnd'
+import { useDrag, DragSourceMonitor } from 'react-dnd'
 import { useTranslation } from 'react-i18next'
 import Tags from './Tags'
 import TypeSelect from './TypeSelect'
-import NoteIcon from '@material-ui/icons/Note'
 import { Formik } from 'formik'
-import DeleteIcon from '@material-ui/icons/Delete'
 import { pathOr } from 'ramda'
-import InputLabel from '@material-ui/core/InputLabel'
 import LanguageOptions from './LanguageOptions'
 import { connect } from 'react-redux'
 import {
@@ -92,12 +99,13 @@ function ImageCard(props: {
 }) {
     const classes = useStyles()
     const [editDialogOpen, setEditDialogOpen] = React.useState(false)
-    const [iiif, setiiif] = React.useState(null)
+    const [iiif, setiiif] = React.useState<any|null>(null)
     const { data: image, sectionInputs } = props
 
-    const [, dragRef] = useDrag({
-        item: { type: 'CARD', imageId: image.id },
-        collect: monitor => ({
+    const [{ opacity }, dragRef] = useDrag({
+        type: 'CARD',
+        item: { imageId: image.id },
+        collect: (monitor) => ({
             opacity: monitor.isDragging() ? 0.3 : 1,
         }),
     })

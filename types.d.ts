@@ -33,7 +33,7 @@ export namespace Buda {
         'spec-version': string
         status: string
         'volume-label': Text[]
-        rev: string
+        rev: string | null
         attribution: Text[]
         note: Text[]
         'viewing-direction': string

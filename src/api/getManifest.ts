@@ -1,5 +1,5 @@
 import uuidv4 from 'uuid/v4'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { assoc, lensPath, map, over } from 'ramda'
 import { Buda } from '../../types'
 
@@ -27,10 +27,11 @@ export async function getOrInitManifest(volumeQname: string, options: Options) {
 
     try {
         manifest = await getManifest(volumeQname)
-    } catch (err) {
+    } catch (error) {
+        const err = error as AxiosError
         console.log('err!', err)
-        console.log('err.response.status', err.response.status)
-        if (err.response.status !== 404) {
+        console.log('err.response.status', err.response?.status)
+        if (err.response?.status !== 404) {
             throw err
         }
         const images = await getImageList(volumeQname)
