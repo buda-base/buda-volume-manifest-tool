@@ -3,6 +3,15 @@ declare module 'history'
 export namespace Buda {
     type Text = { '@value': string; '@language': string }
 
+    type LangToText = Record<string,string>
+
+    interface Tag {
+      helpMessage: LangToText
+      id: string
+      label: LangToText
+      ofField?: string
+    }
+
     interface Image {
         id: string
         filename: string
@@ -24,7 +33,7 @@ export namespace Buda {
         belongsToVolume?: boolean
     }
 
-    export interface Manifest {
+    interface Manifest {
         isDefault?: boolean
         volumeData?: {
             defaultLanguage: string

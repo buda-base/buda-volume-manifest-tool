@@ -166,7 +166,7 @@ function ImageCard(props: {
                         }
                     >
                         {image.collapsed ? (
-                            <VisibilityOnIcon className="mr-4"/>
+                            <VisibilityIcon className="mr-4"/>
                         ) : (
                             <VisibilityOffIcon className="mr-4"/>
                         )}

@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
 
 const TypeSelect = (props: {
     id: any
-    duplicateImageOptions: readonly Record<'id', any>[]
+    duplicateImageOptions: Record<'id', any>[]
     duplicateOf: any
     tags: any
     i?: any
@@ -144,13 +144,10 @@ TypeSelect.whyDidYouRender = false
 const mapStateToProps = function(state: any) {
     const imageListLens = lensPath(['view', 'view1', 'imagelist'])
     const imageList = (view(imageListLens, state.manifest) as Buda.Image[]) || []
+    const imageListWithFilenames = imageList.filter((img) => {return !!img.filename})
+    const res = imageListWithFilenames.map(({ id, filename }) => ({ id, name: filename }))
     return {
-        duplicateImageOptions: compose(
-            map(({ id, filename }) => ({ id, name: filename })),
-            // @ts-ignore
-            reject(complement(has)('filename'))
-            // @ts-ignore
-        )(imageList)
+        duplicateImageOptions: res
     }
 }
 

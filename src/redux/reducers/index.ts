@@ -111,9 +111,7 @@ export default (
             return updateImage(action.payload.idx, (image: Buda.Image) =>
                 compose(
                     assoc('collapsed', action.payload.hide),
-                    // @ts-ignore
                     assoc('hide', action.payload.hide),
-            // @ts-ignore
                 )(image),
             )
         }
@@ -161,7 +159,7 @@ export default (
             return updateImage(action.payload.idx, (image: Buda.Image) =>
                 assoc(
                     action.payload.key,
-                    action.payload.val.name,
+                    action.payload.val?.name,
                     image,
                 ),
             )
@@ -173,13 +171,13 @@ export default (
             var updateImageList9
             if (action.payload.direction === 'before') {
                 updateImageList9 = insert(
-                    action.payload.i,
+                    action.payload.i as number,
                     defaultMissingImage,
                     getImageList(manifest),
                 )
             } else if (action.payload.direction === 'after') {
                 updateImageList9 = insert(
-                    action.payload.i + 1,
+                    (action.payload.i as number) + 1,
                     defaultMissingImage,
                     getImageList(manifest),
                 )
@@ -216,11 +214,11 @@ export default (
                         intersection(currentTags, detailTags).length > 0
 
                     const newTagsHaveDuplicates =
-                        intersection(action.payload.tags, duplicateTags)
+                        intersection(action.payload.tags as string[], duplicateTags)
                             .length > 0
 
                     const newTagsHaveDetail =
-                        intersection(action.payload.tags, detailTags).length > 0
+                        intersection(action.payload.tags as string[], detailTags).length > 0
 
                     const removeDuplicateOf =
                         prevTagsHaveDuplicates && !newTagsHaveDuplicates
@@ -230,7 +228,7 @@ export default (
                     return compose(
                         when(always(removeDuplicateOf), dissoc('duplicate-of')),
                         when(always(removeDetailOf), dissoc('detail-of')),
-                        assoc('tags', action.payload.tags),
+                        assoc('tags', action.payload.tags as string[]),
                     )(image)
                 },
             )
@@ -238,18 +236,17 @@ export default (
         case 'REMOVE_NOTE':
             return updateImage(action.payload.idx, (image: Buda.Image) => {
                     const updatedNotes = remove(
-                        action.payload.noteIdx,
+                        action.payload.noteIdx as number,
                         1,
                         propOr([], 'note', image),
                     )
                     return assoc('note', updatedNotes, image)
-
                 },
             )
 
         case 'MARK_PREVIOUS_AS_REVIEWED':
             const updateImageList14 = mapIndex((image, idx) => {
-                if (idx <= action.payload.imageIdx) {
+                if (idx <= (action.payload.imageIdx as number)) {
                     return assoc('reviewed', true, image)
                 } else {
                     return image
@@ -267,13 +264,14 @@ export default (
                     const diff = i - action.payload.idx
                     // TODO: here we shouldn't change anything after the first reviewed image,
                     // even if some images are not reviewed
-                    if (diff > 0 && !image.reviewed) {
+                    if (diff > 0 && !image.reviewed && getMargin) {
                         let res = getMargin(diff)
+                        if (!res)
+                          return image
                         let newimg = assoc('indication', res[1], image)
                         if (!newimg.pagination) {
                             newimg.pagination = {}
                         }
-                        // @ts-ignore
                         newimg.pagination[pagination_id] = res[0]
                         return newimg
                     } else {
@@ -285,15 +283,12 @@ export default (
             return set(imageListLens, updateImageList15, manifest)
         case 'HANDLE_PAGINATION_PREDICTION':
             const imageList2 = getImageList(manifest)
+
             const rearrangeImage = (imageId: string, idx: number) => {
                 const { image, images } = reduce(
-                    (acc, val) => {
-                        // @ts-ignore
+                    (acc: {image: Buda.Image | null, images: Buda.Image[]}, val: Buda.Image) => {
                         if (val.id === imageId) {
-                            const valToRemove = assoc('remove', true, val)
                             acc.image = val
-                            acc.images.push(valToRemove)
-                            return acc
                         }
                         acc.images.push(val)
                         return acc
@@ -302,19 +297,20 @@ export default (
                         image: null,
                         images: [],
                     },
-                    imageList2,
+                    imageList2
                 )
-                return reject(
-                    propEq('remove', true),
-                    insert(inc(idx), image, images),
-                )
+                const tmpList = insert(idx+1, image, images)
+                // TODO: check
+                const updatedImageList = tmpList.filter( (img: Buda.Image | null, i: number) => {
+                  return img && (imageId != img.id || i == idx+1)
+                }) as Buda.Image[]
+                return updatedImageList
             }
-            // @ts-ignore
+
             const cmp = curry(getComparator)(manifest)
             // TODO: the comparator is currently for the whole manifest, it might be
             // relevant to have it just for the specific image
             const idx = findIndex(
-                // @ts-ignore
                 img => cmp(action.payload.image.pagination, img.pagination) < 0,
                 imageList2,
             )

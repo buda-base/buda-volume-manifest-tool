@@ -12,9 +12,6 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import { useAuth0 } from './react-auth0-spa'
 import { AxiosError } from "axios"
 import {
-  useParams,
-} from "react-router-dom"
-import {
     addIndex,
     assoc,
     curry,
@@ -56,7 +53,7 @@ type ImageAndRemove = Buda.Image & { remove?: boolean }
 
 function App(props: any) {
     const { manifest } = props
-    const params = useParams()
+
     const [settingsDialogOpen, setSettingsDialog] = React.useState(false)
     const imageList = (view(imageListLens, manifest) as Buda.Image[]) || []
     const [isFetching, setIsFetching] = React.useState(false)
@@ -89,7 +86,6 @@ function App(props: any) {
     }, [])
 
     React.useEffect(() => {
-        const volume = params.get('volume')
         setFetchErr(null)
         if (!volume) {
             setIsFetching(false)
@@ -110,7 +106,7 @@ function App(props: any) {
             }
             getData()
         }
-    }, [dispatch])
+    }, [dispatch,volume])
 
     const saveUpdatesToManifest = async (auth: any) => {
         try {
@@ -174,10 +170,10 @@ function App(props: any) {
             },
             imageList
         )
-        const tmpList = insert(inc(idx), image, images)
+        const tmpList = insert(idx+1, image, images)
         // TODO: check
-        const updatedImageList = tmpList.filter( img => {
-          return img && imageId != img.id
+        const updatedImageList = tmpList.filter( (img: Buda.Image | null, i: number) => {
+          return img && (imageId != img.id || i == idx+1)
         }) as Buda.Image[]
         updateImageList(updatedImageList)
     }
@@ -214,6 +210,7 @@ function App(props: any) {
                     postErr={postErr}
                     setPostErr={setPostErr}
                 />
+
                 {manifest.isDefault ? (
                     <VolumeSearch
                         isFetching={isFetching}
@@ -255,11 +252,11 @@ function App(props: any) {
                                 </div>
                                 <div className="w-1/2 flex flex-col">
                                     <div className="self-end">
-                                        {auth.isAuthenticated && (
+                                        {(props.auth?.isAuthenticated || auth.isAuthenticated) && (
                                             <span
                                                 className="underline text-md font-medium cursor-pointer mr-5"
                                                 onClick={() =>
-                                                    saveUpdatesToManifest(auth)
+                                                    saveUpdatesToManifest(props.auth?props.auth:auth)
                                                 }
                                             >
                                                 {t('SAVE')}
@@ -287,7 +284,7 @@ function App(props: any) {
                                     }
                                     useWindow={true}
                                 >
-                                    {mapIndex(
+                                    {imageList.slice(0, renderToIdx).map(
                                         (item: Buda.Image, i: number) => (
                                             <React.Fragment key={i}>
                                                 {i === 0 && (
@@ -311,8 +308,7 @@ function App(props: any) {
                                                     handleDrop={rearrangeImage}
                                                 />
                                             </React.Fragment>
-                                        ),
-                                        imageList.slice(0, renderToIdx)
+                                        )
                                     )}
                                 </InfiniteScroll>
                             </div>

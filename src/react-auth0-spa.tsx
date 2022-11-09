@@ -106,13 +106,17 @@ export const Auth0Provider = ({
     }
 
     const setSession = async (authResult: auth0.Auth0DecodedHash) => {
-        // Set the time that the Access Token will expire at
-        let expiresAt = JSON.stringify(
-            authResult.expiresIn * 1000 + new Date().getTime()
-        )
-        localStorage.setItem('access_token', authResult.accessToken)
-        localStorage.setItem('id_token', authResult.idToken)
-        localStorage.setItem('expires_at', expiresAt)
+        if (authResult.expiresIn) {
+          // Set the time that the Access Token will expire at
+          let expiresAt = JSON.stringify(
+              authResult.expiresIn * 1000 + new Date().getTime()
+          )
+          localStorage.setItem('bvmt_expires_at', expiresAt)
+        }
+        if (authResult.accessToken && authResult.idToken) {
+          localStorage.setItem('bvmt_access_token', authResult.accessToken)
+          localStorage.setItem('bvmt_id_token', authResult.idToken)
+        }
 
         console.log('session', authResult)
 
@@ -123,14 +127,16 @@ export const Auth0Provider = ({
         auth.parseHash(async (err, authResult) => {
             if (authResult && authResult.accessToken && authResult.idToken) {
                 setSession(authResult)
-                let redirect = JSON.parse(
-                    localStorage.getItem('auth0_redirect')
-                )
-                if (redirect) {
-                    history.push(redirect)
-                    // TODO find something better to force rerendering
-                    window.location.reload()
-                } else window.history.replaceState(null, null, ' ')
+                const redirect_from_localStorage = localStorage.getItem('auth0_redirect')
+                if (redirect_from_localStorage) {
+                  let redirect = JSON.parse(redirect_from_localStorage)
+                  if (redirect) {
+                      history.push(redirect)
+                      // TODO find something better to force rerendering
+                      window.location.reload()
+                  }
+                }
+                else window.history.replaceState(null, "", ' ')
             } else if (err) {
                 console.log(err)
             }

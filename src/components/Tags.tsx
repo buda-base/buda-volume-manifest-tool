@@ -12,8 +12,9 @@ import ListItemText from '@material-ui/core/ListItemText'
 import Checkbox from '@material-ui/core/Checkbox'
 import { connect } from 'react-redux'
 import { addImageTag } from '../redux/actions/manifest'
+import { Buda } from '../../types'
 
-const tagMap = tags.reduce((acc, val) => {
+const tagMap: Record<string,Buda.Tag> = (tags as Buda.Tag[]).reduce((acc, val) => {
     return assoc(val.id, val, acc)
 }, {})
 
@@ -23,13 +24,13 @@ const useStyles = makeStyles(() => ({
         maxWidth: 300,
     },
 }))
-const Tags = (props: { tags?: any; id?: any; dispatch: any; idx: number }) => {
+const Tags = (props: { tags: string[]; id?: string; dispatch: any; idx: number }) => {
     const { t } = useTranslation()
     const classes = useStyles()
 
-    const [tagOptions, setTagOptions] = React.useState([])
+    const [tagOptions, setTagOptions] = React.useState<string[]>([])
     React.useEffect(() => {
-        setTagOptions(tags)
+        setTagOptions(props.tags)
     }, [props.tags])
 
     const MenuProps = {
@@ -54,27 +55,27 @@ const Tags = (props: { tags?: any; id?: any; dispatch: any; idx: number }) => {
                     value={props.tags || []}
                     onChange={handleChange}
                     input={<Input />}
-                    renderValue={(selected: any[]) => {
-                        return (
-                            selected
-                                // @ts-ignore
-                                .map(tag => tagMap[tag].label.en)
+                    renderValue={(selected: unknown) => {
+                        return (<>{
+                            (selected as string[])
+                                .map((tagid: string) => tagMap[tagid].label.en)
                                 .join(', ')
+                                }</>
                         )
                     }}
                     MenuProps={MenuProps}
                 >
-                    {tagOptions.map(tag => (
-                        <MenuItem key={tag.id} value={tag.id}>
+                    {tagOptions.map((tagid: string) => (
+                        <MenuItem key={tagid} value={tagid}>
                             <Checkbox
                                 checked={
                                     (includes(
-                                        tag.id,
+                                        tagid,
                                         tagsSafe
                                     ) as unknown) as boolean
                                 }
                             />
-                            <ListItemText primary={tag.label.en} />
+                            <ListItemText primary={tagMap[tagid].label.en} />
                         </MenuItem>
                     ))}
                 </Select>

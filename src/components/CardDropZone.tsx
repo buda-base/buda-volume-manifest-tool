@@ -9,7 +9,7 @@ function CardDropZone({
     i: number
     handleDrop: (arg1: string, arg2: number) => void
 }) {
-    const [{ isOver }, drop] = useDrop({
+    const [{ isOver }, drop] = useDrop<unknown,unknown,{ isOver: boolean }>({
         accept: 'CARD',
         // @ts-ignore
         drop: ({ imageId }) => {

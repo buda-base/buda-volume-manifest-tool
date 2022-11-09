@@ -24,16 +24,5 @@ const onRedirectCallback = (appState: { targetUrl: any }) => {
     )
 }
 
-ReactDOM.render(
-    <Provider store={store}>
-        <Auth0Provider
-            {...config.login}
-            onRedirectCallback={onRedirectCallback}
-        >
-            <App />
-        </Auth0Provider>{' '}
-    </Provider>,
-    document.getElementById('root')
-)
 
 serviceWorker.unregister()
