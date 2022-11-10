@@ -1,11 +1,7 @@
 // @ts-nocheck
 import { pagination_types } from './pagination-prediction'
 
-export function getComparator(manifest: {
-    pagination: any
-    section: any
-    sections: string | any[]
-}) {
+export function getComparator(manifest: Buda.Manifest) {
     var paginations = manifest.pagination
     if (!paginations || paginations.length < 1) {
         // error

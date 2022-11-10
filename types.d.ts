@@ -15,6 +15,7 @@ export namespace Buda {
     interface Image {
         id: string
         filename: string
+        // TODO: this should be an object with the different pagination types
         pagination?: {
             pgfolios?: Text
         }
@@ -23,6 +24,7 @@ export namespace Buda {
         tags?: string[]
         display?: false
         'duplicate-of'?: string
+        'detail-of'?: string
         sectionId?: string
         reviewed?: boolean
         type?: string

@@ -1,4 +1,4 @@
-import {
+  import {
     addIndex,
     always,
     append,
@@ -33,6 +33,14 @@ const mapIndex = addIndex(map)
 const imageListLens = lensPath(['view', 'view1', 'imagelist'])
 const getImageList = (manifest: any) => {
     return (view(imageListLens, manifest) as Buda.Image[]) || []
+}
+
+const getPaginationFromManifest = (manifest: Buda.Manifest, pagination_id: string) => {
+  for (const pagination of manifest.pagination) {
+    if (pagination.id == pagination_id)
+      return pagination
+  }
+  return null
 }
 
 export default (
@@ -225,11 +233,14 @@ export default (
                     const removeDetailOf =
                         prevTagsHaveDetail && !newTagsHaveDetail
 
-                    return compose(
-                        when(always(removeDuplicateOf), dissoc('duplicate-of')),
-                        when(always(removeDetailOf), dissoc('detail-of')),
-                        assoc('tags', action.payload.tags as string[]),
-                    )(image)
+                    if (removeDuplicateOf)
+                      image['duplicate-of'] = undefined
+
+                    if (removeDetailOf)
+                      image['detail-of'] = undefined
+
+                    image.tags = action.payload.tags as string[]
+                    return image
                 },
             )
 
@@ -238,7 +249,7 @@ export default (
                     const updatedNotes = remove(
                         action.payload.noteIdx as number,
                         1,
-                        propOr([], 'note', image),
+                        'note' in image && image['note'] ? image['note'] : []
                     )
                     return assoc('note', updatedNotes, image)
                 },
@@ -257,28 +268,29 @@ export default (
         case 'UPDATE_UNCHECKED_ITEMS':
             const getMargin = getPagination(manifest, action.payload.image0)
             // TODO: in the future it may depend on more elaborated checks:
-            let pagination_id = manifest.pagination[0].id
-
-            const updateImageList15 = mapIndex(
+            const pagination_id = manifest.pagination[0].id
+            const imageList = getImageList(manifest)
+            const updateImageList15 = imageList.map(
                 (image: Buda.Image, i: number) => {
                     const diff = i - action.payload.idx
                     // TODO: here we shouldn't change anything after the first reviewed image,
                     // even if some images are not reviewed
                     if (diff > 0 && !image.reviewed && getMargin) {
-                        let res = getMargin(diff)
-                        if (!res)
+                        const margin = getMargin(diff)
+                        if (!margin)
                           return image
-                        let newimg = assoc('indication', res[1], image)
+                        const newimg = { ...image, 'indication':  margin[1] }
                         if (!newimg.pagination) {
                             newimg.pagination = {}
                         }
-                        newimg.pagination[pagination_id] = res[0]
+                        // TODO: check
+                        if (margin[0])
+                          newimg.pagination.pgfolios = margin[0] as Buda.Text
                         return newimg
                     } else {
                         return image
                     }
-                },
-                getImageList(manifest),
+                }
             )
             return set(imageListLens, updateImageList15, manifest)
         case 'HANDLE_PAGINATION_PREDICTION':
