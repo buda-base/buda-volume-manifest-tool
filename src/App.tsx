@@ -213,6 +213,7 @@ function App(props: any) {
 
                 {manifest.isDefault ? (
                     <VolumeSearch
+                        history={props.history}
                         isFetching={isFetching}
                         fetchErr={fetchErr}
                         {...(manifest && manifest['imggroup']

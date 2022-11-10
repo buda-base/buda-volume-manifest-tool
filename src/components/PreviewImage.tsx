@@ -6,9 +6,11 @@ import MenuItem from '@material-ui/core/MenuItem'
 import { withStyles } from '@material-ui/core'
 import Icon from '@material-ui/core/Icon'
 import { useTranslation } from 'react-i18next'
+import i18n from "i18next"
 import { connect } from 'react-redux'
 import { setImageView } from '../redux/actions/manifest'
 import { pathOr } from 'ramda'
+import "../css/PreviewImage.css"
 
 interface IState {
     degrees?: number
@@ -56,7 +58,49 @@ class PreviewImage extends React.Component<IProps, IState> {
                 defaultZoomLevel: this.props.zoom,
                 showRotationControl: true,
                 tileSources: [this.props.iiif],
+                toolbar:`openseadragon${this.props.i}_toolbar`,
+                prefixUrl:'/images/osd/',
+                ajaxWithCredentials: true,
+                navImages:{
+                    zoomIn:{ 
+                        REST:"plus.svg",
+                        GROUP:"plus.svg",
+                        HOVER:"plus.svg",
+                        DOWN:"plus.svg" 
+                    },
+                    zoomOut:{ 
+                        REST:"minus.svg",
+                        GROUP:"minus.svg",
+                        HOVER:"minus.svg",
+                        DOWN:"minus.svg" 
+                    },
+                    fullpage:{ 
+                        REST:"fullscreen.svg",
+                        GROUP:"fullscreen.svg",
+                        HOVER:"fullscreen.svg",
+                        DOWN:"fullscreen.svg" 
+                    },
+                    rotateleft:{ 
+                        REST:"rotate90.svg",
+                        GROUP:"rotate90.svg",
+                        HOVER:"rotate90.svg",
+                        DOWN:"rotate90.svg" 
+                    },
+                    rotateright:{ 
+                        REST:"rotate270.svg",
+                        GROUP:"rotate270.svg",
+                        HOVER:"rotate270.svg",
+                        DOWN:"rotate270.svg" 
+                    },
+                    home:{ 
+                        REST:"home.svg",
+                        GROUP:"home.svg",
+                        HOVER:"home.svg",
+                        DOWN:"home.svg" 
+                    }
+                }
             })
+            //console.log("viewer:",viewer,this.props.iiif)
 
             if (imageView) {
                 viewer.addHandler('open', () => {
@@ -172,7 +216,7 @@ class PreviewImage extends React.Component<IProps, IState> {
         }))(ImageMenu)
 
         return (
-            <div className="border-r border-gray-300 mr-2 w-1/2">
+            <div className="border-r border-gray-300 mr-2 w-3/5 osd-preview">
                 <div
                     style={{
                         width: '100%',
@@ -191,8 +235,30 @@ class PreviewImage extends React.Component<IProps, IState> {
                         }}
                         className="text-white"
                     >
-                        <ImageMenuOverlay />
-                    </div>
+                        {/* <ImageMenuOverlay /> */}
+                    </div>                
+                </div>
+                <div  className="osd-toolbar-ui">
+                    <div id={`openseadragon${this.props.i}_toolbar`} className="osd-toolbar-ui-container"></div>
+                    <div className="preview" style={{display:"inline-block"}} onClick={() => {
+                        const zoom = this.state.viewer.viewport.getZoom(
+                            true
+                        )
+                        const center = this.state.viewer.viewport.getCenter(
+                            true
+                        )
+                        const rotation = this.state.viewer.viewport.getRotation(
+                            true
+                        )
+
+                        this.props.dispatch(
+                            setImageView({
+                                zoom,
+                                center,
+                                rotation,
+                            })
+                        )
+                    }}><>{i18n.t('Set Preview')}<img src="/images/osd/preview.svg" alt="Set Preview"/></></div>
                 </div>
             </div>
         )

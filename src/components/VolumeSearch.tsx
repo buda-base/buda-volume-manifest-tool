@@ -12,6 +12,7 @@ const VolumeSearch = (props: {
     isFetching: any
     forVolume?: any
     fetchErr: any
+    history: any
 }) => {
     const { t } = useTranslation()
     const [volume, setVolume] = React.useState('')
