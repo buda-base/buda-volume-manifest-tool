@@ -28,10 +28,12 @@ const Tags = (props: { tags: string[]; id?: string; dispatch: any; idx: number }
     const { t } = useTranslation()
     const classes = useStyles()
 
+    console.log("tags:",tags)
+    
     const [tagOptions, setTagOptions] = React.useState<string[]>([])
     React.useEffect(() => {
         setTagOptions(props.tags)
-    }, [props.tags])
+    }, [props.tags])    
 
     const MenuProps = {
         PaperProps: {
@@ -44,6 +46,7 @@ const Tags = (props: { tags: string[]; id?: string; dispatch: any; idx: number }
     const tagsSafe = props.tags || []
     const handleChange = (e: { target: { value: any } }) => {
         const newTags = e.target.value
+        console.log("nT:",newTags,e)
         props.dispatch(addImageTag(props.idx, newTags))
     }
 
@@ -56,6 +59,7 @@ const Tags = (props: { tags: string[]; id?: string; dispatch: any; idx: number }
                     onChange={handleChange}
                     input={<Input />}
                     renderValue={(selected: unknown) => {
+                        console.log("sel:",selected)
                         return (<>{
                             (selected as string[])
                                 .map((tagid: string) => tagMap[tagid].label.en)
@@ -65,7 +69,7 @@ const Tags = (props: { tags: string[]; id?: string; dispatch: any; idx: number }
                     }}
                     MenuProps={MenuProps}
                 >
-                    {tagOptions?.map((tagid: string) => (
+                    {Object.keys(tagMap).map((tagid: string) => (
                         <MenuItem key={tagid} value={tagid}>
                             <Checkbox
                                 checked={

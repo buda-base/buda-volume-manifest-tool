@@ -209,6 +209,9 @@ export default (
             )
         case 'ADD_IMAGE_TAG':
             return updateImage(action.payload.idx, (image: Buda.Image) => {
+
+                    console.log("upd:",image,action)
+
                     const duplicateTags = ['T0018', 'T0017']
                     const detailTags = ['T0016']
                     const currentTags = propOr(
