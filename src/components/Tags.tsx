@@ -65,7 +65,7 @@ const Tags = (props: { tags: string[]; id?: string; dispatch: any; idx: number }
                     }}
                     MenuProps={MenuProps}
                 >
-                    {tagOptions.map((tagid: string) => (
+                    {tagOptions?.map((tagid: string) => (
                         <MenuItem key={tagid} value={tagid}>
                             <Checkbox
                                 checked={

@@ -49,7 +49,7 @@ const VolumeSearch = (props: {
                     color="primary"
                     style={{ marginLeft: '1em' }}
                     onClick={() => {
-                        if(location.pathname.startsWith("/bvmt")) navigate({pathname:"/bvmt/"+volume})
+                        if(location.pathname.startsWith("/bvmt")) navigate({pathname:"/bvmt",search:"volume="+volume})
                         else window.location.search = `?volume=${volume}`
                     }}
                 >
