@@ -229,7 +229,7 @@ export default function SettingsDialog(props: {
             open={props.open}
             fullWidth
         >
-            <DialogTitle onClose={props.handleClose}>{t('Edit')}</DialogTitle>
+            <DialogTitle onClose={props.handleClose}><>{t('Edit')}</></DialogTitle>
             <div className="p-3">
                 <div className="w-full">
                     <div className="w-2/4">
